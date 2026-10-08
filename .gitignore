@@ -1,0 +1,42 @@
+# Binaries and build outputs
+/bin/
+/dist/
+/release/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.com
+*.COM
+*.dsk
+*.DSK
+*.rel
+*.ihx
+*.hex
+*.sym
+*.map
+*.noi
+*.lk
+*.asm
+
+# IDEs and OS files
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Go test / coverage outputs
+*.out
+*.test
+*.prof
+
+# SQLite temporary/runtime files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+!resources/
+!resource/

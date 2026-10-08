@@ -1,0 +1,19 @@
+{
+  "database_path": "dbase2plus.db",
+  "default_data_dir": ".",
+  "interactive_prompt": ".",
+  "talk": true,
+  "echo": false,
+  "bell": true,
+  "screen_columns": 80,
+  "screen_lines": 24,
+  "msx": {
+    "target_platform": "msx2p",
+    "memory_mapper_kb": 256,
+    "sdk": "fusion-c",
+    "sdcc_path": "sdcc",
+    "fusion_c_path": "resources/msx/fusion-c",
+    "msxgl_path": "resources/msx/msxgl",
+    "emulator_path": "openmsx"
+  }
+}
