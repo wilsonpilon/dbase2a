@@ -1,5 +1,5 @@
 # ESPECIFICAÇÃO TÉCNICA E ARQUITETURAL (SPEC.md)
-## Projeto dBase II+ (PC & MSX 2+)
+## Projeto dBase II++ (PC & MSX 2+)
 
 > **Documento Vivo (Live Document)**  
 > Este documento é atualizado continuamente ao longo do ciclo de vida do projeto para registrar arquitetura, especificações técnicas, decisões de engenharia, progresso de implementação e pendências futuras.
@@ -8,7 +8,7 @@
 
 ### 1. Visão Geral e Objetivos do Projeto
 
-O **dBase II+** é uma reimplementação moderna e estendida do clássico sistema gerenciador de banco de dados relacional e linguagem de programação **dBase II**, com foco duplo:
+O **dBase II++** é uma reimplementação moderna e estendida do clássico sistema gerenciador de banco de dados relacional e linguagem de programação **dBase II / dBase II+** (Plus Plus — partindo do dBase II+ original e incrementando novos recursos e tecnologias), com foco duplo:
 1. **Ambiente PC (Windows & Linux)**:
    - Aplicação de alto desempenho escrita em **Go (Golang)**.
    - Suporte a múltiplos modos de interface: **GUI Desktop** (utilizando o framework **Fyne**), **TUI** (Terminal User Interface completa para consoles de texto) e **CLI Interativo** (com o clássico prompt de ponto `.` e processador de linha de comando extensivo).
@@ -25,7 +25,7 @@ O **dBase II+** é uma reimplementação moderna e estendida do clássico sistem
 
 ```
 +-----------------------------------------------------------------------------------+
-|                                 dBase II+ Engine (Go)                            |
+|                                 dBase II++ Engine (Go)                            |
 +-----------------------------------------------------------------------------------+
 |  +-------------------+  +-------------------+  +-------------------------------+  |
 |  |     GUI (Fyne)    |  |     TUI (Term)    |  |       CLI (Dot Prompt .)      |  |
@@ -119,7 +119,10 @@ A aplicação no PC disponibiliza três modos de interface integrados:
 
 1. **Modo CLI (Command Line Interface)**:
    - Emulação fiel do terminal dBase II com prompt de comando `.`.
-   - Suporte a histórico de comandos, buffer de edição e saída paginada.
+   - Editor de linha interativo (`LineEditor`) com suporte a histórico, atalhos de navegação e edição.
+   - **Autocomplete Cíclico por TAB**: Autocompleta comandos com único match (`cre` -> `CREATE `) ou circula entre múltiplos candidatos a cada TAB sucessivo (`co` -> `CONTINUE` -> `COPY` -> `COUNT`...). Suporte contextual para comandos, tópicos de help, parâmetros de `SET` e nomes de arquivos.
+   - **Realce de Sintaxe Dinâmico (Syntax Highlighting)**: Destaque de comandos (Ciano), cláusulas (Branco Negrito), operadores (Amarelo), funções (Magenta), arquivos/strings (Verde), números (Azul) e mensagens de erro destacadas em Vermelho Brilhante.
+   - Suporte a saída paginada interativa (`pkg/help/pager.go`) com rolagem por páginas e linhas.
    - Execução direta de parâmetros passados via terminal (`--cli`, `--exec="USE CLIENTES; LIST"`, `--file=rotina.cmd`).
 2. **Modo TUI (Terminal User Interface)**:
    - Interface em modo texto formatada com caixas, menus suspensos, status bar e visualizador de tabelas para terminais ANSI/VT100 no Windows PowerShell e Linux Bash.
@@ -169,18 +172,27 @@ $$\text{Formato: } \mathbf{vX.Y.Z}$$
 - [x] Interface CLI com prompt `.` e interpretador de comandos básico (`CREATE`, `USE`, `LIST`, `APPEND`, `QUIT`).
 - [x] Módulo gerador de código C/ASM para MSX (Fusion-C / MSXgl).
 
-#### Fase 2: Expansão da Engine, TUI e GUI Fyne (Em Andamento)
-- [x] Implementação dos comandos estendidos (`PACK`, `ZAP`, `REPLACE`, `LOCATE`, `COUNT`, `SUM`, `DO`).
+#### Fase 2: Expansão da Engine, TUI e GUI Fyne (Concluído / Atual)
+- [x] Implementação dos comandos estendidos (`PACK`, `ZAP`, `REPLACE`, `LOCATE`, `COUNT`, `SUM`, `DO`, `STORE`, `?`, `??`, `GOTO`, `SKIP`).
 - [x] Interface TUI avançada para terminal via ANSI/VT100.
 - [x] Interface gráfica Desktop via **Fyne** com tabela de dados e editor de consultas.
-- [ ] Suporte a arquivos de índices `.NDX` do dBASE II original.
-- [ ] Avaliador de expressões lógicas e matemáticas completas (`.AND.`, `.OR.`, `.NOT.`, `>`, `<`, `=`, `+`, `-`, `*`, `/`).
+- [x] Avaliador de expressões lógicas e matemáticas completas (`.AND.`, `.OR.`, `.NOT.`, `>`, `<`, `=`, `<=`, `>=`, `<>`, `#`, `$`, `+`, `-`, `*`, `/`, funções intrínsecas e filtros `FOR`/`WHILE`).
+- [x] Subsistema de Ajuda Dinâmica (`pkg/help`) com suporte total a `DBASEMSG.TXT`, `MED.HLP` e conversor transparente da ROM de caracteres de 8-bits do MSX nacional para UTF-8.
+- [x] Paginador Interativo do Help com navegação por teclado (`pkg/help/pager.go`) e catálogo `HELP COMMANDS`.
+- [x] Editor CLI interativo com Autocomplete Cíclico por TAB e Realce de Sintaxe Dinâmico / Erros em Vermelho (`pkg/ui/cli`).
+- [x] Criação Interativa de Tabelas (`CREATE`) com cabeçalho de estrutura, validação de campos passo a passo (`001`, `002`), término com `Enter` vazio e prompt de inclusão imediata (`INPUT DATA NOW? (Y/N)`).
+- [x] Modo Interativo de Inclusão (`APPEND`) e Edição (`EDIT`) com tela de campos alinhados, encerramento por `Enter` no 1º campo e mapeamento completo de teclas clássicas (Ctrl) e modernas.
+- [ ] Suporte a arquivos de índices `.NDX` do dBASE II original (B-Tree).
+- [ ] Interpretador de scripts e estruturas de controle de fluxo `.PRG` (`DO WHILE ... ENDDO`, `IF ... ELSE ... ENDIF`).
 
 #### Fase 3: Toolchain MSX Avançada e Mapeamento de Memória 256KB
+- [x] Integração completa e suporte padrão à SDK **MSXgl** moderna com suporte a SDCC 4.6.0.
 - [x] Geração de templates de código C para MSX-DOS 2 com suporte a telas texto (Screen 0) de 80 colunas.
-- [ ] Mapeamento dinâmico de segmentos de 16 KB no Memory Mapper do MSX 2+ para cache de tabelas grandes.
+- [x] Mapeamento dinâmico de segmentos de 16 KB no Memory Mapper do MSX 2+ (`dos_mapper.h`, `DOSMapper_Alloc`, `DOSMapper_SetPage2`) para cache de tabelas grandes em 256 KB RAM.
+- [x] Conversor nativo em Go de Intel HEX (.ihx) para binário executável MSX-DOS 2 (.COM) sem dependências externas (`pkg/msx/hex2bin.go`).
+- [x] Geração de `msxgl_config.h`, `project_config.js`, `Makefile`, `build.bat` e `build.sh` para 1-click build no PC e MSX.
 - [ ] Criação de imagens de disco virtuais `.DSK` (720 KB e 360 KB) automaticamente no PC contendo o executável compilado e os arquivos `.DBF`.
 - [ ] Integração de emulador MSX (openMSX / BlueMSX) diretamente disparado pela GUI do Fyne para testes instantâneos.
 
 ---
-*Última atualização: 2026-10-08 | Versão: v0.1.0 "Nosferatu"*
+*Última atualização: 2026-10-08 | Versão: v0.6.4 "The Exorcist" | Consulte também: HANDOVER.md*

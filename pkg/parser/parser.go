@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -14,12 +13,12 @@ func Parse(input string) ([]*Statement, error) {
 	}
 
 	// Remove eventual ponto '.' inicial característico do prompt do dBASE II
-	if strings.HasPrefix(input, ".") {
+	if strings.HasPrefix(input, ".") && !strings.HasPrefix(input, ".T.") && !strings.HasPrefix(input, ".F.") && !strings.HasPrefix(input, ".NOT.") && !strings.HasPrefix(input, ".AND.") && !strings.HasPrefix(input, ".OR.") {
 		input = strings.TrimSpace(input[1:])
 	}
 
 	// Comentários no dBASE II iniciam com '*' ou 'NOTE'
-	if strings.HasPrefix(input, "*") || strings.HasPrefix(strings.ToUpper(input), "NOTE ") {
+	if strings.HasPrefix(input, "*") || strings.HasPrefix(strings.ToUpper(input), "NOTE ") || strings.ToUpper(input) == "NOTE" {
 		return nil, nil
 	}
 
@@ -37,13 +36,38 @@ func Parse(input string) ([]*Statement, error) {
 		if err != nil {
 			return nil, err
 		}
-		statements = append(statements, stmt)
+		if stmt != nil {
+			statements = append(statements, stmt)
+		}
 	}
 
 	return statements, nil
 }
 
 func parseSingleStatement(raw string) (*Statement, error) {
+	rawTrimmed := strings.TrimSpace(raw)
+	if rawTrimmed == "" {
+		return nil, nil
+	}
+
+	// Verificação direta para comandos de impressão ? e ??
+	if strings.HasPrefix(rawTrimmed, "??") {
+		return &Statement{
+			Type:       CmdPrintSame,
+			Expression: strings.TrimSpace(rawTrimmed[2:]),
+			Raw:        raw,
+			Options:    make(map[string]string),
+		}, nil
+	}
+	if strings.HasPrefix(rawTrimmed, "?") {
+		return &Statement{
+			Type:       CmdPrint,
+			Expression: strings.TrimSpace(rawTrimmed[1:]),
+			Raw:        raw,
+			Options:    make(map[string]string),
+		}, nil
+	}
+
 	lexer := NewLexer(raw)
 	var tokens []Token
 	for {
@@ -56,6 +80,22 @@ func parseSingleStatement(raw string) (*Statement, error) {
 
 	if len(tokens) == 0 {
 		return nil, nil
+	}
+
+	// Checagem de atribuição direta: VAR = EXPR
+	if len(tokens) >= 3 && (tokens[1].Type == TokenEquals || tokens[1].Value == "=") {
+		varName := strings.ToUpper(tokens[0].Value)
+		var exprParts []string
+		for _, tok := range tokens[2:] {
+			exprParts = append(exprParts, tok.Raw)
+		}
+		return &Statement{
+			Type:       CmdStore,
+			Target:     varName,
+			Expression: strings.Join(exprParts, " "),
+			Raw:        raw,
+			Options:    make(map[string]string),
+		}, nil
 	}
 
 	verb := strings.ToUpper(tokens[0].Value)
@@ -77,10 +117,10 @@ func parseSingleStatement(raw string) (*Statement, error) {
 		}
 	case "LIST":
 		stmt.Type = CmdList
-		parseListOrDisplay(tokens[1:], stmt)
+		parseClauses(tokens[1:], stmt, true)
 	case "DISPLAY":
 		stmt.Type = CmdDisplay
-		parseListOrDisplay(tokens[1:], stmt)
+		parseClauses(tokens[1:], stmt, true)
 	case "APPEND":
 		stmt.Type = CmdAppend
 		if len(tokens) > 1 && strings.ToUpper(tokens[1].Value) == "BLANK" {
@@ -97,10 +137,10 @@ func parseSingleStatement(raw string) (*Statement, error) {
 		stmt.Type = CmdBrowse
 	case "DELETE":
 		stmt.Type = CmdDelete
-		parseScopeAndFor(tokens[1:], stmt)
+		parseClauses(tokens[1:], stmt, false)
 	case "RECALL":
 		stmt.Type = CmdRecall
-		parseScopeAndFor(tokens[1:], stmt)
+		parseClauses(tokens[1:], stmt, false)
 	case "PACK":
 		stmt.Type = CmdPack
 	case "ZAP":
@@ -115,10 +155,31 @@ func parseSingleStatement(raw string) (*Statement, error) {
 		stmt.Type = CmdContinue
 	case "COUNT":
 		stmt.Type = CmdCount
-		parseScopeAndFor(tokens[1:], stmt)
+		parseClauses(tokens[1:], stmt, false)
 	case "SUM":
 		stmt.Type = CmdSum
 		parseSum(tokens[1:], stmt)
+	case "STORE":
+		stmt.Type = CmdStore
+		parseStore(tokens[1:], stmt)
+	case "GO", "GOTO":
+		stmt.Type = CmdGoto
+		if len(tokens) > 1 {
+			target := strings.ToUpper(tokens[1].Value)
+			if target == "TOP" || target == "BOTTOM" {
+				stmt.Target = target
+			} else if n, err := strconv.Atoi(target); err == nil {
+				stmt.RecNo = n
+			}
+		}
+	case "SKIP":
+		stmt.Type = CmdSkip
+		stmt.RecNo = 1 // default skip +1
+		if len(tokens) > 1 {
+			if n, err := strconv.Atoi(tokens[1].Value); err == nil {
+				stmt.RecNo = n
+			}
+		}
 	case "DO":
 		stmt.Type = CmdDo
 		if len(tokens) > 1 {
@@ -134,11 +195,24 @@ func parseSingleStatement(raw string) (*Statement, error) {
 		}
 	case "QUIT", "EXIT":
 		stmt.Type = CmdQuit
-	case "HELP", "?":
+	case "HELP":
 		stmt.Type = CmdHelp
+		if len(tokens) > 1 {
+			var parts []string
+			for _, t := range tokens[1:] {
+				parts = append(parts, t.Raw)
+			}
+			stmt.Target = strings.TrimSpace(strings.Join(parts, " "))
+		}
 	case "CLEAR", "CLS":
 		stmt.Type = CmdClear
 	default:
+		// Se começar por número inteiro, no dBase II '5' equivale a 'GOTO 5'
+		if num, err := strconv.Atoi(verb); err == nil {
+			stmt.Type = CmdGoto
+			stmt.RecNo = num
+			return stmt, nil
+		}
 		stmt.Type = CmdUnknown
 		stmt.Target = verb
 	}
@@ -146,9 +220,11 @@ func parseSingleStatement(raw string) (*Statement, error) {
 	return stmt, nil
 }
 
-func parseListOrDisplay(tokens []Token, stmt *Statement) {
+// parseClauses analisa parâmetros genéricos de comandos: escopo (ALL, RECORD n, NEXT n, REST), campos, FOR e WHILE.
+func parseClauses(tokens []Token, stmt *Statement, allowFields bool) {
 	for i := 0; i < len(tokens); i++ {
 		tokVal := strings.ToUpper(tokens[i].Value)
+
 		if tokVal == "ALL" {
 			stmt.Scope = "ALL"
 			continue
@@ -158,33 +234,20 @@ func parseListOrDisplay(tokens []Token, stmt *Statement) {
 			continue
 		}
 		if tokVal == "FOR" {
-			var forParts []string
-			for j := i + 1; j < len(tokens); j++ {
-				forParts = append(forParts, tokens[j].Value)
-			}
-			stmt.ForClause = strings.Join(forParts, " ")
-			break
-		}
-		if tokens[i].Type != TokenComma {
-			stmt.Fields = append(stmt.Fields, tokVal)
-		}
-	}
-}
-
-func parseScopeAndFor(tokens []Token, stmt *Statement) {
-	for i := 0; i < len(tokens); i++ {
-		tokVal := strings.ToUpper(tokens[i].Value)
-		if tokVal == "ALL" {
-			stmt.Scope = "ALL"
+			stmt.ForClause, i = extractClauseUntilNextKeyword(tokens, i+1)
 			continue
 		}
-		if tokVal == "FOR" {
-			var forParts []string
-			for j := i + 1; j < len(tokens); j++ {
-				forParts = append(forParts, tokens[j].Value)
-			}
-			stmt.ForClause = strings.Join(forParts, " ")
-			break
+		if tokVal == "WHILE" {
+			stmt.WhileClause, i = extractClauseUntilNextKeyword(tokens, i+1)
+			continue
+		}
+		if tokVal == "TO" && i+1 < len(tokens) {
+			stmt.Target = strings.ToUpper(tokens[i+1].Value)
+			i++
+			continue
+		}
+		if allowFields && tokens[i].Type != TokenComma {
+			stmt.Fields = append(stmt.Fields, tokVal)
 		}
 	}
 }
@@ -193,28 +256,48 @@ func parseReplace(tokens []Token, stmt *Statement) {
 	if len(tokens) == 0 {
 		return
 	}
-	stmt.Target = strings.ToUpper(tokens[0].Value) // Campo a ser substituído
-	for i := 1; i < len(tokens); i++ {
-		if strings.ToUpper(tokens[i].Value) == "WITH" {
-			var withParts []string
-			for j := i + 1; j < len(tokens); j++ {
-				if strings.ToUpper(tokens[j].Value) == "FOR" {
-					stmt.ForClause = strings.Join(extractRemaining(tokens, j+1), " ")
-					break
-				}
-				withParts = append(withParts, tokens[j].Value)
-			}
-			stmt.WithClause = strings.Join(withParts, " ")
-			break
+
+	// REPLACE [scope] FIELD WITH expr [FOR expr] [WHILE expr]
+	idx := 0
+	if strings.ToUpper(tokens[idx].Value) == "ALL" {
+		stmt.Scope = "ALL"
+		idx++
+	}
+	if idx >= len(tokens) {
+		return
+	}
+
+	stmt.Target = strings.ToUpper(tokens[idx].Value) // Campo alvo
+	idx++
+
+	for idx < len(tokens) {
+		tokVal := strings.ToUpper(tokens[idx].Value)
+		if tokVal == "WITH" {
+			stmt.WithClause, idx = extractClauseUntilNextKeyword(tokens, idx+1)
+			continue
 		}
+		if tokVal == "FOR" {
+			stmt.ForClause, idx = extractClauseUntilNextKeyword(tokens, idx+1)
+			continue
+		}
+		if tokVal == "WHILE" {
+			stmt.WhileClause, idx = extractClauseUntilNextKeyword(tokens, idx+1)
+			continue
+		}
+		idx++
 	}
 }
 
 func parseLocate(tokens []Token, stmt *Statement) {
 	for i := 0; i < len(tokens); i++ {
-		if strings.ToUpper(tokens[i].Value) == "FOR" {
-			stmt.ForClause = strings.Join(extractRemaining(tokens, i+1), " ")
-			break
+		tokVal := strings.ToUpper(tokens[i].Value)
+		if tokVal == "FOR" {
+			stmt.ForClause, i = extractClauseUntilNextKeyword(tokens, i+1)
+			continue
+		}
+		if tokVal == "WHILE" {
+			stmt.WhileClause, i = extractClauseUntilNextKeyword(tokens, i+1)
+			continue
 		}
 	}
 }
@@ -223,8 +306,21 @@ func parseSum(tokens []Token, stmt *Statement) {
 	for i := 0; i < len(tokens); i++ {
 		tokVal := strings.ToUpper(tokens[i].Value)
 		if tokVal == "FOR" {
-			stmt.ForClause = strings.Join(extractRemaining(tokens, i+1), " ")
-			break
+			stmt.ForClause, i = extractClauseUntilNextKeyword(tokens, i+1)
+			continue
+		}
+		if tokVal == "WHILE" {
+			stmt.WhileClause, i = extractClauseUntilNextKeyword(tokens, i+1)
+			continue
+		}
+		if tokVal == "TO" && i+1 < len(tokens) {
+			stmt.Target = strings.ToUpper(tokens[i+1].Value)
+			i++
+			continue
+		}
+		if tokVal == "ALL" {
+			stmt.Scope = "ALL"
+			continue
 		}
 		if tokens[i].Type != TokenComma {
 			stmt.Fields = append(stmt.Fields, tokVal)
@@ -232,15 +328,37 @@ func parseSum(tokens []Token, stmt *Statement) {
 	}
 }
 
-func extractRemaining(tokens []Token, start int) []string {
-	var parts []string
-	for j := start; j < len(tokens); j++ {
-		parts = append(parts, tokens[j].Value)
+func parseStore(tokens []Token, stmt *Statement) {
+	// STORE <expr> TO <var>
+	var exprParts []string
+	toFound := false
+	for i := 0; i < len(tokens); i++ {
+		tokVal := strings.ToUpper(tokens[i].Value)
+		if tokVal == "TO" {
+			toFound = true
+			if i+1 < len(tokens) {
+				stmt.Target = strings.ToUpper(tokens[i+1].Value)
+			}
+			break
+		}
+		exprParts = append(exprParts, tokens[i].Raw)
 	}
-	return parts
+	if toFound {
+		stmt.Expression = strings.Join(exprParts, " ")
+	}
 }
 
-// FormatSummary retorna uma representação legível do comando analisado.
-func (s *Statement) FormatSummary() string {
-	return fmt.Sprintf("Cmd: %s | Target: %s | Scope: %s | For: %s", s.Type, s.Target, s.Scope, s.ForClause)
+func extractClauseUntilNextKeyword(tokens []Token, start int) (string, int) {
+	var parts []string
+	curr := start
+	for curr < len(tokens) {
+		upper := strings.ToUpper(tokens[curr].Value)
+		if upper == "FOR" || upper == "WHILE" || upper == "WITH" || upper == "TO" {
+			curr--
+			break
+		}
+		parts = append(parts, tokens[curr].Raw)
+		curr++
+	}
+	return strings.Join(parts, " "), curr
 }

@@ -1,4 +1,4 @@
-// Package config gerencia as opções de configuração do dBase II+,
+// Package config gerencia as opções de configuração do dBase II++,
 // diretórios de dados, preferências de usuário e localização das toolchains MSX.
 package config
 
@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-// AppConfig armazena as configurações globais da aplicação dBase II+.
+// AppConfig armazena as configurações globais da aplicação dBase II++.
 type AppConfig struct {
 	// DatabasePath indica o caminho do banco de dados SQLite para metadados e histórico.
 	DatabasePath string `json:"database_path"`
@@ -28,6 +28,9 @@ type AppConfig struct {
 	// Bell emite sinal sonoro em erros ou avisos (SET BELL ON).
 	Bell bool `json:"bell"`
 
+	// Exact habilita comparação exata de strings (SET EXACT ON).
+	Exact bool `json:"exact"`
+
 	// ScreenColumns largura da tela do terminal ou TUI (80 padrão, ou 40 para modo MSX 1).
 	ScreenColumns int `json:"screen_columns"`
 
@@ -40,7 +43,7 @@ type AppConfig struct {
 
 // MSXToolchainConfig detalha caminhos e preferências da toolchain de compilação MSX.
 type MSXToolchainConfig struct {
-	TargetPlatform string `json:"target_platform"` // "msx1", "msx2", "msx2p", "msxtr"
+	TargetPlatform string `json:"target_platform"`  // "msx1", "msx2", "msx2p", "msxtr"
 	MemoryMapperKB int    `json:"memory_mapper_kb"` // 64, 128, 256, 512
 	SDK            string `json:"sdk"`              // "fusion-c", "msxgl", "sdcc-raw"
 	SDCCPath       string `json:"sdcc_path"`        // Caminho do executável do SDCC
@@ -49,7 +52,7 @@ type MSXToolchainConfig struct {
 	EmulatorPath   string `json:"emulator_path"`    // Caminho do emulador (openMSX, BlueMSX, etc.)
 }
 
-// DefaultConfig retorna a configuração padrão de fábrica do dBase II+.
+// DefaultConfig retorna a configuração padrão de fábrica do dBase II++.
 func DefaultConfig() *AppConfig {
 	return &AppConfig{
 		DatabasePath:      "dbase2plus.db",

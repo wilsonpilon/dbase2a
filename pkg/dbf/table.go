@@ -260,6 +260,11 @@ func (t *Table) Zap() {
 	t.RecNo = 0
 }
 
+// Close fecha a tabela e persiste dados se necessário.
+func (t *Table) Close() error {
+	return t.Save()
+}
+
 // FieldNames retorna a lista de nomes dos campos em maiúsculas.
 func (t *Table) FieldNames() []string {
 	names := make([]string, len(t.Header.Fields))

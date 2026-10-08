@@ -23,6 +23,9 @@ const (
 type Token struct {
 	Type  TokenType
 	Value string
+	Raw   string
+	Start int
+	End   int
 }
 
 // Lexer divide a linha de comando em uma sequência de tokens.
@@ -44,9 +47,10 @@ func (l *Lexer) NextToken() Token {
 	l.skipWhitespace()
 
 	if l.pos >= len(l.input) {
-		return Token{Type: TokenEOF, Value: ""}
+		return Token{Type: TokenEOF, Value: "", Raw: "", Start: l.pos, End: l.pos}
 	}
 
+	start := l.pos
 	ch := l.input[l.pos]
 
 	if ch == '"' || ch == '\'' {
@@ -55,17 +59,51 @@ func (l *Lexer) NextToken() Token {
 
 	if ch == ',' {
 		l.pos++
-		return Token{Type: TokenComma, Value: ","}
+		return Token{Type: TokenComma, Value: ",", Raw: ",", Start: start, End: l.pos}
 	}
 
 	if ch == ';' {
 		l.pos++
-		return Token{Type: TokenSemicolon, Value: ";"}
+		return Token{Type: TokenSemicolon, Value: ";", Raw: ";", Start: start, End: l.pos}
+	}
+
+	// Operadores de comparação com 2 caracteres
+	if ch == '>' {
+		l.pos++
+		if l.pos < len(l.input) && l.input[l.pos] == '=' {
+			l.pos++
+			return Token{Type: TokenIdentifier, Value: ">=", Raw: ">=", Start: start, End: l.pos}
+		}
+		return Token{Type: TokenIdentifier, Value: ">", Raw: ">", Start: start, End: l.pos}
+	}
+
+	if ch == '<' {
+		l.pos++
+		if l.pos < len(l.input) {
+			if l.input[l.pos] == '=' {
+				l.pos++
+				return Token{Type: TokenIdentifier, Value: "<=", Raw: "<=", Start: start, End: l.pos}
+			}
+			if l.input[l.pos] == '>' {
+				l.pos++
+				return Token{Type: TokenIdentifier, Value: "<>", Raw: "<>", Start: start, End: l.pos}
+			}
+		}
+		return Token{Type: TokenIdentifier, Value: "<", Raw: "<", Start: start, End: l.pos}
+	}
+
+	if ch == '!' {
+		l.pos++
+		if l.pos < len(l.input) && l.input[l.pos] == '=' {
+			l.pos++
+			return Token{Type: TokenIdentifier, Value: "!=", Raw: "!=", Start: start, End: l.pos}
+		}
+		return Token{Type: TokenIdentifier, Value: "!", Raw: "!", Start: start, End: l.pos}
 	}
 
 	if ch == '=' {
 		l.pos++
-		return Token{Type: TokenEquals, Value: "="}
+		return Token{Type: TokenEquals, Value: "=", Raw: "=", Start: start, End: l.pos}
 	}
 
 	if unicode.IsDigit(ch) {
@@ -77,7 +115,8 @@ func (l *Lexer) NextToken() Token {
 	}
 
 	l.pos++
-	return Token{Type: TokenIdentifier, Value: string(ch)}
+	str := string(ch)
+	return Token{Type: TokenIdentifier, Value: str, Raw: str, Start: start, End: l.pos}
 }
 
 func (l *Lexer) skipWhitespace() {
@@ -87,16 +126,18 @@ func (l *Lexer) skipWhitespace() {
 }
 
 func (l *Lexer) readString(quote rune) Token {
-	l.pos++ // pula abertura da aspa
 	start := l.pos
+	l.pos++ // pula abertura da aspa
+	contentStart := l.pos
 	for l.pos < len(l.input) && l.input[l.pos] != quote {
 		l.pos++
 	}
-	str := string(l.input[start:l.pos])
+	content := string(l.input[contentStart:l.pos])
 	if l.pos < len(l.input) && l.input[l.pos] == quote {
 		l.pos++ // pula fechamento da aspa
 	}
-	return Token{Type: TokenString, Value: str}
+	raw := string(l.input[start:l.pos])
+	return Token{Type: TokenString, Value: content, Raw: raw, Start: start, End: l.pos}
 }
 
 func (l *Lexer) readNumber() Token {
@@ -113,19 +154,20 @@ func (l *Lexer) readNumber() Token {
 			break
 		}
 	}
-	return Token{Type: TokenNumber, Value: string(l.input[start:l.pos])}
+	raw := string(l.input[start:l.pos])
+	return Token{Type: TokenNumber, Value: raw, Raw: raw, Start: start, End: l.pos}
 }
 
 func (l *Lexer) readIdentifierOrKeyword() Token {
 	start := l.pos
 	for l.pos < len(l.input) {
 		ch := l.input[l.pos]
-		if unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '_' || ch == '.' || ch == '\\' || ch == '/' || ch == ':' || ch == '-' {
+		if unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '_' || ch == '.' || ch == '\\' || ch == '/' || ch == ':' || ch == '-' || ch == '$' {
 			l.pos++
 		} else {
 			break
 		}
 	}
-	val := string(l.input[start:l.pos])
-	return Token{Type: TokenIdentifier, Value: val}
+	raw := string(l.input[start:l.pos])
+	return Token{Type: TokenIdentifier, Value: raw, Raw: raw, Start: start, End: l.pos}
 }

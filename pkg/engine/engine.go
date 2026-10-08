@@ -3,30 +3,39 @@
 package engine
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"dbase2a/pkg/config"
 	"dbase2a/pkg/dbf"
+	"dbase2a/pkg/eval"
+	"dbase2a/pkg/help"
 	"dbase2a/pkg/parser"
 	"dbase2a/pkg/storage/sqlite"
 )
 
-// Engine gerencia o estado de execução de uma sessão do dBase II+.
+// Engine gerencia o estado de execução de uma sessão do dBase II++.
 type Engine struct {
-	Config       *config.AppConfig
-	Storage      *sqlite.Storage
-	ActiveTable  *dbf.Table
-	ActiveAlias  string
-	Out          io.Writer
-	LastLocateCond string
-	QuitRequested bool
-	mu           sync.Mutex
+	Config             *config.AppConfig
+	Storage            *sqlite.Storage
+	ActiveTable        *dbf.Table
+	ActiveAlias        string
+	CurrentRecordIndex int // 1-based (0 se tabela vazia ou sem seleção)
+	Variables          map[string]eval.Value
+	Help               *help.HelpSystem
+	In                 io.Reader
+	Out                io.Writer
+	reader             *bufio.Reader
+	LastLocateCond     string
+	QuitRequested      bool
+	mu                 sync.Mutex
 }
 
 // NewEngine instancia um novo motor de execução com a configuração e o armazenamento fornecidos.
@@ -34,10 +43,16 @@ func NewEngine(cfg *config.AppConfig, store *sqlite.Storage, out io.Writer) *Eng
 	if out == nil {
 		out = os.Stdout
 	}
+	helpSys := help.NewHelpSystem()
+	_ = helpSys.LoadDefault()
+
 	return &Engine{
-		Config:  cfg,
-		Storage: store,
-		Out:     out,
+		Config:             cfg,
+		Storage:            store,
+		Variables:          make(map[string]eval.Value),
+		CurrentRecordIndex: 1,
+		Help:               helpSys,
+		Out:                out,
 	}
 }
 
@@ -49,6 +64,66 @@ func (e *Engine) Printf(format string, a ...interface{}) {
 // Println escreve uma linha na saída configurada.
 func (e *Engine) Println(a ...interface{}) {
 	fmt.Fprintln(e.Out, a...)
+}
+
+// GetEvalContext cria o contexto de avaliação de expressões no estado atual ou para um registro específico.
+func (e *Engine) GetEvalContext(rec *dbf.Record, recNo int) *eval.Context {
+	return &eval.Context{
+		GetFieldFunc: func(name string) (eval.Value, bool) {
+			if rec != nil {
+				valStr := rec.Get(name)
+				// Tenta inferir tipo com base no esquema do DBF se tabela ativa
+				if e.ActiveTable != nil {
+					for _, f := range e.ActiveTable.Header.Fields {
+						if strings.EqualFold(f.Name, name) {
+							switch f.Type {
+							case dbf.TypeNumeric:
+								if num, err := strconv.ParseFloat(strings.TrimSpace(valStr), 64); err == nil {
+									return eval.NewNumberValue(num), true
+								}
+							case dbf.TypeLogical:
+								upper := strings.ToUpper(strings.TrimSpace(valStr))
+								return eval.NewLogicalValue(upper == "T" || upper == "Y"), true
+							}
+							return eval.NewStringValue(valStr), true
+						}
+					}
+				}
+				// Se não encontrou no header mas está no record
+				if valStr != "" {
+					if num, err := strconv.ParseFloat(strings.TrimSpace(valStr), 64); err == nil {
+						return eval.NewNumberValue(num), true
+					}
+					return eval.NewStringValue(valStr), true
+				}
+			}
+			return eval.NewNullValue(), false
+		},
+		GetVarFunc: func(name string) (eval.Value, bool) {
+			if val, exists := e.Variables[strings.ToUpper(name)]; exists {
+				return val, true
+			}
+			return eval.NewNullValue(), false
+		},
+		DeletedFunc: func() bool {
+			if rec != nil {
+				return rec.IsDeleted()
+			}
+			return false
+		},
+		EOFFunc: func() bool {
+			if e.ActiveTable == nil || len(e.ActiveTable.Records) == 0 {
+				return true
+			}
+			return recNo > len(e.ActiveTable.Records)
+		},
+		RecNoFunc: func() int {
+			if recNo > 0 {
+				return recNo
+			}
+			return e.CurrentRecordIndex
+		},
+	}
 }
 
 // ExecuteLine processa e executa uma linha completa de comando do usuário.

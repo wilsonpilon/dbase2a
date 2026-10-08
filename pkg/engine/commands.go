@@ -3,10 +3,11 @@ package engine
 import (
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"dbase2a/pkg/dbf"
+	"dbase2a/pkg/eval"
+	"dbase2a/pkg/help"
 	"dbase2a/pkg/parser"
 )
 
@@ -28,6 +29,8 @@ func (e *Engine) execStatement(stmt *parser.Statement) error {
 		return e.cmdAppend(stmt)
 	case parser.CmdEdit:
 		return e.cmdEdit(stmt)
+	case parser.CmdBrowse:
+		return e.cmdBrowse(stmt)
 	case parser.CmdDelete:
 		return e.cmdDelete(stmt)
 	case parser.CmdRecall:
@@ -46,6 +49,16 @@ func (e *Engine) execStatement(stmt *parser.Statement) error {
 		return e.cmdCount(stmt)
 	case parser.CmdSum:
 		return e.cmdSum(stmt)
+	case parser.CmdStore:
+		return e.cmdStore(stmt)
+	case parser.CmdPrint:
+		return e.cmdPrint(stmt, true)
+	case parser.CmdPrintSame:
+		return e.cmdPrint(stmt, false)
+	case parser.CmdGoto:
+		return e.cmdGoto(stmt)
+	case parser.CmdSkip:
+		return e.cmdSkip(stmt)
 	case parser.CmdDo:
 		return e.cmdDo(stmt)
 	case parser.CmdSet:
@@ -55,520 +68,738 @@ func (e *Engine) execStatement(stmt *parser.Statement) error {
 	case parser.CmdHelp:
 		return e.cmdHelp(stmt)
 	case parser.CmdClear:
-		e.Printf("\033[H\033[2J") // Limpeza ANSI
-		return nil
+		return e.cmdClear(stmt)
 	default:
-		return fmt.Errorf("comando não reconhecido ou ainda não implementado: %s", stmt.Raw)
+		return fmt.Errorf("comando não reconhecido ou sintaxe inválida: '%s'", stmt.Raw)
 	}
 }
 
 func (e *Engine) cmdUse(stmt *parser.Statement) error {
 	if stmt.Target == "" {
-		// USE sem parâmetros fecha a tabela atual
 		if e.ActiveTable != nil {
-			_ = e.ActiveTable.Save()
+			_ = e.ActiveTable.Close()
 			e.ActiveTable = nil
 			e.ActiveAlias = ""
-			if e.Config.Talk {
-				e.Println("Nenhum arquivo em uso.")
-			}
+			e.CurrentRecordIndex = 0
 		}
 		return nil
 	}
 
 	filePath := stmt.Target
-	if filepath.Ext(filePath) == "" {
+	if !strings.HasSuffix(strings.ToUpper(filePath), ".DBF") {
 		filePath += ".DBF"
 	}
 
 	tbl, err := dbf.OpenTable(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("erro ao abrir tabela '%s': %w", filePath, err)
 	}
 
 	if e.ActiveTable != nil {
-		_ = e.ActiveTable.Save()
+		_ = e.ActiveTable.Close()
 	}
 
 	e.ActiveTable = tbl
-	e.ActiveAlias = strings.ToUpper(filepath.Base(filePath))
-
-	if e.Storage != nil {
-		_ = e.Storage.CatalogTable(e.ActiveAlias, filePath, len(tbl.Records), len(tbl.Header.Fields), int(tbl.Header.RecordSize), tbl.Header.LastUpdate)
-	}
+	base := filepath.Base(filePath)
+	ext := filepath.Ext(base)
+	e.ActiveAlias = strings.ToUpper(strings.TrimSuffix(base, ext))
+	e.CurrentRecordIndex = 1
 
 	if e.Config.Talk {
-		e.Printf("Tabela %s aberta com sucesso (%d registros, %d campos).\n", e.ActiveAlias, len(tbl.Records), len(tbl.Header.Fields))
+		e.Printf("Tabela ativa: %s (%d registros)\n", e.ActiveAlias, len(tbl.Records))
 	}
 	return nil
 }
 
 func (e *Engine) cmdCreate(stmt *parser.Statement) error {
-	if stmt.Target == "" {
-		return fmt.Errorf("uso: CREATE <nome_arquivo>")
-	}
-	filePath := stmt.Target
-	if filepath.Ext(filePath) == "" {
-		filePath += ".DBF"
-	}
-
-	// Criação de estrutura padrão básica caso chamada programaticamente
-	defaultFields := []dbf.Field{
-		{Name: "ID", Type: dbf.TypeNumeric, Length: 6, Decimals: 0},
-		{Name: "DESCRICAO", Type: dbf.TypeCharacter, Length: 30, Decimals: 0},
-		{Name: "VALOR", Type: dbf.TypeNumeric, Length: 10, Decimals: 2},
-	}
-
-	tbl, err := dbf.CreateTable(filePath, defaultFields)
-	if err != nil {
-		return err
-	}
-
-	e.ActiveTable = tbl
-	e.ActiveAlias = strings.ToUpper(filepath.Base(filePath))
-
-	if e.Config.Talk {
-		e.Printf("Estrutura da tabela %s criada com sucesso.\n", e.ActiveAlias)
-	}
-	return nil
+	return e.InteractiveCreate(stmt.Target)
 }
 
 func (e *Engine) cmdList(stmt *parser.Statement) error {
-	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso (use o comando USE)")
-	}
-
-	// LIST STRUCTURE
-	if stmt.Options["STRUCTURE"] == "true" {
-		e.Printf("ESTRUTURA PARA O ARQUIVO: %s\n", e.ActiveTable.FilePath)
-		e.Printf("NUMERO DE REGISTROS: %d\n", len(e.ActiveTable.Records))
-		e.Printf("DATA DO ULTIMO UPDATE: %s\n", e.ActiveTable.Header.LastUpdate.Format("02/01/2006"))
-		e.Printf("TAMANHO DO REGISTRO: %d BYTES\n\n", e.ActiveTable.Header.RecordSize)
-		e.Printf("%-5s %-12s %-6s %-6s %-6s\n", "FLD", "NAME", "TYPE", "WIDTH", "DEC")
-		e.Println("----------------------------------------")
-		for i, f := range e.ActiveTable.Header.Fields {
-			e.Printf("%03d   %-12s %-6c %-6d %-6d\n", i+1, f.Name, f.Type, f.Length, f.Decimals)
-		}
-		e.Printf("** TOTAL **                       %d\n", e.ActiveTable.Header.RecordSize)
-		return nil
-	}
-
-	fieldsToDisplay := stmt.Fields
-	if len(fieldsToDisplay) == 0 {
-		fieldsToDisplay = e.ActiveTable.FieldNames()
-	}
-
-	// Cabeçalho da listagem
-	e.Printf("%-6s ", "RECNO")
-	for _, fn := range fieldsToDisplay {
-		e.Printf("%-15s ", fn)
-	}
-	e.Println()
-	e.Println(strings.Repeat("-", 6+(16*len(fieldsToDisplay))))
-
-	matchCount := 0
-	for i, rec := range e.ActiveTable.Records {
-		recNo := i + 1
-
-		// Filtro FOR
-		if stmt.ForClause != "" && !evaluateForClause(rec, stmt.ForClause) {
-			continue
-		}
-
-		delMarker := " "
-		if rec.Deleted {
-			delMarker = "*"
-		}
-
-		e.Printf("%05d%s ", recNo, delMarker)
-		for _, fn := range fieldsToDisplay {
-			val := rec.Get(fn)
-			e.Printf("%-15s ", val)
-		}
-		e.Println()
-		matchCount++
-	}
-
-	if e.Config.Talk {
-		e.Printf("\n%d registros listados.\n", matchCount)
-	}
-
-	return nil
+	return e.displayOrList(stmt, true)
 }
 
 func (e *Engine) cmdDisplay(stmt *parser.Statement) error {
+	return e.displayOrList(stmt, false)
+}
+
+func (e *Engine) displayOrList(stmt *parser.Statement, isList bool) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta. Utilize 'USE <arquivo>' primeiro")
 	}
 
-	if stmt.Scope == "ALL" {
-		return e.cmdList(stmt)
-	}
-
-	rec := e.ActiveTable.CurrentRecord()
-	if rec == nil {
-		if e.Config.Talk {
-			e.Println("Fim de arquivo (EOF).")
+	if stmt.Options["STRUCTURE"] == "true" {
+		e.Printf("ESTRUTURA DA TABELA: %s\n", e.ActiveAlias)
+		e.Printf("NUMERO DE REGISTROS: %05d\n", len(e.ActiveTable.Records))
+		e.Printf("CAMPOS:\n")
+		e.Printf("  NOME        TIPO  TAM  DEC\n")
+		for _, f := range e.ActiveTable.Header.Fields {
+			e.Printf("  %-10s   %c   %3d  %3d\n", f.Name, f.Type, f.Length, f.Decimals)
 		}
 		return nil
 	}
 
-	e.Printf("REGISTRO %05d:\n", e.ActiveTable.RecNo)
-	for _, f := range e.ActiveTable.Header.Fields {
-		e.Printf("  %-12s : %s\n", f.Name, rec.Get(f.Name))
+	if len(e.ActiveTable.Records) == 0 {
+		if e.Config.Talk {
+			e.Println("Tabela vazia.")
+		}
+		return nil
 	}
+
+	// Cabeçalho de colunas
+	var headerCols []string
+	headerCols = append(headerCols, "REC# ")
+	fieldsToShow := stmt.Fields
+	if len(fieldsToShow) == 0 {
+		for _, f := range e.ActiveTable.Header.Fields {
+			fieldsToShow = append(fieldsToShow, f.Name)
+		}
+	}
+
+	for _, fn := range fieldsToShow {
+		headerCols = append(headerCols, fmt.Sprintf("%-15s", fn))
+	}
+	e.Println(strings.Join(headerCols, " "))
+
+	startIdx := 0
+	endIdx := len(e.ActiveTable.Records)
+
+	if !isList && stmt.Scope != "ALL" {
+		// DISPLAY sem ALL exibe o registro atual
+		curr := e.CurrentRecordIndex - 1
+		if curr < 0 {
+			curr = 0
+		}
+		if curr >= len(e.ActiveTable.Records) {
+			e.Println("FIM DE ARQUIVO ALCANCADO")
+			return nil
+		}
+		startIdx = curr
+		endIdx = curr + 1
+	}
+
+	for i := startIdx; i < endIdx; i++ {
+		rec := e.ActiveTable.Records[i]
+		recNo := i + 1
+
+		// Avalia cláusula WHILE (se falhar, interrompe loop)
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
+			}
+		}
+
+		// Avalia cláusula FOR (se falhar, pula registro)
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
+		}
+
+		delMark := " "
+		if rec.IsDeleted() {
+			delMark = "*"
+		}
+
+		var rowCols []string
+		rowCols = append(rowCols, fmt.Sprintf("%05d%s", recNo, delMark))
+
+		for _, fn := range fieldsToShow {
+			val := rec.Get(fn)
+			if val == "" {
+				// Tenta avaliar como expressão se não for campo direto
+				ctx := e.GetEvalContext(rec, recNo)
+				if v, err := eval.Eval(fn, ctx); err == nil && v.Type != eval.TypeNull {
+					val = v.AsString()
+				}
+			}
+			rowCols = append(rowCols, fmt.Sprintf("%-15s", val))
+		}
+		e.Println(strings.Join(rowCols, " "))
+		e.CurrentRecordIndex = recNo
+	}
+
 	return nil
 }
 
 func (e *Engine) cmdAppend(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta para APPEND")
 	}
 
-	rec := e.ActiveTable.AppendBlank()
-	_ = e.ActiveTable.Save()
+	if stmt.Options["BLANK"] == "true" {
+		_ = e.ActiveTable.AppendBlank()
+		e.CurrentRecordIndex = len(e.ActiveTable.Records)
 
-	if e.Config.Talk {
-		e.Printf("Registro %d inserido.\n", len(e.ActiveTable.Records))
+		if err := e.ActiveTable.Save(); err != nil {
+			return fmt.Errorf("erro ao salvar novo registro: %w", err)
+		}
+
+		if e.Config.Talk {
+			e.Printf("Registro %d adicionado em branco.\n", len(e.ActiveTable.Records))
+		}
+		return nil
 	}
-	_ = rec
-	return nil
+
+	return e.InteractiveAppend()
 }
 
 func (e *Engine) cmdEdit(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta para EDIT")
 	}
-	if stmt.RecNo > 0 {
-		if err := e.ActiveTable.Goto(stmt.RecNo); err != nil {
-			return err
-		}
+
+	recNo := stmt.RecNo
+	if recNo <= 0 {
+		recNo = e.CurrentRecordIndex
 	}
-	if e.Config.Talk {
-		e.Printf("Editando registro %d.\n", e.ActiveTable.RecNo)
-	}
-	return nil
+
+	return e.InteractiveEdit(recNo)
+}
+
+func (e *Engine) cmdBrowse(stmt *parser.Statement) error {
+	return e.cmdList(&parser.Statement{Type: parser.CmdList, Scope: "ALL"})
 }
 
 func (e *Engine) cmdDelete(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	count := 0
-	if stmt.Scope == "ALL" {
-		for _, r := range e.ActiveTable.Records {
-			if stmt.ForClause == "" || evaluateForClause(r, stmt.ForClause) {
-				r.Deleted = true
-				count++
+	startIdx := 0
+	endIdx := len(e.ActiveTable.Records)
+
+	if stmt.Scope != "ALL" && stmt.ForClause == "" && stmt.WhileClause == "" {
+		curr := e.CurrentRecordIndex - 1
+		if curr >= 0 && curr < len(e.ActiveTable.Records) {
+			startIdx = curr
+			endIdx = curr + 1
+		}
+	}
+
+	for i := startIdx; i < endIdx; i++ {
+		rec := e.ActiveTable.Records[i]
+		recNo := i + 1
+
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
 			}
 		}
-	} else {
-		if rec := e.ActiveTable.CurrentRecord(); rec != nil {
-			rec.Deleted = true
-			count = 1
+
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
 		}
+
+		rec.Delete()
+		count++
 	}
 
 	_ = e.ActiveTable.Save()
 	if e.Config.Talk {
-		e.Printf("%d registro(s) marcado(s) para exclusão (*).\n", count)
+		e.Printf("%05d REGISTRO(S) MARCADOS PARA EXCLUSAO\n", count)
 	}
 	return nil
 }
 
 func (e *Engine) cmdRecall(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	count := 0
-	if stmt.Scope == "ALL" {
-		for _, r := range e.ActiveTable.Records {
-			if stmt.ForClause == "" || evaluateForClause(r, stmt.ForClause) {
-				r.Deleted = false
-				count++
+	startIdx := 0
+	endIdx := len(e.ActiveTable.Records)
+
+	if stmt.Scope != "ALL" && stmt.ForClause == "" && stmt.WhileClause == "" {
+		curr := e.CurrentRecordIndex - 1
+		if curr >= 0 && curr < len(e.ActiveTable.Records) {
+			startIdx = curr
+			endIdx = curr + 1
+		}
+	}
+
+	for i := startIdx; i < endIdx; i++ {
+		rec := e.ActiveTable.Records[i]
+		recNo := i + 1
+
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
 			}
 		}
-	} else {
-		if rec := e.ActiveTable.CurrentRecord(); rec != nil {
-			rec.Deleted = false
-			count = 1
+
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
+		}
+
+		if rec.IsDeleted() {
+			rec.Recall()
+			count++
 		}
 	}
 
 	_ = e.ActiveTable.Save()
 	if e.Config.Talk {
-		e.Printf("%d registro(s) restaurado(s).\n", count)
+		e.Printf("%05d REGISTRO(S) RECUPERADOS\n", count)
 	}
 	return nil
 }
 
 func (e *Engine) cmdPack(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	removed := e.ActiveTable.Pack()
 	if err := e.ActiveTable.Save(); err != nil {
-		return err
+		return fmt.Errorf("erro ao salvar após PACK: %w", err)
+	}
+
+	if e.CurrentRecordIndex > len(e.ActiveTable.Records) {
+		e.CurrentRecordIndex = len(e.ActiveTable.Records)
 	}
 
 	if e.Config.Talk {
-		e.Printf("PACK concluído: %d registros fisicamente removidos. Total restante: %d.\n", removed, len(e.ActiveTable.Records))
+		e.Printf("PACK CONCLUIDO: %d registro(s) excluido(s) permanentemente. Restam %d.\n", removed, len(e.ActiveTable.Records))
 	}
 	return nil
 }
 
 func (e *Engine) cmdZap(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	e.ActiveTable.Zap()
 	if err := e.ActiveTable.Save(); err != nil {
-		return err
+		return fmt.Errorf("erro ao salvar após ZAP: %w", err)
 	}
 
+	e.CurrentRecordIndex = 0
 	if e.Config.Talk {
-		e.Println("ZAP concluído: Todos os registros foram eliminados.")
+		e.Println("ZAP CONCLUIDO: Todos os registros foram apagados.")
 	}
 	return nil
 }
 
 func (e *Engine) cmdReplace(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
-	}
-	if stmt.Target == "" {
-		return fmt.Errorf("uso: REPLACE <campo> WITH <valor> [FOR <condicao>]")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	fieldName := stmt.Target
-	val := stmt.WithClause
-	count := 0
+	if fieldName == "" {
+		return fmt.Errorf("sintaxe: REPLACE [scope] <campo> WITH <expressao> [FOR <cond>] [WHILE <cond>]")
+	}
 
-	if stmt.ForClause != "" {
-		for _, r := range e.ActiveTable.Records {
-			if evaluateForClause(r, stmt.ForClause) {
-				r.Set(fieldName, val)
-				count++
+	count := 0
+	startIdx := 0
+	endIdx := len(e.ActiveTable.Records)
+
+	if stmt.Scope != "ALL" && stmt.ForClause == "" && stmt.WhileClause == "" {
+		curr := e.CurrentRecordIndex - 1
+		if curr >= 0 && curr < len(e.ActiveTable.Records) {
+			startIdx = curr
+			endIdx = curr + 1
+		}
+	}
+
+	for i := startIdx; i < endIdx; i++ {
+		rec := e.ActiveTable.Records[i]
+		recNo := i + 1
+
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
 			}
 		}
-	} else {
-		if rec := e.ActiveTable.CurrentRecord(); rec != nil {
-			rec.Set(fieldName, val)
-			count = 1
+
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
 		}
+
+		ctx := e.GetEvalContext(rec, recNo)
+		val, err := eval.Eval(stmt.WithClause, ctx)
+		if err != nil {
+			return fmt.Errorf("erro ao avaliar cláusula WITH '%s': %w", stmt.WithClause, err)
+		}
+
+		rec.Set(fieldName, val.AsString())
+		count++
+		e.CurrentRecordIndex = recNo
 	}
 
 	_ = e.ActiveTable.Save()
 	if e.Config.Talk {
-		e.Printf("%d registro(s) substituído(s).\n", count)
+		e.Printf("%05d REGISTRO(S) SUBSTITUIDO(S)\n", count)
 	}
 	return nil
 }
 
 func (e *Engine) cmdLocate(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
-	}
-	if stmt.ForClause == "" {
-		return fmt.Errorf("uso: LOCATE FOR <condicao>")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	e.LastLocateCond = stmt.ForClause
-	for i, r := range e.ActiveTable.Records {
-		if evaluateForClause(r, stmt.ForClause) {
-			e.ActiveTable.RecNo = i + 1
-			if e.Config.Talk {
-				e.Printf("REGISTRO = %05d\n", e.ActiveTable.RecNo)
-			}
-			return nil
-		}
-	}
-
-	e.ActiveTable.RecNo = len(e.ActiveTable.Records) + 1 // EOF
-	if e.Config.Talk {
-		e.Println("Fim de arquivo (registro não encontrado).")
-	}
-	return nil
+	return e.findNextLocate(0)
 }
 
 func (e *Engine) cmdContinue(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 	if e.LastLocateCond == "" {
-		return fmt.Errorf("nenhum LOCATE anterior para continuar")
+		return fmt.Errorf("nenhum comando LOCATE anterior ativo")
 	}
 
-	start := e.ActiveTable.RecNo
-	for i := start; i < len(e.ActiveTable.Records); i++ {
-		r := e.ActiveTable.Records[i]
-		if evaluateForClause(r, e.LastLocateCond) {
-			e.ActiveTable.RecNo = i + 1
+	start := e.CurrentRecordIndex
+	return e.findNextLocate(start)
+}
+
+func (e *Engine) findNextLocate(startIdx int) error {
+	for i := startIdx; i < len(e.ActiveTable.Records); i++ {
+		rec := e.ActiveTable.Records[i]
+		recNo := i + 1
+
+		pass, err := e.evaluateCondition(rec, recNo, e.LastLocateCond)
+		if err != nil {
+			return err
+		}
+
+		if pass {
+			e.CurrentRecordIndex = recNo
 			if e.Config.Talk {
-				e.Printf("REGISTRO = %05d\n", e.ActiveTable.RecNo)
+				e.Printf("REGISTRO = %05d\n", recNo)
 			}
 			return nil
 		}
 	}
 
-	e.ActiveTable.RecNo = len(e.ActiveTable.Records) + 1
+	e.CurrentRecordIndex = len(e.ActiveTable.Records) + 1
 	if e.Config.Talk {
-		e.Println("Fim de arquivo (EOF).")
+		e.Println("FIM DE ARQUIVO ALCANCADO")
 	}
 	return nil
 }
 
 func (e *Engine) cmdCount(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	count := 0
-	for _, r := range e.ActiveTable.Records {
-		if stmt.ForClause == "" || evaluateForClause(r, stmt.ForClause) {
-			count++
+	for i, rec := range e.ActiveTable.Records {
+		recNo := i + 1
+
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
+			}
 		}
+
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
+		}
+
+		count++
 	}
 
-	e.Printf("%d REGISTROS\n", count)
+	if stmt.Target != "" {
+		e.Variables[strings.ToUpper(stmt.Target)] = eval.NewNumberValue(float64(count))
+	}
+
+	e.Printf("%05d REGISTROS\n", count)
 	return nil
 }
 
 func (e *Engine) cmdSum(stmt *parser.Statement) error {
 	if e.ActiveTable == nil {
-		return fmt.Errorf("nenhum arquivo .DBF em uso")
+		return fmt.Errorf("nenhuma tabela aberta")
 	}
 
 	fields := stmt.Fields
 	if len(fields) == 0 {
-		return fmt.Errorf("especifique ao menos um campo numérico para somar")
+		return fmt.Errorf("sintaxe: SUM <campo1> [, <campo2>] [FOR <cond>] [WHILE <cond>] [TO <var>]")
 	}
 
-	sums := make(map[string]float64)
-	count := 0
+	totals := make([]float64, len(fields))
 
-	for _, r := range e.ActiveTable.Records {
-		if stmt.ForClause == "" || evaluateForClause(r, stmt.ForClause) {
-			count++
-			for _, fn := range fields {
-				valStr := r.Get(fn)
-				val, _ := strconv.ParseFloat(valStr, 64)
-				sums[fn] += val
+	for i, rec := range e.ActiveTable.Records {
+		recNo := i + 1
+
+		if stmt.WhileClause != "" {
+			passWhile, err := e.evaluateCondition(rec, recNo, stmt.WhileClause)
+			if err != nil {
+				return err
+			}
+			if !passWhile {
+				break
+			}
+		}
+
+		if stmt.ForClause != "" {
+			passFor, err := e.evaluateCondition(rec, recNo, stmt.ForClause)
+			if err != nil {
+				return err
+			}
+			if !passFor {
+				continue
+			}
+		}
+
+		ctx := e.GetEvalContext(rec, recNo)
+		for fIdx, fName := range fields {
+			val, err := eval.Eval(fName, ctx)
+			if err == nil {
+				if num, err := val.AsNumber(); err == nil {
+					totals[fIdx] += num
+				}
 			}
 		}
 	}
 
-	e.Printf("%d REGISTROS SOMADOS:\n", count)
-	for _, fn := range fields {
-		e.Printf("  TOTAL (%s) = %.2f\n", fn, sums[fn])
+	if stmt.Target != "" && len(totals) > 0 {
+		e.Variables[strings.ToUpper(stmt.Target)] = eval.NewNumberValue(totals[0])
+	}
+
+	var parts []string
+	for fIdx, fName := range fields {
+		parts = append(parts, fmt.Sprintf("%s: %.2f", fName, totals[fIdx]))
+	}
+	e.Printf("SOMA: %s\n", strings.Join(parts, " | "))
+	return nil
+}
+
+func (e *Engine) cmdStore(stmt *parser.Statement) error {
+	if stmt.Target == "" {
+		return fmt.Errorf("sintaxe: STORE <expressao> TO <variavel>")
+	}
+
+	ctx := e.GetEvalContext(e.getCurrentRecord(), e.CurrentRecordIndex)
+	val, err := eval.Eval(stmt.Expression, ctx)
+	if err != nil {
+		return fmt.Errorf("erro ao avaliar expressão STORE: %w", err)
+	}
+
+	e.Variables[strings.ToUpper(stmt.Target)] = val
+
+	if e.Config.Talk {
+		e.Printf("%s = %s\n", strings.ToUpper(stmt.Target), val.AsString())
+	}
+	return nil
+}
+
+func (e *Engine) cmdPrint(stmt *parser.Statement, addNewline bool) error {
+	ctx := e.GetEvalContext(e.getCurrentRecord(), e.CurrentRecordIndex)
+	val, err := eval.Eval(stmt.Expression, ctx)
+	if err != nil {
+		return fmt.Errorf("erro na avaliação de '?' : %w", err)
+	}
+
+	if addNewline {
+		e.Println(val.AsString())
+	} else {
+		e.Printf("%s", val.AsString())
+	}
+	return nil
+}
+
+func (e *Engine) cmdGoto(stmt *parser.Statement) error {
+	if e.ActiveTable == nil {
+		return fmt.Errorf("nenhuma tabela aberta")
+	}
+
+	if strings.ToUpper(stmt.Target) == "TOP" {
+		e.CurrentRecordIndex = 1
+	} else if strings.ToUpper(stmt.Target) == "BOTTOM" {
+		e.CurrentRecordIndex = len(e.ActiveTable.Records)
+	} else if stmt.RecNo > 0 {
+		if stmt.RecNo > len(e.ActiveTable.Records) {
+			e.CurrentRecordIndex = len(e.ActiveTable.Records) + 1
+		} else {
+			e.CurrentRecordIndex = stmt.RecNo
+		}
+	}
+
+	if e.Config.Talk {
+		if e.CurrentRecordIndex > len(e.ActiveTable.Records) {
+			e.Println("FIM DE ARQUIVO ALCANCADO")
+		} else {
+			e.Printf("REGISTRO ATUAL: %05d\n", e.CurrentRecordIndex)
+		}
+	}
+	return nil
+}
+
+func (e *Engine) cmdSkip(stmt *parser.Statement) error {
+	if e.ActiveTable == nil {
+		return fmt.Errorf("nenhuma tabela aberta")
+	}
+
+	delta := stmt.RecNo
+	if delta == 0 {
+		delta = 1
+	}
+
+	e.CurrentRecordIndex += delta
+	if e.CurrentRecordIndex < 1 {
+		e.CurrentRecordIndex = 1
+	}
+
+	if e.Config.Talk {
+		if e.CurrentRecordIndex > len(e.ActiveTable.Records) {
+			e.Println("FIM DE ARQUIVO ALCANCADO")
+		} else {
+			e.Printf("REGISTRO ATUAL: %05d\n", e.CurrentRecordIndex)
+		}
 	}
 	return nil
 }
 
 func (e *Engine) cmdDo(stmt *parser.Statement) error {
 	if stmt.Target == "" {
-		return fmt.Errorf("uso: DO <nome_script>")
+		return fmt.Errorf("sintaxe: DO <nome_script>")
 	}
-	path := stmt.Target
-	if filepath.Ext(path) == "" {
-		path += ".CMD"
-	}
-	return e.ExecuteScript(path)
+	return e.ExecuteScript(stmt.Target)
 }
 
 func (e *Engine) cmdSet(stmt *parser.Statement) error {
-	val := (stmt.SetValue == "ON" || stmt.SetValue == "TRUE" || stmt.SetValue == "1")
-	switch stmt.SetParam {
+	param := stmt.SetParam
+	val := stmt.SetValue
+
+	switch param {
 	case "TALK":
-		e.Config.Talk = val
+		e.Config.Talk = (val == "ON")
 	case "ECHO":
-		e.Config.Echo = val
+		e.Config.Echo = (val == "ON")
+	case "EXACT":
+		e.Config.Exact = (val == "ON")
 	case "BELL":
-		e.Config.Bell = val
+		e.Config.Bell = (val == "ON")
 	default:
-		return fmt.Errorf("parâmetro SET desconhecido: %s", stmt.SetParam)
-	}
-	if e.Config.Talk {
-		e.Printf("SET %s %s\n", stmt.SetParam, stmt.SetValue)
+		if e.Config.Talk {
+			e.Printf("SET %s %s aceito.\n", param, val)
+		}
 	}
 	return nil
 }
 
 func (e *Engine) cmdQuit(stmt *parser.Statement) error {
 	if e.ActiveTable != nil {
-		_ = e.ActiveTable.Save()
+		_ = e.ActiveTable.Close()
+		e.ActiveTable = nil
 	}
 	e.QuitRequested = true
 	if e.Config.Talk {
-		e.Println("*** FIM DO dBase II+ ***")
+		e.Println("*** FIM DO DBASE II++ ***")
 	}
 	return nil
 }
 
 func (e *Engine) cmdHelp(stmt *parser.Statement) error {
-	e.Println("=== COMANDOS PRINCIPAIS dBase II+ ===")
-	e.Println("  USE <arquivo>               - Abre uma tabela .DBF")
-	e.Println("  CREATE <arquivo>            - Cria uma nova tabela .DBF")
-	e.Println("  LIST [campos] [FOR cond]    - Lista registros na tela")
-	e.Println("  LIST STRUCTURE              - Exibe estrutura de campos")
-	e.Println("  DISPLAY [ALL]               - Exibe dados do registro atual")
-	e.Println("  APPEND [BLANK]              - Adiciona novo registro")
-	e.Println("  DELETE [ALL] [FOR cond]     - Marca registro para exclusão (*)")
-	e.Println("  RECALL [ALL] [FOR cond]     - Restaura registro excluído")
-	e.Println("  PACK                        - Elimina fisicamente os excluídos")
-	e.Println("  ZAP                         - Esvazia todos os registros")
-	e.Println("  REPLACE <campo> WITH <val>  - Atualiza valores de campos")
-	e.Println("  LOCATE FOR <cond>           - Busca registros por condição")
-	e.Println("  CONTINUE                    - Continua última busca")
-	e.Println("  COUNT [FOR cond]            - Conta registros")
-	e.Println("  SUM <campo> [FOR cond]      - Totaliza campos numéricos")
-	e.Println("  DO <script.cmd>             - Executa arquivo de comandos")
-	e.Println("  SET TALK ON/OFF             - Ativa/desativa mensagens de status")
-	e.Println("  QUIT                        - Salva alterações e encerra")
+	if e.Help == nil {
+		e.Help = help.NewHelpSystem()
+		_ = e.Help.LoadDefault()
+	}
+
+	pager := help.NewPager(nil, e.Out)
+
+	target := strings.TrimSpace(stmt.Target)
+	if target == "" {
+		// HELP sem argumentos mostra a introdução e guia de uso do DBASEMSG.TXT
+		intro, ok := e.Help.GetTopic("DBASE")
+		if !ok {
+			intro, ok = e.Help.GetTopic("HELP")
+		}
+		if ok {
+			return pager.Display(intro)
+		} else {
+			e.Println("Não há mensagem HELP.")
+		}
+		return nil
+	}
+
+	topicText, ok := e.Help.GetTopic(target)
+	if !ok {
+		e.Printf("Não há mensagem HELP para '%s'.\n", target)
+		e.Println("Digite 'HELP' ou 'HELP COMMANDS' para ver a lista de comandos e tópicos disponíveis.")
+		return nil
+	}
+
+	return pager.Display(topicText)
+}
+
+func (e *Engine) cmdClear(stmt *parser.Statement) error {
+	e.Printf("\033[2J\033[H")
 	return nil
 }
 
-// evaluateForClause avalia uma expressão simples do tipo "CAMPO = VALOR" ou "CAMPO > VALOR"
-func evaluateForClause(rec *dbf.Record, expr string) bool {
-	expr = strings.TrimSpace(expr)
-	if expr == "" {
-		return true
+func (e *Engine) getCurrentRecord() *dbf.Record {
+	if e.ActiveTable == nil || len(e.ActiveTable.Records) == 0 {
+		return nil
 	}
-
-	// Operadores comuns: =, ==, !=, <>, >, <, >=, <=, $ (substring)
-	if strings.Contains(expr, "=") {
-		parts := strings.SplitN(expr, "=", 2)
-		fName := strings.ToUpper(strings.TrimSpace(parts[0]))
-		expected := strings.Trim(strings.TrimSpace(parts[1]), "'\"")
-		actual := rec.Get(fName)
-		return strings.EqualFold(actual, expected)
+	curr := e.CurrentRecordIndex - 1
+	if curr < 0 {
+		curr = 0
 	}
-
-	if strings.Contains(expr, ">") {
-		parts := strings.SplitN(expr, ">", 2)
-		fName := strings.ToUpper(strings.TrimSpace(parts[0]))
-		valStr := strings.TrimSpace(parts[1])
-		expNum, err1 := strconv.ParseFloat(valStr, 64)
-		actNum, err2 := strconv.ParseFloat(rec.Get(fName), 64)
-		if err1 == nil && err2 == nil {
-			return actNum > expNum
-		}
+	if curr >= len(e.ActiveTable.Records) {
+		return nil
 	}
+	return e.ActiveTable.Records[curr]
+}
 
-	if strings.Contains(expr, "<") {
-		parts := strings.SplitN(expr, "<", 2)
-		fName := strings.ToUpper(strings.TrimSpace(parts[0]))
-		valStr := strings.TrimSpace(parts[1])
-		expNum, err1 := strconv.ParseFloat(valStr, 64)
-		actNum, err2 := strconv.ParseFloat(rec.Get(fName), 64)
-		if err1 == nil && err2 == nil {
-			return actNum < expNum
-		}
-	}
-
-	return true
+func (e *Engine) evaluateCondition(rec *dbf.Record, recNo int, condStr string) (bool, error) {
+	ctx := e.GetEvalContext(rec, recNo)
+	return eval.EvalBool(condStr, ctx)
 }

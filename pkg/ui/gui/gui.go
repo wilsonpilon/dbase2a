@@ -18,16 +18,16 @@ import (
 	"dbase2a/pkg/version"
 )
 
-// Run inicia a interface gráfica Fyne para o dBase II+.
+// Run inicia a interface gráfica Fyne para o dBase II++.
 func Run(eng *engine.Engine) error {
 	vInfo := version.Current
 	a := app.NewWithID("com.dbase2plus.app")
-	w := a.NewWindow(fmt.Sprintf("dBase II+ %s \"%s\" - PC & MSX Edition", vInfo.VersionString(), vInfo.Codename))
+	w := a.NewWindow(fmt.Sprintf("dBase II++ %s \"%s\" - PC & MSX Edition", vInfo.VersionString(), vInfo.Codename))
 	w.Resize(fyne.NewSize(900, 650))
 
 	// Status e console de saída
 	consoleOutput := widget.NewMultiLineEntry()
-	consoleOutput.SetText(fmt.Sprintf("=== dBase II+ %s \"%s\" Inicializado ===\nDigite comandos na barra inferior ou use a barra de ferramentas.\n\n", vInfo.VersionString(), vInfo.Codename))
+	consoleOutput.SetText(fmt.Sprintf("=== dBase II++ %s \"%s\" Inicializado ===\nDigite comandos na barra inferior ou use a barra de ferramentas.\n\n", vInfo.VersionString(), vInfo.Codename))
 	consoleOutput.Wrapping = fyne.TextWrapWord
 
 	statusLabel := widget.NewLabel("Status: Pronto | Nenhuma tabela carregada.")

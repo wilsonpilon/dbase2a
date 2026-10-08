@@ -19,7 +19,7 @@ func Run(eng *engine.Engine) error {
 
 	for {
 		renderScreen(eng, vInfo)
-		fmt.Print("dBase II+ TUI > ")
+		fmt.Print("dBase II++ TUI > ")
 		if !scanner.Scan() {
 			break
 		}
@@ -46,7 +46,7 @@ func Run(eng *engine.Engine) error {
 func renderScreen(eng *engine.Engine, vInfo version.Info) {
 	fmt.Print("\033[H\033[2J") // Limpa tela ANSI
 	fmt.Println("┌──────────────────────────────────────────────────────────────────────────────┐")
-	fmt.Printf("│ dBase II+ %-15s [ %-12s ] - TERMINAL UI MODE           │\n", vInfo.VersionString(), vInfo.Codename)
+	fmt.Printf("│ dBase II++ %-14s [ %-12s ] - TERMINAL UI MODE          │\n", vInfo.VersionString(), vInfo.Codename)
 	fmt.Println("├──────────────────────────────────────────────────────────────────────────────┤")
 
 	if eng.ActiveTable != nil {

@@ -1,10 +1,11 @@
 // Package cli implementa a interface de linha de comando interativa (CLI)
-// com o clássico prompt de ponto '.' do dBase II original.
+// com o clássico prompt de ponto '.' do dBase II original, autocomplete com TAB
+// cíclico, realce de sintaxe em tempo real e relatórios de erro estilizados em vermelho.
 package cli
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -12,32 +13,35 @@ import (
 	"dbase2a/pkg/version"
 )
 
-// Run inicia o loop interativo do prompt '.' do dBase II.
+// Run inicia o loop interativo do prompt '.' do dBase II com LineEditor integrado.
 func Run(eng *engine.Engine) error {
 	vInfo := version.Current
-	fmt.Printf("dBase II+ %s \"%s\" (PC & MSX Edition)\n", vInfo.VersionString(), vInfo.Codename)
+	fmt.Printf("dBase II++ %s \"%s\" (PC & MSX Edition)\n", vInfo.VersionString(), vInfo.Codename)
 	fmt.Println("Digite HELP ou ? para ajuda, ou QUIT para encerrar.")
 	fmt.Println()
 
-	scanner := bufio.NewScanner(os.Stdin)
+	editor := NewLineEditor(os.Stdin, os.Stdout)
 	prompt := eng.Config.InteractivePrompt
 	if prompt == "" {
 		prompt = "."
 	}
 
 	for {
-		fmt.Printf("%s ", prompt)
-		if !scanner.Scan() {
-			break
+		line, err := editor.ReadLine(prompt)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
 		}
 
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
 			continue
 		}
 
-		if err := eng.ExecuteLine(line); err != nil {
-			fmt.Printf("*** ERRO: %s\n", err.Error())
+		if err := eng.ExecuteLine(trimmed); err != nil {
+			fmt.Println(FormatError(err.Error()))
 			if eng.Config.Bell {
 				fmt.Print("\a") // Beep
 			}
@@ -48,5 +52,5 @@ func Run(eng *engine.Engine) error {
 		}
 	}
 
-	return scanner.Err()
+	return nil
 }

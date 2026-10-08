@@ -40,6 +40,21 @@ func (r *Record) Set(fieldName, val string) {
 	r.Values[strings.ToUpper(strings.TrimSpace(fieldName))] = val
 }
 
+// IsDeleted retorna se o registro está marcado para exclusão.
+func (r *Record) IsDeleted() bool {
+	return r.Deleted
+}
+
+// Delete marca o registro como excluído.
+func (r *Record) Delete() {
+	r.Deleted = true
+}
+
+// Recall desmarca a exclusão do registro.
+func (r *Record) Recall() {
+	r.Deleted = false
+}
+
 // FormatRecordBytes converte o registro para os bytes binários do dBASE II com base nos descritores de campo.
 func (r *Record) FormatRecordBytes(fields []Field, totalSize int) []byte {
 	buf := make([]byte, totalSize)

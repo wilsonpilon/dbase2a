@@ -1,5 +1,5 @@
 // Package version gerencia o versionamento semântico vX.Y.Z,
-// metadados de compilação e codinomes temáticos de filmes de terror/horror para o dBase II+.
+// metadados de compilação e codinomes temáticos de filmes de terror/horror para o dBase II++.
 package version
 
 import (
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Info armazena os metadados de versão e compilação do dBase II+.
+// Info armazena os metadados de versão e compilação do dBase II++.
 type Info struct {
 	Major     int    `json:"major"`      // X: Pacote de features ou mudança de fase
 	Minor     int    `json:"minor"`      // Y: Novo recurso adicionado ou terminado
@@ -40,7 +40,7 @@ func (v Info) VersionString() string {
 
 // FullString retorna a descrição detalhada com versão, codinome e data de build.
 func (v Info) FullString() string {
-	return fmt.Sprintf("dBase II+ %s \"%s\" (Build: %s, Commit: %s)",
+	return fmt.Sprintf("dBase II++ %s \"%s\" (Build: %s, Commit: %s)",
 		v.VersionString(), v.Codename, v.BuildDate, v.Commit)
 }
 

@@ -13,7 +13,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Storage gerencia a conexão com o banco de dados SQLite do dBase II+.
+// Storage gerencia a conexão com o banco de dados SQLite do dBase II++.
 type Storage struct {
 	db   *sql.DB
 	path string
@@ -22,12 +22,12 @@ type Storage struct {
 
 // CommandLogEntry representa um comando executado pelo usuário no CLI, TUI ou GUI.
 type CommandLogEntry struct {
-	ID        int64     `json:"id"`
-	Command   string    `json:"command"`
+	ID         int64     `json:"id"`
+	Command    string    `json:"command"`
 	ExecutedAt time.Time `json:"executed_at"`
-	DurationMs int64    `json:"duration_ms"`
-	Success   bool      `json:"success"`
-	ErrorMsg  string    `json:"error_msg"`
+	DurationMs int64     `json:"duration_ms"`
+	Success    bool      `json:"success"`
+	ErrorMsg   string    `json:"error_msg"`
 }
 
 // TableCatalogEntry armazena informações catalogadas sobre tabelas .DBF no disco.

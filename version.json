@@ -1,8 +1,8 @@
 {
   "major": 0,
-  "minor": 1,
+  "minor": 6,
   "patch": 4,
-  "codename": "Nosferatu",
+  "codename": "The Exorcist",
   "build_date": "2026-10-08",
-  "commit": "local"
+  "commit": "9b9f18d"
 }

@@ -1,6 +1,6 @@
 # ==============================================================================
-# Script de Build e Empacotamento do dBase II+ para Windows (PowerShell)
-# Autor: Equipe dBase II+
+# Script de Build e Empacotamento do dBase II++ para Windows (PowerShell)
+# Autor: Equipe dBase II++
 # Licença: GNU General Public License v3.0 (GPL-3.0)
 # ==============================================================================
 
@@ -8,6 +8,7 @@
 param (
     [string]$Mode = "all",
     [switch]$SkipTests = $false,
+    [switch]$NoIncrement = $false,
     [string]$CustomCodename = "",
     [string]$Tags = "nogui"
 )
@@ -15,7 +16,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 Write-Host "================================================================================" -ForegroundColor Cyan
-Write-Host "                dBase II+ (PC & MSX Edition) - Build System (Windows)           " -ForegroundColor Yellow
+Write-Host "                dBase II++ (PC & MSX Edition) - Build System (Windows)          " -ForegroundColor Yellow
 Write-Host "================================================================================" -ForegroundColor Cyan
 
 # 1. Carregamento e incremento da versão (vX.Y.Z) onde Z é o contador de builds
@@ -34,8 +35,10 @@ if (-not (Test-Path $VersionFile)) {
     $VersionData = $JsonContent | ConvertFrom-Json
 }
 
-# Incrementa Z (patch / build number)
-$VersionData.patch = [int]$VersionData.patch + 1
+# Incrementa Z (patch / build number) se não solicitado NoIncrement
+if (-not $NoIncrement) {
+    $VersionData.patch = [int]$VersionData.patch + 1
+}
 $VersionData.build_date = (Get-Date -Format "yyyy-MM-dd")
 
 if ($CustomCodename -ne "") {
@@ -66,7 +69,7 @@ go mod tidy
 # 3. Execução de testes automatizados
 if (-not $SkipTests) {
     Write-Host "`n>>> Executando suíte de testes unitários..." -ForegroundColor Cyan
-    go test ./pkg/dbf ./pkg/parser ./pkg/engine ./pkg/msx ./pkg/version ./pkg/storage/sqlite
+    go test ./pkg/dbf ./pkg/parser ./pkg/eval ./pkg/engine ./pkg/help ./pkg/msx ./pkg/version ./pkg/storage/sqlite ./pkg/ui/cli
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Falha na execução dos testes unitários. Abortando compilação."
     }
@@ -83,7 +86,7 @@ if (-not (Test-Path $ReleaseDir)) { New-Item -ItemType Directory -Path $ReleaseD
 if (-not (Test-Path $DistDir)) { New-Item -ItemType Directory -Path $DistDir | Out-Null }
 
 # 5. Compilação do executável Windows
-Write-Host "`n>>> Compilando executável dBase II+ para Windows (amd64)..." -ForegroundColor Cyan
+Write-Host "`n>>> Compilando executável dBase II++ para Windows (amd64)..." -ForegroundColor Cyan
 $ExeName = "dbase2plus.exe"
 $ExePath = Join-Path $BinDir $ExeName
 
@@ -102,16 +105,25 @@ Write-Host ">>> Executável gerado: $ExePath ($((Get-Item $ExePath).Length / 1MB
 
 # 6. Preparação da pasta release/
 Write-Host "`n>>> Copiando artefatos para a pasta '$ReleaseDir'..." -ForegroundColor Cyan
+Get-ChildItem -Path $ReleaseDir -Filter "*.zip" | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path $ReleaseDir -Filter "*.tar.gz" | Remove-Item -Force -ErrorAction SilentlyContinue
 Copy-Item $ExePath -Destination $ReleaseDir -Force
 Copy-Item "version.json" -Destination $ReleaseDir -Force
 Copy-Item "README.md" -Destination $ReleaseDir -Force
 Copy-Item "SPEC.md" -Destination $ReleaseDir -Force
 Copy-Item "CHANGELOG.md" -Destination $ReleaseDir -Force
 Copy-Item "RELEASE.md" -Destination $ReleaseDir -Force
+Copy-Item "HANDOVER.md" -Destination $ReleaseDir -Force
 Copy-Item "LICENSE" -Destination $ReleaseDir -Force
 
 if (Test-Path "resource") {
-    Copy-Item "resource" -Destination (Join-Path $ReleaseDir "resource") -Recurse -Force
+    $RelResDir = Join-Path $ReleaseDir "resource"
+    if (Test-Path $RelResDir) {
+        Remove-Item $RelResDir -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $RelResDir | Out-Null
+    if (Test-Path "resource\files") { Copy-Item "resource\files" -Destination $RelResDir -Recurse -Force }
+    if (Test-Path "resource\disks") { Copy-Item "resource\disks" -Destination $RelResDir -Recurse -Force }
 }
 
 # 7. Geração do pacote compactado ZIP para distribuição
@@ -121,7 +133,7 @@ $ZipReleasePath = Join-Path $ReleaseDir $ZipName
 
 Write-Host "`n>>> Gerando pacote ZIP de distribuição ($ZipName)..." -ForegroundColor Cyan
 if (Test-Path $ZipDistPath) { Remove-Item $ZipDistPath -Force }
-Compress-Archive -Path "$ReleaseDir\*" -DestinationPath $ZipDistPath -CompressionLevel Optimal
+Compress-Archive -Path "$ReleaseDir\*" -DestinationPath $ZipDistPath -CompressionLevel Fastest
 Copy-Item $ZipDistPath -Destination $ZipReleasePath -Force
 
 Write-Host "`n================================================================================" -ForegroundColor Green

@@ -1,4 +1,4 @@
-# dBase II+ (PC & MSX Edition)
+# dBase II++ (PC & MSX Edition)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Platform: Windows | Linux | MSX](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20MSX-orange.svg)](#)
@@ -6,7 +6,7 @@
 [![GUI: Fyne](https://img.shields.io/badge/GUI-Fyne-29BEB0.svg)](#)
 [![MSX Target: MSX 2+ / MSX--DOS 2](https://img.shields.io/badge/MSX%20Target-MSX%202%2B%20%2F%20256KB-red.svg)](#)
 
-O **dBase II+** é um clone moderno, poderoso e estendido do clássico **dBase II**, projetado como uma ferramenta completa de desenvolvimento, gestão de dados e geração de código tanto para **PC (Windows e Linux)** quanto para o lendário computador **MSX (especialmente MSX 2+ com 256 KB de RAM e MSX-DOS 2)**.
+O **dBase II++** é um clone moderno, poderoso e estendido do clássico **dBase II / dBase II+** (Plus Plus — partindo da versão II+ original e incrementando novas capacidades), projetado como uma ferramenta completa de desenvolvimento, gestão de dados e geração de código tanto para **PC (Windows e Linux)** quanto para o lendário computador **MSX (especialmente MSX 2+ com 256 KB de RAM e MSX-DOS 2)**.
 
 ---
 
@@ -14,11 +14,34 @@ O **dBase II+** é um clone moderno, poderoso e estendido do clássico **dBase I
 
 - **Compatibilidade Binária 100% com dBASE II**:
   - Leitura e gravação de arquivos de dados `.DBF` no formato original do dBASE II (cabeçalho 0x02 de 521 bytes, campos de 16 bytes, tipos `C`, `N`, `L`, marcadores de exclusão).
+  - Criação interativa de tabelas com comando `CREATE`: definição passo a passo de campos (`001`, `002`...), validação imediata, encerramento com `Enter` vazio e prompt para inserção imediata de dados (`INPUT DATA NOW? (Y/N)`).
+  - Inclusão interativa (`APPEND`) e edição (`EDIT`) com tela simples de campos alinhados e encerramento com `Enter` em branco no primeiro campo de novo registro.
   - Totalmente compatível com os arquivos e discos dBase II do MSX.
 - **Três Modos de Interface no PC**:
   1. **GUI (Graphical User Interface)**: Construída com **Fyne**, oferecendo grid de dados, edição visual de tabelas, painel de compilação MSX e monitor de banco de dados.
   2. **TUI (Terminal User Interface)**: Modo texto com menus, caixas de diálogo e navegação rápida para terminais modernos no Windows (PowerShell/CMD) e Linux (Bash/Zsh).
-  3. **CLI (Command Line Interface)**: O clássico e nostálgico prompt de ponto `.` com suporte a comandos interativos, histórico, pipes e scripts `.CMD`.
+  3. **CLI (Command Line Interface)**: O clássico e nostálgico prompt de ponto `.` estendido com:
+     - **Autocomplete Cíclico por TAB**: Completa comandos ao digitar prefixos (`cre` -> `CREATE `) e circula entre candidatos a cada pressionamento da tecla TAB (`co` -> `CONTINUE` -> `COPY` -> `COUNT`).
+     - **Realce de Sintaxe Dinâmico**: Destaque em cores ANSI em tempo real para comandos, cláusulas, operadores, funções, strings, números e arquivos.
+     - **Relatório de Erros em Vermelho**: Mensagens de erro com destaque visual claro (`*** ERRO: ...`).
+     - **Paginador Interativo do Help**: Navegação de tópicos longos de ajuda com rolagem por páginas (`Espaço`/`PageDown`/`PageUp`) e linhas (`j`/`k`/setas).
+     - **Catálogo de Comandos**: Comando `HELP COMMANDS` com resumo em uma linha de todas as instruções.
+
+---
+
+### Guia de Teclas e Atalhos de Edição
+
+| Tecla Clássica dBASE II | Tecla Moderna / Terminal | Ação Executada |
+|---|---|---|
+| `<Enter>` | `Enter` | Confirma o campo e avança para o próximo campo / próxima linha da estrutura |
+| `<Enter>` (vazio no 1º campo) | `Enter` (em linha vazia) | Finaliza criação de campos no `CREATE` ou encerra inserção no `APPEND` |
+| `CTRL-W` ou `CTRL-O` | `Ctrl+W` / `Ctrl+End` / `F10` | Salva o registro atual e sai do modo de edição/append |
+| `CTRL-Q` | `Ctrl+Q` / `Esc` | Aborta o registro corrente sem salvar e retorna ao prompt `.` |
+| `CTRL-U` | `Ctrl+U` | Alterna a marcação de exclusão lógica (*Deleted* `*` / ` `) |
+| `CTRL-X` ou `CTRL-F` | `Seta Baixo` / `Tab` | Avança o cursor para o próximo campo |
+| `CTRL-E` ou `CTRL-A` | `Seta Cima` / `Shift+Tab` | Retorna o cursor para o campo anterior |
+| `CTRL-C` | `PageDown` | Grava o registro corrente e avança para o próximo registro (modo `EDIT`) |
+| `CTRL-R` | `PageUp` | Grava o registro corrente e retorna ao registro anterior (modo `EDIT`) |
 - **Persistência de Configurações em SQLite**:
   - Armazenamento de preferências de usuário, histórico de comandos, aliases de tabelas e estatísticas em banco SQLite leve (`dbase2plus.db`).
 - **Pipeline de Compilação Cruzada para MSX**:
@@ -43,6 +66,8 @@ dbase2a/
 │   ├── config/             # Gerenciamento de configurações e diretórios
 │   ├── dbf/                # Leitor/Gravador binário do formato dBASE II (.DBF)
 │   ├── engine/             # Interpretador e motor de execução de comandos
+│   ├── eval/               # Avaliador polimórfico de expressões matemáticas e lógicas
+│   ├── help/               # Sistema de ajuda interativo (DBASEMSG.TXT / MED.HLP) e conversor MSX->UTF8
 │   ├── msx/                # Gerador de código e pipeline SDCC/Fusion-C/MSXgl
 │   ├── parser/             # Lexer, analisador sintático e AST da linguagem
 │   ├── storage/sqlite/     # Camada de banco de dados SQLite (metadados/config)
