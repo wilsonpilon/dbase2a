@@ -1,0 +1,1401 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.6.0 #16555 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module dos
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _g_DOS_ErrorStack
+                                     12 	.globl _g_DOS_ErrorHandler
+                                     13 	.globl _g_DOS_Time
+                                     14 	.globl _g_DOS_LastFIB
+                                     15 	.globl _g_DOS_LastError
+                                     16 	.globl _g_SLTSL
+                                     17 	.globl _g_GRPACY
+                                     18 	.globl _g_GRPACX
+                                     19 	.globl _g_LOGOPR
+                                     20 	.globl _g_CMASK
+                                     21 	.globl _g_CLOC
+                                     22 	.globl _g_FNKSTR
+                                     23 	.globl _g_GETPNT
+                                     24 	.globl _g_PUTPNT
+                                     25 	.globl _g_ATRBYT
+                                     26 	.globl _g_BDRCLR
+                                     27 	.globl _g_BAKCLR
+                                     28 	.globl _g_FORCLR
+                                     29 	.globl _g_CSRX
+                                     30 	.globl _g_CSRY
+                                     31 	.globl _g_CLIKSW
+                                     32 	.globl _g_MLTPAT
+                                     33 	.globl _g_MLTATR
+                                     34 	.globl _g_MLTCGP
+                                     35 	.globl _g_MLTCOL
+                                     36 	.globl _g_MLTNAM
+                                     37 	.globl _g_GRPPAT
+                                     38 	.globl _g_GRPATR
+                                     39 	.globl _g_GRPCGP
+                                     40 	.globl _g_GRPCOL
+                                     41 	.globl _g_GRPNAM
+                                     42 	.globl _g_T32PAT
+                                     43 	.globl _g_T32ATR
+                                     44 	.globl _g_T32CGP
+                                     45 	.globl _g_T32COL
+                                     46 	.globl _g_T32NAM
+                                     47 	.globl _g_TXTPAT
+                                     48 	.globl _g_TXTATR
+                                     49 	.globl _g_TXTCGP
+                                     50 	.globl _g_TXTCOL
+                                     51 	.globl _g_TXTNAM
+                                     52 	.globl _g_CLMLST
+                                     53 	.globl _g_CRTCNT
+                                     54 	.globl _g_LINLEN
+                                     55 	.globl _g_LINL32
+                                     56 	.globl _g_LINL40
+                                     57 	.globl _DOS_TPAUpperAddr
+                                     58 	.globl _g_BDOS
+                                     59 	.globl _g_MASTER
+                                     60 	.globl _g_RAMAD3
+                                     61 	.globl _g_RAMAD2
+                                     62 	.globl _g_RAMAD1
+                                     63 	.globl _g_RAMAD0
+                                     64 	.globl _g_BREAKV
+                                     65 	.globl _g_DISKVE
+                                     66 	.globl _g_KANJTABLE
+                                     67 	.globl _g_STRSRC
+                                     68 	.globl _g_SUBRID
+                                     69 	.globl _g_CHAR_16
+                                     70 	.globl _g_MSXMID
+                                     71 	.globl _g_MSXVER
+                                     72 	.globl _g_ROMVersion
+                                     73 	.globl _g_BASRVN
+                                     74 	.globl _g_VDP_DW
+                                     75 	.globl _g_VDP_DR
+                                     76 	.globl _g_CGTABL
+                                     77 	.globl _g_SVFFFD
+                                     78 	.globl _g_RG27SAV
+                                     79 	.globl _g_RG26SAV
+                                     80 	.globl _g_RG25SAV
+                                     81 	.globl _g_SVFFF8
+                                     82 	.globl _g_MINROM
+                                     83 	.globl _g_RG23SAV
+                                     84 	.globl _g_RG22SAV
+                                     85 	.globl _g_RG21SAV
+                                     86 	.globl _g_RG20SAV
+                                     87 	.globl _g_RG19SAV
+                                     88 	.globl _g_RG18SAV
+                                     89 	.globl _g_RG17SAV
+                                     90 	.globl _g_RG16SAV
+                                     91 	.globl _g_RG15SAV
+                                     92 	.globl _g_RG14SAV
+                                     93 	.globl _g_RG13SAV
+                                     94 	.globl _g_RG12SAV
+                                     95 	.globl _g_RG11SAV
+                                     96 	.globl _g_RG10SAV
+                                     97 	.globl _g_RG09SAV
+                                     98 	.globl _g_RG08SAV
+                                     99 	.globl _g_PROCNM
+                                    100 	.globl _g_SLTWRK
+                                    101 	.globl _g_SLTATR
+                                    102 	.globl _g_SLTTBL
+                                    103 	.globl _g_EXPTBL
+                                    104 	.globl _g_MNROM
+                                    105 	.globl _g_DRWANG
+                                    106 	.globl _g_DRWSCL
+                                    107 	.globl _g_DRWFLG
+                                    108 	.globl _g_GYPOS
+                                    109 	.globl _g_GXPOS
+                                    110 	.globl _g_BRDATR
+                                    111 	.globl _g_CASPRV
+                                    112 	.globl _g_OLDSCR
+                                    113 	.globl _g_SCRMOD
+                                    114 	.globl _g_FLBMEM
+                                    115 	.globl _g_KANAMD
+                                    116 	.globl _g_KANAST
+                                    117 	.globl _g_CAPST
+                                    118 	.globl _g_CSTYLE
+                                    119 	.globl _g_CSRSW
+                                    120 	.globl _g_INSFLG
+                                    121 	.globl _g_ESCCNT
+                                    122 	.globl _g_GRPHED
+                                    123 	.globl _g_WINWID
+                                    124 	.globl _g_LOWLIM
+                                    125 	.globl _g_INTCNT
+                                    126 	.globl _g_INTVAL
+                                    127 	.globl _g_JIFFY
+                                    128 	.globl _g_PADX
+                                    129 	.globl _g_PADY
+                                    130 	.globl _g_INTFLG
+                                    131 	.globl _g_RTYCNT
+                                    132 	.globl _g_TRPTBL
+                                    133 	.globl _g_HIMEM
+                                    134 	.globl _g_BOTTOM
+                                    135 	.globl _g_PATWRK
+                                    136 	.globl _g_LINWRK
+                                    137 	.globl _g_KEYBUF
+                                    138 	.globl _g_NEWKEY
+                                    139 	.globl _g_OLDKEY
+                                    140 	.globl _g_CLIKFL
+                                    141 	.globl _g_ONGSBF
+                                    142 	.globl _g_FNKFLG
+                                    143 	.globl _g_FNKSWI
+                                    144 	.globl _g_CODSAV
+                                    145 	.globl _g_FSTPOS
+                                    146 	.globl _g_LINTTB
+                                    147 	.globl _g_BASROM
+                                    148 	.globl _g_ENSTOP
+                                    149 	.globl _g_VCBC
+                                    150 	.globl _g_VCBB
+                                    151 	.globl _g_VCBA
+                                    152 	.globl _g_PLYCNT
+                                    153 	.globl _g_MUSICF
+                                    154 	.globl _g_QUEUEN
+                                    155 	.globl _g_MCLPTR
+                                    156 	.globl _g_MCLLEN
+                                    157 	.globl _g_SAVVOL
+                                    158 	.globl _g_VOICEN
+                                    159 	.globl _g_SAVSP
+                                    160 	.globl _g_PRSCNT
+                                    161 	.globl _g_LSTMOD
+                                    162 	.globl _g_LSTCOM
+                                    163 	.globl _g_COMMSK
+                                    164 	.globl _g_ESTBLS
+                                    165 	.globl _g_FLAGS
+                                    166 	.globl _g_ERRORS
+                                    167 	.globl _g_DATCNT
+                                    168 	.globl _g_DEVNUM
+                                    169 	.globl _g_OLDINT
+                                    170 	.globl _g_OLDSTT
+                                    171 	.globl _g_MEXBIh
+                                    172 	.globl _g_RSIQLN
+                                    173 	.globl _g_RSFCB
+                                    174 	.globl _g_TOCNT
+                                    175 	.globl _g_RSTMP
+                                    176 	.globl _g_YSAVE
+                                    177 	.globl _g_XSAVE
+                                    178 	.globl _g_NORUSE
+                                    179 	.globl _g_MODE
+                                    180 	.globl _g_ROMA
+                                    181 	.globl _g_CHRCNT
+                                    182 	.globl _g_EXBRSA
+                                    183 	.globl _g_AVCSAV
+                                    184 	.globl _g_ACPAGE
+                                    185 	.globl _g_DPPAGE
+                                    186 	.globl _g_RS2IQ
+                                    187 	.globl _g_VOICCQ
+                                    188 	.globl _g_VOICBQ
+                                    189 	.globl _g_VOICAQ
+                                    190 	.globl _g_QUEBAK
+                                    191 	.globl _g_QUETAB
+                                    192 	.globl _g_ASPCT2
+                                    193 	.globl _g_ASPCT1
+                                    194 	.globl _g_HEADER
+                                    195 	.globl _g_HIGH
+                                    196 	.globl _g_LOW
+                                    197 	.globl _g_CS240
+                                    198 	.globl _g_CS120
+                                    199 	.globl _g_REPCNT
+                                    200 	.globl _g_SCNCNT
+                                    201 	.globl _g_FRCNEW
+                                    202 	.globl _g_QUEUES
+                                    203 	.globl _g_MINUPD
+                                    204 	.globl _g_MAXUPD
+                                    205 	.globl _g_TRGFLG
+                                    206 	.globl _g_STATFL
+                                    207 	.globl _g_RG7SAV
+                                    208 	.globl _g_RG6SAV
+                                    209 	.globl _g_RG5SAV
+                                    210 	.globl _g_RG4SAV
+                                    211 	.globl _g_RG3SAV
+                                    212 	.globl _g_RG2SAV
+                                    213 	.globl _g_RG1SAV
+                                    214 	.globl _g_RG0SAV
+                                    215 	.globl _g_CNSDFG
+                                    216 	.globl _g_USRTAB
+                                    217 	.globl _g_CLPRIM
+                                    218 	.globl _g_WRPRIM
+                                    219 	.globl _g_RDPRIM
+                                    220 	.globl _DOS_InterSlotRead
+                                    221 	.globl _DOS_InterSlotWrite
+                                    222 	.globl _DOS_InterSlotCall
+                                    223 	.globl _DOS_InstallErrorHandler
+                                    224 	.globl _DOS_Call
+                                    225 	.globl _DOS_Exit0
+                                    226 	.globl _DOS_CharInput
+                                    227 	.globl _DOS_CharOutput
+                                    228 	.globl _DOS_StringOutput
+                                    229 	.globl _DOS_SetTransferAddr
+                                    230 	.globl _DOS_GetFreeSpace
+                                    231 	.globl _DOS_OpenFCB
+                                    232 	.globl _DOS_CreateFCB
+                                    233 	.globl _DOS_CloseFCB
+                                    234 	.globl _DOS_DeleteFCB
+                                    235 	.globl _DOS_SequentialReadFCB
+                                    236 	.globl _DOS_SequentialWriteFCB
+                                    237 	.globl _DOS_RandomBlockWriteFCB
+                                    238 	.globl _DOS_RandomBlockReadFCB
+                                    239 	.globl _DOS_FindFirstFileFCB
+                                    240 	.globl _DOS_FindNextFileFCB
+                                    241 	.globl _DOS_OpenHandle
+                                    242 	.globl _DOS_CreateHandle
+                                    243 	.globl _DOS_CloseHandle
+                                    244 	.globl _DOS_EnsureHandle
+                                    245 	.globl _DOS_DuplicateHandle
+                                    246 	.globl _DOS_ReadHandle
+                                    247 	.globl _DOS_WriteHandle
+                                    248 	.globl _DOS_SeekHandle
+                                    249 	.globl _DOS_DeleteHandle
+                                    250 	.globl _DOS_RenameHandle
+                                    251 	.globl _DOS_MoveHandle
+                                    252 	.globl _DOS_SetAttributeHandle
+                                    253 	.globl _DOS_GetAttributeHandle
+                                    254 	.globl _DOS_GetDiskParam
+                                    255 	.globl _DOS_Exit
+                                    256 	.globl _DOS_Explain
+                                    257 	.globl _DOS_FindFirstEntry
+                                    258 	.globl _DOS_FindNextEntry
+                                    259 	.globl _DOS_Delete
+                                    260 	.globl _DOS_Rename
+                                    261 	.globl _DOS_Move
+                                    262 	.globl _DOS_SetAttribute
+                                    263 	.globl _DOS_GetAttribute
+                                    264 	.globl _DOS_GetDirectory
+                                    265 	.globl _DOS_ChangeDirectory
+                                    266 	.globl _DOS_GetTime
+                                    267 	.globl _DOS_GetVersion
+                                    268 	.globl _DOS_SelectDrive
+                                    269 	.globl _DOS_AvailableDrives
+                                    270 	.globl _DOS_GetCurrentDrive
+                                    271 	.globl _DOS_GetDiskInfo
+                                    272 ;--------------------------------------------------------
+                                    273 ; special function registers
+                                    274 ;--------------------------------------------------------
+                         000000A0   275 _g_PSG_RegPort	=	0x00a0
+                         000000A1   276 _g_PSG_DataPort	=	0x00a1
+                         000000A2   277 _g_PSG_StatPort	=	0x00a2
+                         00000010   278 _g_PSG_Ext_RegPort	=	0x0010
+                         00000011   279 _g_PSG_Ext_DataPort	=	0x0011
+                         00000012   280 _g_PSG_Ext_StatPort	=	0x0012
+                         00000090   281 _g_Printer_ControlPort	=	0x0090
+                         00000091   282 _g_Printer_DataPort	=	0x0091
+                         0000007C   283 _g_MSXMusic_IndexPort	=	0x007c
+                         0000007D   284 _g_MSXMusic_DataPort	=	0x007d
+                         00000098   285 _g_VDP_DataPort	=	0x0098
+                         00000099   286 _g_VDP_RegPort	=	0x0099
+                         00000099   287 _g_VDP_AddrPort	=	0x0099
+                         00000099   288 _g_VDP_StatPort	=	0x0099
+                         0000009A   289 _g_VDP_PalPort	=	0x009a
+                         0000009B   290 _g_VDP_IRegPort	=	0x009b
+                         000000A8   291 _g_PortPrimarySlot	=	0x00a8
+                         000000A9   292 _g_PortReadKeyboard	=	0x00a9
+                         000000AA   293 _g_PortAccessKeyboard	=	0x00aa
+                         000000AB   294 _g_PortControl	=	0x00ab
+                         000000B4   295 _g_RTC_AddrPort	=	0x00b4
+                         000000B5   296 _g_RTC_DataPort	=	0x00b5
+                         000000C0   297 _g_MSXAudio_IndexPort	=	0x00c0
+                         000000C1   298 _g_MSXAudio_DataPort	=	0x00c1
+                         000000C2   299 _g_MSXAudio_IndexPort2	=	0x00c2
+                         000000C3   300 _g_MSXAudio_DataPort2	=	0x00c3
+                         000000D8   301 _g_Kanji_Level1LowPort	=	0x00d8
+                         000000D9   302 _g_Kanji_Level1HighPort	=	0x00d9
+                         000000DA   303 _g_Kanji_Level2LowPort	=	0x00da
+                         000000DB   304 _g_Kanji_Level2HighPort	=	0x00db
+                         000000E6   305 _g_TimerLowPort	=	0x00e6
+                         000000E7   306 _g_TimerHighPort	=	0x00e7
+                                    307 ;--------------------------------------------------------
+                                    308 ; ram data
+                                    309 ;--------------------------------------------------------
+                                    310 	.area _DATA
+                         00000006   311 _DOS_TPAUpperAddr	=	0x0006
+                         0000F3AE   312 _g_LINL40	=	0xf3ae
+                         0000F3AF   313 _g_LINL32	=	0xf3af
+                         0000F3B0   314 _g_LINLEN	=	0xf3b0
+                         0000F3B1   315 _g_CRTCNT	=	0xf3b1
+                         0000F3B2   316 _g_CLMLST	=	0xf3b2
+                         0000F3B3   317 _g_TXTNAM	=	0xf3b3
+                         0000F3B5   318 _g_TXTCOL	=	0xf3b5
+                         0000F3B7   319 _g_TXTCGP	=	0xf3b7
+                         0000F3B9   320 _g_TXTATR	=	0xf3b9
+                         0000F3BB   321 _g_TXTPAT	=	0xf3bb
+                         0000F3BD   322 _g_T32NAM	=	0xf3bd
+                         0000F3BF   323 _g_T32COL	=	0xf3bf
+                         0000F3C1   324 _g_T32CGP	=	0xf3c1
+                         0000F3C3   325 _g_T32ATR	=	0xf3c3
+                         0000F3C5   326 _g_T32PAT	=	0xf3c5
+                         0000F3C7   327 _g_GRPNAM	=	0xf3c7
+                         0000F3C9   328 _g_GRPCOL	=	0xf3c9
+                         0000F3CB   329 _g_GRPCGP	=	0xf3cb
+                         0000F3CD   330 _g_GRPATR	=	0xf3cd
+                         0000F3CF   331 _g_GRPPAT	=	0xf3cf
+                         0000F3D1   332 _g_MLTNAM	=	0xf3d1
+                         0000F3D3   333 _g_MLTCOL	=	0xf3d3
+                         0000F3D5   334 _g_MLTCGP	=	0xf3d5
+                         0000F3D7   335 _g_MLTATR	=	0xf3d7
+                         0000F3D9   336 _g_MLTPAT	=	0xf3d9
+                         0000F3DB   337 _g_CLIKSW	=	0xf3db
+                         0000F3DC   338 _g_CSRY	=	0xf3dc
+                         0000F3DD   339 _g_CSRX	=	0xf3dd
+                         0000F3E9   340 _g_FORCLR	=	0xf3e9
+                         0000F3EA   341 _g_BAKCLR	=	0xf3ea
+                         0000F3EB   342 _g_BDRCLR	=	0xf3eb
+                         0000F3F2   343 _g_ATRBYT	=	0xf3f2
+                         0000F3F8   344 _g_PUTPNT	=	0xf3f8
+                         0000F3FA   345 _g_GETPNT	=	0xf3fa
+                         0000F87F   346 _g_FNKSTR	=	0xf87f
+                         0000F92A   347 _g_CLOC	=	0xf92a
+                         0000F92C   348 _g_CMASK	=	0xf92c
+                         0000FB02   349 _g_LOGOPR	=	0xfb02
+                         0000FCB7   350 _g_GRPACX	=	0xfcb7
+                         0000FCB9   351 _g_GRPACY	=	0xfcb9
+                         0000FFFF   352 _g_SLTSL	=	0xffff
+    00000000                        353 _g_DOS_LastError::
+    00000000                        354 	.ds 1
+    00000001                        355 _g_DOS_LastFIB::
+    00000001                        356 	.ds 64
+    00000041                        357 _g_DOS_Time::
+    00000041                        358 	.ds 8
+    00000049                        359 _g_DOS_ErrorHandler::
+    00000049                        360 	.ds 2
+    0000004B                        361 _g_DOS_ErrorStack::
+    0000004B                        362 	.ds 2
+                                    363 ;--------------------------------------------------------
+                                    364 ; ram data
+                                    365 ;--------------------------------------------------------
+                                    366 	.area _INITIALIZED
+                                    367 ;--------------------------------------------------------
+                                    368 ; absolute ram data
+                                    369 ;--------------------------------------------------------
+                                    370 	.area _DABS (ABS)
+                                    371 	.area _DABS (ABS)
+                                    372 ;--------------------------------------------------------
+                                    373 ; global & static initialisations
+                                    374 ;--------------------------------------------------------
+                                    375 	.area _HOME
+                                    376 	.area _GSINIT
+                                    377 	.area _GSFINAL
+                                    378 	.area _GSINIT
+                                    379 ;--------------------------------------------------------
+                                    380 ; Home
+                                    381 ;--------------------------------------------------------
+                                    382 	.area _HOME
+                                    383 	.area _HOME
+                                    384 ;--------------------------------------------------------
+                                    385 ; code
+                                    386 ;--------------------------------------------------------
+                                    387 	.area _CODE
+                                    388 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:62: u8 DOS_InterSlotRead(u8 slot, u16 addr) __NAKED
+                                    389 ;	---------------------------------
+                                    390 ; Function DOS_InterSlotRead
+                                    391 ; ---------------------------------
+    00000000                        392 _DOS_InterSlotRead::
+                                    393 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:70: __endasm;
+    00000000 EB               [ 4]  394 	ex de, hl
+    00000001 CD 0C 00         [17]  395 	call 0x000C
+    00000004 C9               [10]  396 	ret
+                                    397 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:71: }
+                                    398 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:83: void DOS_InterSlotWrite(u8 slot, u16 addr, u8 value)
+                                    399 ;	---------------------------------
+                                    400 ; Function DOS_InterSlotWrite
+                                    401 ; ---------------------------------
+    00000005                        402 _DOS_InterSlotWrite::
+                                    403 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:96: __endasm;
+    00000005 FD 21 04 00      [14]  404 	ld iy, #4
+    00000009 FD 39            [15]  405 	add iy, sp
+    0000000B 6B               [ 4]  406 	ld l, e
+    0000000C 62               [ 4]  407 	ld h, d
+    0000000D FD 5E 00         [19]  408 	ld e, 0(iy)
+    00000010 CD 14 00         [17]  409 	call 0x0014
+                                    410 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:97: }
+    00000013 E1               [10]  411 	pop	hl
+    00000014 33               [ 6]  412 	inc	sp
+    00000015 E9               [ 4]  413 	jp	(hl)
+    00000016                        414 ___str_0:
+    00000016 0A                     415 	.db 0x0a
+    00000017 0D                     416 	.db 0x0d
+    00000018 24                     417 	.ascii "$"
+    00000019 00                     418 	.db 0x00
+                         0000F380   419 _g_RDPRIM	=	0xf380
+                         0000F385   420 _g_WRPRIM	=	0xf385
+                         0000F38C   421 _g_CLPRIM	=	0xf38c
+                         0000F39A   422 _g_USRTAB	=	0xf39a
+                         0000F3DE   423 _g_CNSDFG	=	0xf3de
+                         0000F3DF   424 _g_RG0SAV	=	0xf3df
+                         0000F3E0   425 _g_RG1SAV	=	0xf3e0
+                         0000F3E1   426 _g_RG2SAV	=	0xf3e1
+                         0000F3E2   427 _g_RG3SAV	=	0xf3e2
+                         0000F3E3   428 _g_RG4SAV	=	0xf3e3
+                         0000F3E4   429 _g_RG5SAV	=	0xf3e4
+                         0000F3E5   430 _g_RG6SAV	=	0xf3e5
+                         0000F3E6   431 _g_RG7SAV	=	0xf3e6
+                         0000F3E7   432 _g_STATFL	=	0xf3e7
+                         0000F3E8   433 _g_TRGFLG	=	0xf3e8
+                         0000F3EC   434 _g_MAXUPD	=	0xf3ec
+                         0000F3EF   435 _g_MINUPD	=	0xf3ef
+                         0000F3F3   436 _g_QUEUES	=	0xf3f3
+                         0000F3F5   437 _g_FRCNEW	=	0xf3f5
+                         0000F3F6   438 _g_SCNCNT	=	0xf3f6
+                         0000F3F7   439 _g_REPCNT	=	0xf3f7
+                         0000F3FC   440 _g_CS120	=	0xf3fc
+                         0000F401   441 _g_CS240	=	0xf401
+                         0000F406   442 _g_LOW	=	0xf406
+                         0000F408   443 _g_HIGH	=	0xf408
+                         0000F40A   444 _g_HEADER	=	0xf40a
+                         0000F40B   445 _g_ASPCT1	=	0xf40b
+                         0000F40D   446 _g_ASPCT2	=	0xf40d
+                         0000F959   447 _g_QUETAB	=	0xf959
+                         0000F971   448 _g_QUEBAK	=	0xf971
+                         0000F975   449 _g_VOICAQ	=	0xf975
+                         0000F9F5   450 _g_VOICBQ	=	0xf9f5
+                         0000FA75   451 _g_VOICCQ	=	0xfa75
+                         0000FAF5   452 _g_RS2IQ	=	0xfaf5
+                         0000FAF5   453 _g_DPPAGE	=	0xfaf5
+                         0000FAF6   454 _g_ACPAGE	=	0xfaf6
+                         0000FAF7   455 _g_AVCSAV	=	0xfaf7
+                         0000FAF8   456 _g_EXBRSA	=	0xfaf8
+                         0000FAF9   457 _g_CHRCNT	=	0xfaf9
+                         0000FAFA   458 _g_ROMA	=	0xfafa
+                         0000FAFC   459 _g_MODE	=	0xfafc
+                         0000FAFD   460 _g_NORUSE	=	0xfafd
+                         0000FAFE   461 _g_XSAVE	=	0xfafe
+                         0000FB00   462 _g_YSAVE	=	0xfb00
+                         0000FB03   463 _g_RSTMP	=	0xfb03
+                         0000FB03   464 _g_TOCNT	=	0xfb03
+                         0000FB04   465 _g_RSFCB	=	0xfb04
+                         0000FB06   466 _g_RSIQLN	=	0xfb06
+                         0000FB07   467 _g_MEXBIh	=	0xfb07
+                         0000FB0C   468 _g_OLDSTT	=	0xfb0c
+                         0000FB0C   469 _g_OLDINT	=	0xfb0c
+                         0000FB16   470 _g_DEVNUM	=	0xfb16
+                         0000FB17   471 _g_DATCNT	=	0xfb17
+                         0000FB1A   472 _g_ERRORS	=	0xfb1a
+                         0000FB1B   473 _g_FLAGS	=	0xfb1b
+                         0000FB1C   474 _g_ESTBLS	=	0xfb1c
+                         0000FB1D   475 _g_COMMSK	=	0xfb1d
+                         0000FB1E   476 _g_LSTCOM	=	0xfb1e
+                         0000FB1F   477 _g_LSTMOD	=	0xfb1f
+                         0000FB35   478 _g_PRSCNT	=	0xfb35
+                         0000FB36   479 _g_SAVSP	=	0xfb36
+                         0000FB38   480 _g_VOICEN	=	0xfb38
+                         0000FB39   481 _g_SAVVOL	=	0xfb39
+                         0000FB3B   482 _g_MCLLEN	=	0xfb3b
+                         0000FB3C   483 _g_MCLPTR	=	0xfb3c
+                         0000FB3E   484 _g_QUEUEN	=	0xfb3e
+                         0000FB3F   485 _g_MUSICF	=	0xfb3f
+                         0000FB40   486 _g_PLYCNT	=	0xfb40
+                         0000FB41   487 _g_VCBA	=	0xfb41
+                         0000FB66   488 _g_VCBB	=	0xfb66
+                         0000FB8B   489 _g_VCBC	=	0xfb8b
+                         0000FBB0   490 _g_ENSTOP	=	0xfbb0
+                         0000FBB1   491 _g_BASROM	=	0xfbb1
+                         0000FBB2   492 _g_LINTTB	=	0xfbb2
+                         0000FBCA   493 _g_FSTPOS	=	0xfbca
+                         0000FBCC   494 _g_CODSAV	=	0xfbcc
+                         0000FBCD   495 _g_FNKSWI	=	0xfbcd
+                         0000FBCE   496 _g_FNKFLG	=	0xfbce
+                         0000FBD8   497 _g_ONGSBF	=	0xfbd8
+                         0000FBD9   498 _g_CLIKFL	=	0xfbd9
+                         0000FBDA   499 _g_OLDKEY	=	0xfbda
+                         0000FBE5   500 _g_NEWKEY	=	0xfbe5
+                         0000FBF0   501 _g_KEYBUF	=	0xfbf0
+                         0000FC18   502 _g_LINWRK	=	0xfc18
+                         0000FC40   503 _g_PATWRK	=	0xfc40
+                         0000FC48   504 _g_BOTTOM	=	0xfc48
+                         0000FC4A   505 _g_HIMEM	=	0xfc4a
+                         0000FC4C   506 _g_TRPTBL	=	0xfc4c
+                         0000FC9A   507 _g_RTYCNT	=	0xfc9a
+                         0000FC9B   508 _g_INTFLG	=	0xfc9b
+                         0000FC9C   509 _g_PADY	=	0xfc9c
+                         0000FC9D   510 _g_PADX	=	0xfc9d
+                         0000FC9E   511 _g_JIFFY	=	0xfc9e
+                         0000FCA0   512 _g_INTVAL	=	0xfca0
+                         0000FCA2   513 _g_INTCNT	=	0xfca2
+                         0000FCA4   514 _g_LOWLIM	=	0xfca4
+                         0000FCA5   515 _g_WINWID	=	0xfca5
+                         0000FCA6   516 _g_GRPHED	=	0xfca6
+                         0000FCA7   517 _g_ESCCNT	=	0xfca7
+                         0000FCA8   518 _g_INSFLG	=	0xfca8
+                         0000FCA9   519 _g_CSRSW	=	0xfca9
+                         0000FCAA   520 _g_CSTYLE	=	0xfcaa
+                         0000FCAB   521 _g_CAPST	=	0xfcab
+                         0000FCAC   522 _g_KANAST	=	0xfcac
+                         0000FCAD   523 _g_KANAMD	=	0xfcad
+                         0000FCAE   524 _g_FLBMEM	=	0xfcae
+                         0000FCAF   525 _g_SCRMOD	=	0xfcaf
+                         0000FCB0   526 _g_OLDSCR	=	0xfcb0
+                         0000FCB1   527 _g_CASPRV	=	0xfcb1
+                         0000FCB2   528 _g_BRDATR	=	0xfcb2
+                         0000FCB3   529 _g_GXPOS	=	0xfcb3
+                         0000FCB5   530 _g_GYPOS	=	0xfcb5
+                         0000FCBB   531 _g_DRWFLG	=	0xfcbb
+                         0000FCBC   532 _g_DRWSCL	=	0xfcbc
+                         0000FCBD   533 _g_DRWANG	=	0xfcbd
+                         0000FCC1   534 _g_MNROM	=	0xfcc1
+                         0000FCC1   535 _g_EXPTBL	=	0xfcc1
+                         0000FCC5   536 _g_SLTTBL	=	0xfcc5
+                         0000FCC9   537 _g_SLTATR	=	0xfcc9
+                         0000FD09   538 _g_SLTWRK	=	0xfd09
+                         0000FD89   539 _g_PROCNM	=	0xfd89
+                         0000FFE7   540 _g_RG08SAV	=	0xffe7
+                         0000FFE8   541 _g_RG09SAV	=	0xffe8
+                         0000FFE9   542 _g_RG10SAV	=	0xffe9
+                         0000FFEA   543 _g_RG11SAV	=	0xffea
+                         0000FFEB   544 _g_RG12SAV	=	0xffeb
+                         0000FFEC   545 _g_RG13SAV	=	0xffec
+                         0000FFED   546 _g_RG14SAV	=	0xffed
+                         0000FFEE   547 _g_RG15SAV	=	0xffee
+                         0000FFEF   548 _g_RG16SAV	=	0xffef
+                         0000FFF0   549 _g_RG17SAV	=	0xfff0
+                         0000FFF1   550 _g_RG18SAV	=	0xfff1
+                         0000FFF2   551 _g_RG19SAV	=	0xfff2
+                         0000FFF3   552 _g_RG20SAV	=	0xfff3
+                         0000FFF4   553 _g_RG21SAV	=	0xfff4
+                         0000FFF5   554 _g_RG22SAV	=	0xfff5
+                         0000FFF6   555 _g_RG23SAV	=	0xfff6
+                         0000FFF7   556 _g_MINROM	=	0xfff7
+                         0000FFF8   557 _g_SVFFF8	=	0xfff8
+                         0000FFFA   558 _g_RG25SAV	=	0xfffa
+                         0000FFFB   559 _g_RG26SAV	=	0xfffb
+                         0000FFFC   560 _g_RG27SAV	=	0xfffc
+                         0000FFFD   561 _g_SVFFFD	=	0xfffd
+                         00000004   562 _g_CGTABL	=	0x0004
+                         00000006   563 _g_VDP_DR	=	0x0006
+                         00000007   564 _g_VDP_DW	=	0x0007
+                         0000002B   565 _g_BASRVN	=	0x002b
+                         0000002B   566 _g_ROMVersion	=	0x002b
+                         0000002D   567 _g_MSXVER	=	0x002d
+                         0000002E   568 _g_MSXMID	=	0x002e
+                         00000034   569 _g_CHAR_16	=	0x0034
+                         00000000   570 _g_SUBRID	=	0x0000
+                         00000002   571 _g_STRSRC	=	0x0002
+                         0000F30F   572 _g_KANJTABLE	=	0xf30f
+                         0000F323   573 _g_DISKVE	=	0xf323
+                         0000F325   574 _g_BREAKV	=	0xf325
+                         0000F341   575 _g_RAMAD0	=	0xf341
+                         0000F342   576 _g_RAMAD1	=	0xf342
+                         0000F343   577 _g_RAMAD2	=	0xf343
+                         0000F344   578 _g_RAMAD3	=	0xf344
+                         0000F348   579 _g_MASTER	=	0xf348
+                         0000F37D   580 _g_BDOS	=	0xf37d
+                                    581 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:105: void DOS_InterSlotCall(u8 slot, u16 addr)
+                                    582 ;	---------------------------------
+                                    583 ; Function DOS_InterSlotCall
+                                    584 ; ---------------------------------
+    0000001A                        585 _DOS_InterSlotCall::
+                                    586 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:124: __endasm;
+    0000001A DD E5            [15]  587 	push ix
+    0000001C 2E 00            [ 7]  588 	ld l, #0
+    0000001E 67               [ 4]  589 	ld h, a
+    0000001F E5               [11]  590 	push hl
+    00000020 FD E1            [14]  591 	pop iy
+    00000022 D5               [11]  592 	push de
+    00000023 DD E1            [14]  593 	pop ix
+    00000025 CD 1C 00         [17]  594 	call 0x001C
+    00000028 FB               [ 4]  595 	ei
+    00000029 DD E1            [14]  596 	pop ix
+                                    597 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:125: }
+    0000002B C9               [10]  598 	ret
+                                    599 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:153: void DOS_InstallErrorHandler(callback cb, u8 size)
+                                    600 ;	---------------------------------
+                                    601 ; Function DOS_InstallErrorHandler
+                                    602 ; ---------------------------------
+    0000002C                        603 _DOS_InstallErrorHandler::
+    0000002C DD E5            [15]  604 	push	ix
+    0000002E DD 21 00 00      [14]  605 	ld	ix,	#0
+    00000032 DD 39            [15]  606 	add	ix, sp
+    00000034 E5               [11]  607 	push	hl
+                                    608 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:156: void* ptr = Mem_HeapAlloc(size);
+    00000035 DD 4E 04         [19]  609 	ld	c, 4 (ix)
+    00000038 06 00            [ 7]  610 	ld	b, #0x00
+                                    611 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.h:68: inline void* Mem_HeapAlloc(u16 size) { u16 addr = g_HeapStartAddress; g_HeapStartAddress += size; return (void*)addr; }
+    0000003A ED 5Br00r00      [20]  612 	ld	de, (_g_HeapStartAddress)
+                                    613 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:156: void* ptr = Mem_HeapAlloc(size);
+    0000003E 79               [ 4]  614 	ld	a, c
+    0000003F FD 21r00r00      [14]  615 	ld	iy, #_g_HeapStartAddress
+    00000043 FD 86 00         [19]  616 	add	a, 0 (iy)
+    00000046 32r00r00         [13]  617 	ld	(_g_HeapStartAddress+0), a
+    00000049 78               [ 4]  618 	ld	a, b
+    0000004A FD 8E 01         [19]  619 	adc	a, 1 (iy)
+    0000004D 32r01r00         [13]  620 	ld	(_g_HeapStartAddress+1), a
+                                    621 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:157: Mem_Copy(*((const void **)&cb), ptr, size);
+    00000050 E1               [10]  622 	pop	hl
+    00000051 E5               [11]  623 	push	hl
+    00000052 DD 4E 04         [19]  624 	ld	c, 4 (ix)
+    00000055 06 00            [ 7]  625 	ld	b, #0x00
+    00000057 D5               [11]  626 	push	de
+    00000058 78               [ 4]  627 	ld	a, b
+    00000059 B1               [ 4]  628 	or	a, c
+    0000005A 28 02            [12]  629 	jr	z, 00105$
+    0000005C ED B0            [21]  630 	ldir
+    0000005E                        631 00105$:
+    0000005E D1               [10]  632 	pop	de
+                                    633 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:158: g_DOS_ErrorHandler = ptr;
+    0000005F ED 53r49r00      [20]  634 	ld	(_g_DOS_ErrorHandler), de
+                                    635 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:159: Poke16(M_DISKVE, (u16)&g_DOS_ErrorHandler);
+                                    636 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/system.h:109: inline void Poke16(u16 addr, u16 val) { *(u16*)addr = val; }
+    00000063 21r49r00         [10]  637 	ld	hl, #_g_DOS_ErrorHandler
+    00000066 22 23 F3         [16]  638 	ld	(0xf323), hl
+                                    639 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:159: Poke16(M_DISKVE, (u16)&g_DOS_ErrorHandler);
+                                    640 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:160: }
+    00000069 DD F9            [10]  641 	ld	sp, ix
+    0000006B DD E1            [14]  642 	pop	ix
+    0000006D E1               [10]  643 	pop	hl
+    0000006E 33               [ 6]  644 	inc	sp
+    0000006F E9               [ 4]  645 	jp	(hl)
+                                    646 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:166: void DOS_Call(u8 func) __NAKED
+                                    647 ;	---------------------------------
+                                    648 ; Function DOS_Call
+                                    649 ; ---------------------------------
+    00000070                        650 _DOS_Call::
+                                    651 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:176: __endasm;
+    00000070 DD E5            [15]  652 	push ix
+    00000072 4F               [ 4]  653 	ld c, a
+    00000073 CD 05 00         [17]  654 	call 0x0005
+    00000076 DD E1            [14]  655 	pop ix
+    00000078 C9               [10]  656 	ret
+                                    657 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:177: }
+                                    658 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:181: void DOS_Exit0() __NAKED
+                                    659 ;	---------------------------------
+                                    660 ; Function DOS_Exit0
+                                    661 ; ---------------------------------
+    00000079                        662 _DOS_Exit0::
+                                    663 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:186: __endasm;
+    00000079 0E 00            [ 7]  664 	ld c, #0x00
+    0000007B C3 05 00         [10]  665 	jp 0x0005
+                                    666 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:187: }
+                                    667 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:191: c8 DOS_CharInput() __NAKED
+                                    668 ;	---------------------------------
+                                    669 ; Function DOS_CharInput
+                                    670 ; ---------------------------------
+    0000007E                        671 _DOS_CharInput::
+                                    672 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:199: __endasm;
+    0000007E DD E5            [15]  673 	push ix
+    00000080 0E 01            [ 7]  674 	ld c, #0x01
+    00000082 CD 05 00         [17]  675 	call 0x0005
+    00000085 DD E1            [14]  676 	pop ix
+    00000087 C9               [10]  677 	ret
+                                    678 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:200: }
+                                    679 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:204: void DOS_CharOutput(c8 chr) __NAKED
+                                    680 ;	---------------------------------
+                                    681 ; Function DOS_CharOutput
+                                    682 ; ---------------------------------
+    00000088                        683 _DOS_CharOutput::
+                                    684 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:215: __endasm;
+    00000088 DD E5            [15]  685 	push ix
+    0000008A 5F               [ 4]  686 	ld e, a
+    0000008B 0E 02            [ 7]  687 	ld c, #0x02
+    0000008D CD 05 00         [17]  688 	call 0x0005
+    00000090 DD E1            [14]  689 	pop ix
+    00000092 C9               [10]  690 	ret
+                                    691 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:216: }
+                                    692 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:220: void DOS_StringOutput(const c8* str) __NAKED
+                                    693 ;	---------------------------------
+                                    694 ; Function DOS_StringOutput
+                                    695 ; ---------------------------------
+    00000093                        696 _DOS_StringOutput::
+                                    697 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:231: __endasm;
+    00000093 DD E5            [15]  698 	push ix
+    00000095 EB               [ 4]  699 	ex de, hl
+    00000096 0E 09            [ 7]  700 	ld c, #0x09
+    00000098 CD 05 00         [17]  701 	call 0x0005
+    0000009B DD E1            [14]  702 	pop ix
+    0000009D C9               [10]  703 	ret
+                                    704 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:232: }
+                                    705 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:238: void DOS_SetTransferAddr(void* data) __NAKED
+                                    706 ;	---------------------------------
+                                    707 ; Function DOS_SetTransferAddr
+                                    708 ; ---------------------------------
+    0000009E                        709 _DOS_SetTransferAddr::
+                                    710 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:251: __endasm;
+    0000009E DD E5            [15]  711 	push ix
+    000000A0 EB               [ 4]  712 	ex de, hl
+    000000A1 0E 1A            [ 7]  713 	ld c, #0x1A
+    000000A3 CD 05 00         [17]  714 	call 0x0005
+    000000A6 DD E1            [14]  715 	pop ix
+    000000A8 C9               [10]  716 	ret
+                                    717 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:252: }
+                                    718 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:256: u16 DOS_GetFreeSpace(u8 drive) __NAKED
+                                    719 ;	---------------------------------
+                                    720 ; Function DOS_GetFreeSpace
+                                    721 ; ---------------------------------
+    000000A9                        722 _DOS_GetFreeSpace::
+                                    723 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:268: __endasm;
+    000000A9 DD E5            [15]  724 	push ix
+    000000AB 5F               [ 4]  725 	ld e, a
+    000000AC 0E 1B            [ 7]  726 	ld c, #0x1B
+    000000AE CD 05 00         [17]  727 	call 0x0005
+    000000B1 DD E1            [14]  728 	pop ix
+    000000B3 EB               [ 4]  729 	ex de, hl
+    000000B4 C9               [10]  730 	ret
+                                    731 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:269: }
+                                    732 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:276: u8 DOS_OpenFCB(DOS_FCB* stream) __NAKED
+                                    733 ;	---------------------------------
+                                    734 ; Function DOS_OpenFCB
+                                    735 ; ---------------------------------
+    000000B5                        736 _DOS_OpenFCB::
+                                    737 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:293: __endasm;
+    000000B5 DD E5            [15]  738 	push ix
+    000000B7 EB               [ 4]  739 	ex de, hl
+    000000B8 0E 0F            [ 7]  740 	ld c, #0x0F
+    000000BA ED 73r4Br00      [20]  741 	ld (_g_DOS_ErrorStack), sp
+    000000BE CD 05 00         [17]  742 	call 0x0005
+    000000C1 32r00r00         [13]  743 	ld (_g_DOS_LastError), a
+    000000C4 DD E1            [14]  744 	pop ix
+    000000C6 C9               [10]  745 	ret
+                                    746 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:294: }
+                                    747 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:298: u8 DOS_CreateFCB(DOS_FCB* stream) __NAKED
+                                    748 ;	---------------------------------
+                                    749 ; Function DOS_CreateFCB
+                                    750 ; ---------------------------------
+    000000C7                        751 _DOS_CreateFCB::
+                                    752 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:315: __endasm;
+    000000C7 DD E5            [15]  753 	push ix
+    000000C9 EB               [ 4]  754 	ex de, hl
+    000000CA 0E 16            [ 7]  755 	ld c, #0x16
+    000000CC ED 73r4Br00      [20]  756 	ld (_g_DOS_ErrorStack), sp
+    000000D0 CD 05 00         [17]  757 	call 0x0005
+    000000D3 32r00r00         [13]  758 	ld (_g_DOS_LastError), a
+    000000D6 DD E1            [14]  759 	pop ix
+    000000D8 C9               [10]  760 	ret
+                                    761 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:316: }
+                                    762 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:320: u8 DOS_CloseFCB(DOS_FCB* stream) __NAKED
+                                    763 ;	---------------------------------
+                                    764 ; Function DOS_CloseFCB
+                                    765 ; ---------------------------------
+    000000D9                        766 _DOS_CloseFCB::
+                                    767 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:337: __endasm;
+    000000D9 DD E5            [15]  768 	push ix
+    000000DB EB               [ 4]  769 	ex de, hl
+    000000DC 0E 10            [ 7]  770 	ld c, #0x10
+    000000DE ED 73r4Br00      [20]  771 	ld (_g_DOS_ErrorStack), sp
+    000000E2 CD 05 00         [17]  772 	call 0x0005
+    000000E5 32r00r00         [13]  773 	ld (_g_DOS_LastError), a
+    000000E8 DD E1            [14]  774 	pop ix
+    000000EA C9               [10]  775 	ret
+                                    776 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:338: }
+                                    777 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:342: u8 DOS_DeleteFCB(DOS_FCB* stream) __NAKED
+                                    778 ;	---------------------------------
+                                    779 ; Function DOS_DeleteFCB
+                                    780 ; ---------------------------------
+    000000EB                        781 _DOS_DeleteFCB::
+                                    782 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:359: __endasm;
+    000000EB DD E5            [15]  783 	push ix
+    000000ED EB               [ 4]  784 	ex de, hl
+    000000EE 0E 13            [ 7]  785 	ld c, #0x13
+    000000F0 ED 73r4Br00      [20]  786 	ld (_g_DOS_ErrorStack), sp
+    000000F4 CD 05 00         [17]  787 	call 0x0005
+    000000F7 32r00r00         [13]  788 	ld (_g_DOS_LastError), a
+    000000FA DD E1            [14]  789 	pop ix
+    000000FC C9               [10]  790 	ret
+                                    791 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:360: }
+                                    792 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:364: u8 DOS_SequentialReadFCB(DOS_FCB* stream) __NAKED
+                                    793 ;	---------------------------------
+                                    794 ; Function DOS_SequentialReadFCB
+                                    795 ; ---------------------------------
+    000000FD                        796 _DOS_SequentialReadFCB::
+                                    797 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:381: __endasm;
+    000000FD DD E5            [15]  798 	push ix
+    000000FF EB               [ 4]  799 	ex de, hl
+    00000100 0E 14            [ 7]  800 	ld c, #0x14
+    00000102 ED 73r4Br00      [20]  801 	ld (_g_DOS_ErrorStack), sp
+    00000106 CD 05 00         [17]  802 	call 0x0005
+    00000109 32r00r00         [13]  803 	ld (_g_DOS_LastError), a
+    0000010C DD E1            [14]  804 	pop ix
+    0000010E C9               [10]  805 	ret
+                                    806 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:382: }
+                                    807 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:386: u8 DOS_SequentialWriteFCB(DOS_FCB* stream) __NAKED
+                                    808 ;	---------------------------------
+                                    809 ; Function DOS_SequentialWriteFCB
+                                    810 ; ---------------------------------
+    0000010F                        811 _DOS_SequentialWriteFCB::
+                                    812 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:403: __endasm;
+    0000010F DD E5            [15]  813 	push ix
+    00000111 EB               [ 4]  814 	ex de, hl
+    00000112 0E 15            [ 7]  815 	ld c, #0x15
+    00000114 ED 73r4Br00      [20]  816 	ld (_g_DOS_ErrorStack), sp
+    00000118 CD 05 00         [17]  817 	call 0x0005
+    0000011B 32r00r00         [13]  818 	ld (_g_DOS_LastError), a
+    0000011E DD E1            [14]  819 	pop ix
+    00000120 C9               [10]  820 	ret
+                                    821 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:404: }
+                                    822 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:408: u8 DOS_RandomBlockWriteFCB(DOS_FCB* stream, u16 records) __NAKED
+                                    823 ;	---------------------------------
+                                    824 ; Function DOS_RandomBlockWriteFCB
+                                    825 ; ---------------------------------
+    00000121                        826 _DOS_RandomBlockWriteFCB::
+                                    827 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:426: __endasm;
+    00000121 DD E5            [15]  828 	push ix
+    00000123 EB               [ 4]  829 	ex de, hl
+    00000124 0E 26            [ 7]  830 	ld c, #0x26
+    00000126 ED 73r4Br00      [20]  831 	ld (_g_DOS_ErrorStack), sp
+    0000012A CD 05 00         [17]  832 	call 0x0005
+    0000012D 32r00r00         [13]  833 	ld (_g_DOS_LastError), a
+    00000130 DD E1            [14]  834 	pop ix
+    00000132 C9               [10]  835 	ret
+                                    836 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:427: }
+                                    837 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:431: u16 DOS_RandomBlockReadFCB(DOS_FCB* stream, u16 records) __NAKED
+                                    838 ;	---------------------------------
+                                    839 ; Function DOS_RandomBlockReadFCB
+                                    840 ; ---------------------------------
+    00000133                        841 _DOS_RandomBlockReadFCB::
+                                    842 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:450: __endasm;
+    00000133 DD E5            [15]  843 	push ix
+    00000135 EB               [ 4]  844 	ex de, hl
+    00000136 0E 27            [ 7]  845 	ld c, #0x27
+    00000138 ED 73r4Br00      [20]  846 	ld (_g_DOS_ErrorStack), sp
+    0000013C CD 05 00         [17]  847 	call 0x0005
+    0000013F 32r00r00         [13]  848 	ld (_g_DOS_LastError), a
+    00000142 EB               [ 4]  849 	ex de, hl
+    00000143 DD E1            [14]  850 	pop ix
+    00000145 C9               [10]  851 	ret
+                                    852 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:451: }
+                                    853 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:455: u8 DOS_FindFirstFileFCB(DOS_FCB* stream) __NAKED
+                                    854 ;	---------------------------------
+                                    855 ; Function DOS_FindFirstFileFCB
+                                    856 ; ---------------------------------
+    00000146                        857 _DOS_FindFirstFileFCB::
+                                    858 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:471: __endasm;
+    00000146 DD E5            [15]  859 	push ix
+    00000148 EB               [ 4]  860 	ex de, hl
+    00000149 0E 11            [ 7]  861 	ld c, #0x11
+    0000014B ED 73r4Br00      [20]  862 	ld (_g_DOS_ErrorStack), sp
+    0000014F CD 05 00         [17]  863 	call 0x0005
+    00000152 32r00r00         [13]  864 	ld (_g_DOS_LastError), a
+    00000155 DD E1            [14]  865 	pop ix
+    00000157 C9               [10]  866 	ret
+                                    867 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:472: }
+                                    868 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:476: u8 DOS_FindNextFileFCB() __NAKED
+                                    869 ;	---------------------------------
+                                    870 ; Function DOS_FindNextFileFCB
+                                    871 ; ---------------------------------
+    00000158                        872 _DOS_FindNextFileFCB::
+                                    873 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:488: __endasm;
+    00000158 DD E5            [15]  874 	push ix
+    0000015A 0E 12            [ 7]  875 	ld c, #0x12
+    0000015C ED 73r4Br00      [20]  876 	ld (_g_DOS_ErrorStack), sp
+    00000160 CD 05 00         [17]  877 	call 0x0005
+    00000163 32r00r00         [13]  878 	ld (_g_DOS_LastError), a
+    00000166 DD E1            [14]  879 	pop ix
+    00000168 C9               [10]  880 	ret
+                                    881 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:489: }
+                                    882 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:502: u8 DOS_OpenHandle(const c8* path, u8 mode) __NAKED // Stack: 3 bytes
+                                    883 ;	---------------------------------
+                                    884 ; Function DOS_OpenHandle
+                                    885 ; ---------------------------------
+    00000169                        886 _DOS_OpenHandle::
+                                    887 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:529: __endasm;
+    00000169 FD E1            [14]  888 	pop iy
+    0000016B EB               [ 4]  889 	ex de, hl
+    0000016C 3B               [ 6]  890 	dec sp
+    0000016D F1               [10]  891 	pop af
+    0000016E 0E 43            [ 7]  892 	ld c, #0x43
+    00000170 CD 05 00         [17]  893 	call 0x0005
+    00000173 32r00r00         [13]  894 	ld (_g_DOS_LastError), a
+    00000176 B7               [ 4]  895 	or a
+    00000177 CAr7Fr01         [10]  896 	jp z, fopen_ok
+    0000017A 3E FF            [ 7]  897 	ld a, #0xFF
+    0000017C C3r80r01         [10]  898 	jp fopen_end
+    0000017F                        899 fopen_ok:
+    0000017F 78               [ 4]  900 	ld a, b
+    00000180                        901 fopen_end:
+    00000180 FD E9            [ 8]  902 	jp (iy)
+                                    903 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:530: }
+                                    904 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:534: u8 DOS_CreateHandle(const c8* path, u8 mode, u8 attr) __NAKED // Stack: 4 bytes
+                                    905 ;	---------------------------------
+                                    906 ; Function DOS_CreateHandle
+                                    907 ; ---------------------------------
+    00000182                        908 _DOS_CreateHandle::
+                                    909 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:563: __endasm;
+    00000182 FD E1            [14]  910 	pop iy
+    00000184 EB               [ 4]  911 	ex de, hl
+    00000185 C1               [10]  912 	pop bc
+    00000186 79               [ 4]  913 	ld a, c
+    00000187 0E 44            [ 7]  914 	ld c, #0x44
+    00000189 CD 05 00         [17]  915 	call 0x0005
+    0000018C 32r00r00         [13]  916 	ld (_g_DOS_LastError), a
+    0000018F B7               [ 4]  917 	or a
+    00000190 CAr98r01         [10]  918 	jp z, fcreat_ok
+    00000193 3E FF            [ 7]  919 	ld a, #0xFF
+    00000195 C3r99r01         [10]  920 	jp fcreat_end
+    00000198                        921 fcreat_ok:
+    00000198 78               [ 4]  922 	ld a, b
+    00000199                        923 fcreat_end:
+    00000199 FD E9            [ 8]  924 	jp (iy)
+                                    925 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:564: }
+                                    926 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:568: u8 DOS_CloseHandle(u8 file) __NAKED
+                                    927 ;	---------------------------------
+                                    928 ; Function DOS_CloseHandle
+                                    929 ; ---------------------------------
+    0000019B                        930 _DOS_CloseHandle::
+                                    931 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:580: __endasm;
+    0000019B 47               [ 4]  932 	ld b, a
+    0000019C 0E 45            [ 7]  933 	ld c, #0x45
+    0000019E CD 05 00         [17]  934 	call 0x0005
+    000001A1 32r00r00         [13]  935 	ld (_g_DOS_LastError), a
+    000001A4 C9               [10]  936 	ret
+                                    937 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:581: }
+                                    938 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:585: u8 DOS_EnsureHandle(u8 file) __NAKED
+                                    939 ;	---------------------------------
+                                    940 ; Function DOS_EnsureHandle
+                                    941 ; ---------------------------------
+    000001A5                        942 _DOS_EnsureHandle::
+                                    943 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:597: __endasm;
+    000001A5 47               [ 4]  944 	ld b, a
+    000001A6 0E 46            [ 7]  945 	ld c, #0x46
+    000001A8 CD 05 00         [17]  946 	call 0x0005
+    000001AB 32r00r00         [13]  947 	ld (_g_DOS_LastError), a
+    000001AE C9               [10]  948 	ret
+                                    949 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:598: }
+                                    950 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:602: u8 DOS_DuplicateHandle(u8 file) __NAKED
+                                    951 ;	---------------------------------
+                                    952 ; Function DOS_DuplicateHandle
+                                    953 ; ---------------------------------
+    000001AF                        954 _DOS_DuplicateHandle::
+                                    955 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:621: __endasm;
+    000001AF 47               [ 4]  956 	ld b, a
+    000001B0 0E 47            [ 7]  957 	ld c, #0x47
+    000001B2 CD 05 00         [17]  958 	call 0x0005
+    000001B5 32r00r00         [13]  959 	ld (_g_DOS_LastError), a
+    000001B8 B7               [ 4]  960 	or a
+    000001B9 CArC1r01         [10]  961 	jp z, fdupl_ok
+    000001BC 3E FF            [ 7]  962 	ld a, #0xFF
+    000001BE C3rC2r01         [10]  963 	jp fdupl_end
+    000001C1                        964 fdupl_ok:
+    000001C1 78               [ 4]  965 	ld a, b
+    000001C2                        966 fdupl_end:
+    000001C2 C9               [10]  967 	ret
+                                    968 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:622: }
+                                    969 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:626: u16 DOS_ReadHandle(u8 file, void* buffer, u16 size) __NAKED // Stack: 4 bytes
+                                    970 ;	---------------------------------
+                                    971 ; Function DOS_ReadHandle
+                                    972 ; ---------------------------------
+    000001C3                        973 _DOS_ReadHandle::
+                                    974 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:653: __endasm;
+    000001C3 47               [ 4]  975 	ld b, a
+    000001C4 FD E1            [14]  976 	pop iy
+    000001C6 E1               [10]  977 	pop hl
+    000001C7 0E 48            [ 7]  978 	ld c, #0x48
+    000001C9 CD 05 00         [17]  979 	call 0x0005
+    000001CC EB               [ 4]  980 	ex de, hl
+    000001CD 32r00r00         [13]  981 	ld (_g_DOS_LastError), a
+    000001D0 B7               [ 4]  982 	or a
+    000001D1 CArD7r01         [10]  983 	jp z, fread_end
+    000001D4 1E FF            [ 7]  984 	ld e, #0xFF
+    000001D6 53               [ 4]  985 	ld d, e
+    000001D7                        986 fread_end:
+    000001D7 FD E9            [ 8]  987 	jp (iy)
+                                    988 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:654: }
+                                    989 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:658: u16 DOS_WriteHandle(u8 file, const void* buffer, u16 size) __NAKED // Stack: 4 bytes
+                                    990 ;	---------------------------------
+                                    991 ; Function DOS_WriteHandle
+                                    992 ; ---------------------------------
+    000001D9                        993 _DOS_WriteHandle::
+                                    994 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:685: __endasm;
+    000001D9 FD E1            [14]  995 	pop iy
+    000001DB 47               [ 4]  996 	ld b, a
+    000001DC E1               [10]  997 	pop hl
+    000001DD 0E 49            [ 7]  998 	ld c, #0x49
+    000001DF CD 05 00         [17]  999 	call 0x0005
+    000001E2 EB               [ 4] 1000 	ex de, hl
+    000001E3 32r00r00         [13] 1001 	ld (_g_DOS_LastError), a
+    000001E6 B7               [ 4] 1002 	or a
+    000001E7 CArEDr01         [10] 1003 	jp z, fwrite_end
+    000001EA 1E FF            [ 7] 1004 	ld e, #0xFF
+    000001EC 53               [ 4] 1005 	ld d, e
+    000001ED                       1006 fwrite_end:
+    000001ED FD E9            [ 8] 1007 	jp (iy)
+                                   1008 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:686: }
+                                   1009 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:690: u32 DOS_SeekHandle(u8 file, i32 offset, u8 mode) __NAKED __CALLEE // Stack: 7 bytes
+                                   1010 ;	---------------------------------
+                                   1011 ; Function DOS_SeekHandle
+                                   1012 ; ---------------------------------
+    000001EF                       1013 _DOS_SeekHandle::
+                                   1014 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:722: __endasm;
+    000001EF FD E1            [14] 1015 	pop iy
+    000001F1 47               [ 4] 1016 	ld b, a
+    000001F2 E1               [10] 1017 	pop hl
+    000001F3 D1               [10] 1018 	pop de
+    000001F4 3B               [ 6] 1019 	dec sp
+    000001F5 F1               [10] 1020 	pop af
+    000001F6 0E 4A            [ 7] 1021 	ld c, #0x4A
+    000001F8 CD 05 00         [17] 1022 	call 0x0005
+    000001FB EB               [ 4] 1023 	ex de, hl
+    000001FC 32r00r00         [13] 1024 	ld (_g_DOS_LastError), a
+    000001FF B7               [ 4] 1025 	or a
+    00000200 CAr08r02         [10] 1026 	jp z, flseek_end
+    00000203 1E FF            [ 7] 1027 	ld e, #0xFF
+    00000205 53               [ 4] 1028 	ld d, e
+    00000206 6B               [ 4] 1029 	ld l, e
+    00000207 63               [ 4] 1030 	ld h, e
+    00000208                       1031 flseek_end:
+    00000208 FD E9            [ 8] 1032 	jp (iy)
+                                   1033 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:723: }
+                                   1034 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:727: u8 DOS_DeleteHandle(u8 file) __NAKED
+                                   1035 ;	---------------------------------
+                                   1036 ; Function DOS_DeleteHandle
+                                   1037 ; ---------------------------------
+    0000020A                       1038 _DOS_DeleteHandle::
+                                   1039 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:739: __endasm;
+    0000020A 47               [ 4] 1040 	ld b, a
+    0000020B 0E 52            [ 7] 1041 	ld c, #0x52
+    0000020D CD 05 00         [17] 1042 	call 0x0005
+    00000210 32r00r00         [13] 1043 	ld (_g_DOS_LastError), a
+    00000213 C9               [10] 1044 	ret
+                                   1045 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:740: }
+                                   1046 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:744: u8 DOS_RenameHandle(u8 file, const c8* path) __NAKED
+                                   1047 ;	---------------------------------
+                                   1048 ; Function DOS_RenameHandle
+                                   1049 ; ---------------------------------
+    00000214                       1050 _DOS_RenameHandle::
+                                   1051 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:758: __endasm;
+    00000214 EB               [ 4] 1052 	ex de, hl
+    00000215 47               [ 4] 1053 	ld b, a
+    00000216 0E 53            [ 7] 1054 	ld c, #0x53
+    00000218 CD 05 00         [17] 1055 	call 0x0005
+    0000021B 32r00r00         [13] 1056 	ld (_g_DOS_LastError), a
+    0000021E C9               [10] 1057 	ret
+                                   1058 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:759: }
+                                   1059 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:763: u8 DOS_MoveHandle(u8 file, const c8* path) __NAKED
+                                   1060 ;	---------------------------------
+                                   1061 ; Function DOS_MoveHandle
+                                   1062 ; ---------------------------------
+    0000021F                       1063 _DOS_MoveHandle::
+                                   1064 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:777: __endasm;
+    0000021F EB               [ 4] 1065 	ex de, hl
+    00000220 47               [ 4] 1066 	ld b, a
+    00000221 0E 54            [ 7] 1067 	ld c, #0x54
+    00000223 CD 05 00         [17] 1068 	call 0x0005
+    00000226 32r00r00         [13] 1069 	ld (_g_DOS_LastError), a
+    00000229 C9               [10] 1070 	ret
+                                   1071 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:778: }
+                                   1072 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:782: u8 DOS_SetAttributeHandle(u8 file, u8 attr) __NAKED
+                                   1073 ;	---------------------------------
+                                   1074 ; Function DOS_SetAttributeHandle
+                                   1075 ; ---------------------------------
+    0000022A                       1076 _DOS_SetAttributeHandle::
+                                   1077 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:802: __endasm;
+    0000022A 47               [ 4] 1078 	ld b, a
+    0000022B 3E 01            [ 7] 1079 	ld a, #1
+    0000022D 0E 55            [ 7] 1080 	ld c, #0x55
+    0000022F CD 05 00         [17] 1081 	call 0x0005
+    00000232 32r00r00         [13] 1082 	ld (_g_DOS_LastError), a
+    00000235 B7               [ 4] 1083 	or a
+    00000236 CAr3Cr02         [10] 1084 	jp z, fsetattr_ok
+    00000239 3E FF            [ 7] 1085 	ld a, #0xFF
+    0000023B C9               [10] 1086 	ret
+    0000023C                       1087 fsetattr_ok:
+    0000023C 7D               [ 4] 1088 	ld a, l
+    0000023D C9               [10] 1089 	ret
+                                   1090 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:803: }
+                                   1091 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:807: u8 DOS_GetAttributeHandle(u8 file) __NAKED
+                                   1092 ;	---------------------------------
+                                   1093 ; Function DOS_GetAttributeHandle
+                                   1094 ; ---------------------------------
+    0000023E                       1095 _DOS_GetAttributeHandle::
+                                   1096 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:826: __endasm;
+    0000023E 47               [ 4] 1097 	ld b, a
+    0000023F AF               [ 4] 1098 	xor a
+    00000240 0E 55            [ 7] 1099 	ld c, #0x55
+    00000242 CD 05 00         [17] 1100 	call 0x0005
+    00000245 32r00r00         [13] 1101 	ld (_g_DOS_LastError), a
+    00000248 B7               [ 4] 1102 	or a
+    00000249 CAr4Fr02         [10] 1103 	jp z, fgetattr_ok
+    0000024C 3E FF            [ 7] 1104 	ld a, #0xFF
+    0000024E C9               [10] 1105 	ret
+    0000024F                       1106 fgetattr_ok:
+    0000024F 7D               [ 4] 1107 	ld a, l
+    00000250 C9               [10] 1108 	ret
+                                   1109 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:827: }
+                                   1110 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:833: u8 DOS_GetDiskParam(u8 drv, DOS_DiskParam* param) __NAKED
+                                   1111 ;	---------------------------------
+                                   1112 ; Function DOS_GetDiskParam
+                                   1113 ; ---------------------------------
+    00000251                       1114 _DOS_GetDiskParam::
+                                   1115 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:848: __endasm;
+    00000251 DD E5            [15] 1116 	push ix
+    00000253 6F               [ 4] 1117 	ld l, a
+    00000254 0E 31            [ 7] 1118 	ld c, #0x31
+    00000256 CD 05 00         [17] 1119 	call 0x0005
+    00000259 32r00r00         [13] 1120 	ld (_g_DOS_LastError), a
+    0000025C DD E1            [14] 1121 	pop ix
+    0000025E C9               [10] 1122 	ret
+                                   1123 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:849: }
+                                   1124 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:853: void DOS_Exit(u8 err) __NAKED
+                                   1125 ;	---------------------------------
+                                   1126 ; Function DOS_Exit
+                                   1127 ; ---------------------------------
+    0000025F                       1128 _DOS_Exit::
+                                   1129 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:861: __endasm;
+    0000025F 47               [ 4] 1130 	ld b, a
+    00000260 0E 62            [ 7] 1131 	ld c, #0x62
+    00000262 C3 05 00         [10] 1132 	jp 0x0005
+                                   1133 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:862: }
+                                   1134 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:866: void DOS_Explain(u8 err, c8* str) __NAKED
+                                   1135 ;	---------------------------------
+                                   1136 ; Function DOS_Explain
+                                   1137 ; ---------------------------------
+    00000265                       1138 _DOS_Explain::
+                                   1139 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:878: __endasm;
+    00000265 DD E5            [15] 1140 	push ix
+    00000267 47               [ 4] 1141 	ld b, a
+    00000268 0E 66            [ 7] 1142 	ld c, #0x66
+    0000026A CD 05 00         [17] 1143 	call 0x0005
+    0000026D DD E1            [14] 1144 	pop ix
+    0000026F C9               [10] 1145 	ret
+                                   1146 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:879: }
+                                   1147 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:885: DOS_FIB* DOS_FindFirstEntry(const c8* filename, u8 attr) __NAKED // Stack: 3 bytes
+                                   1148 ;	---------------------------------
+                                   1149 ; Function DOS_FindFirstEntry
+                                   1150 ; ---------------------------------
+    00000270                       1151 _DOS_FindFirstEntry::
+                                   1152 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:917: __endasm;	
+    00000270 FD E1            [14] 1153 	pop iy
+    00000272 EB               [ 4] 1154 	ex de, hl
+    00000273 3B               [ 6] 1155 	dec sp
+    00000274 C1               [10] 1156 	pop bc
+    00000275 DD E5            [15] 1157 	push ix
+    00000277 DD 21r01r00      [14] 1158 	ld ix, #_g_DOS_LastFIB
+    0000027B 0E 40            [ 7] 1159 	ld c, #0x40
+    0000027D CD 05 00         [17] 1160 	call 0x0005
+    00000280 32r00r00         [13] 1161 	ld (_g_DOS_LastError), a
+    00000283 B7               [ 4] 1162 	or a
+    00000284 CAr8Dr02         [10] 1163 	jp z, find1st_ok
+    00000287 1E 00            [ 7] 1164 	ld e, #0
+    00000289 53               [ 4] 1165 	ld d, e
+    0000028A C3r90r02         [10] 1166 	jp find1st_end
+    0000028D                       1167 find1st_ok:
+    0000028D 11r01r00         [10] 1168 	ld de, #_g_DOS_LastFIB
+    00000290                       1169 find1st_end:
+    00000290 DD E1            [14] 1170 	pop ix
+    00000292 FD E9            [ 8] 1171 	jp (iy)
+                                   1172 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:918: }
+                                   1173 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:922: DOS_FIB* DOS_FindNextEntry() __NAKED
+                                   1174 ;	---------------------------------
+                                   1175 ; Function DOS_FindNextEntry
+                                   1176 ; ---------------------------------
+    00000294                       1177 _DOS_FindNextEntry::
+                                   1178 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:945: __endasm;
+    00000294 DD E5            [15] 1179 	push ix
+    00000296 DD 21r01r00      [14] 1180 	ld ix, #_g_DOS_LastFIB
+    0000029A 0E 41            [ 7] 1181 	ld c, #0x41
+    0000029C CD 05 00         [17] 1182 	call 0x0005
+    0000029F 32r00r00         [13] 1183 	ld (_g_DOS_LastError), a
+    000002A2 B7               [ 4] 1184 	or a
+    000002A3 CArACr02         [10] 1185 	jp z, findnxt_ok
+    000002A6 1E 00            [ 7] 1186 	ld e, #0
+    000002A8 53               [ 4] 1187 	ld d, e
+    000002A9 C3rAFr02         [10] 1188 	jp findnxt_end
+    000002AC                       1189 findnxt_ok:
+    000002AC 11r01r00         [10] 1190 	ld de, #_g_DOS_LastFIB
+    000002AF                       1191 findnxt_end:
+    000002AF DD E1            [14] 1192 	pop ix
+    000002B1 C9               [10] 1193 	ret
+                                   1194 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:946: }
+                                   1195 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:950: u8 DOS_Delete(const c8* path) __NAKED
+                                   1196 ;	---------------------------------
+                                   1197 ; Function DOS_Delete
+                                   1198 ; ---------------------------------
+    000002B2                       1199 _DOS_Delete::
+                                   1200 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:962: __endasm;
+    000002B2 EB               [ 4] 1201 	ex de, hl
+    000002B3 0E 4D            [ 7] 1202 	ld c, #0x4D
+    000002B5 CD 05 00         [17] 1203 	call 0x0005
+    000002B8 32r00r00         [13] 1204 	ld (_g_DOS_LastError), a
+    000002BB C9               [10] 1205 	ret
+                                   1206 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:963: }
+                                   1207 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:967: u8 DOS_Rename(const c8* path, const c8* newPath) __NAKED
+                                   1208 ;	---------------------------------
+                                   1209 ; Function DOS_Rename
+                                   1210 ; ---------------------------------
+    000002BC                       1211 _DOS_Rename::
+                                   1212 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:980: __endasm;
+    000002BC EB               [ 4] 1213 	ex de, hl
+    000002BD 0E 4E            [ 7] 1214 	ld c, #0x4E
+    000002BF CD 05 00         [17] 1215 	call 0x0005
+    000002C2 32r00r00         [13] 1216 	ld (_g_DOS_LastError), a
+    000002C5 C9               [10] 1217 	ret
+                                   1218 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:981: }
+                                   1219 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:985: u8 DOS_Move(const c8* path, const c8* newPath) __NAKED
+                                   1220 ;	---------------------------------
+                                   1221 ; Function DOS_Move
+                                   1222 ; ---------------------------------
+    000002C6                       1223 _DOS_Move::
+                                   1224 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:998: __endasm;
+    000002C6 EB               [ 4] 1225 	ex de, hl
+    000002C7 0E 4F            [ 7] 1226 	ld c, #0x4F
+    000002C9 CD 05 00         [17] 1227 	call 0x0005
+    000002CC 32r00r00         [13] 1228 	ld (_g_DOS_LastError), a
+    000002CF C9               [10] 1229 	ret
+                                   1230 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:999: }
+                                   1231 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1003: u8 DOS_SetAttribute(const c8* path, u8 attr) __NAKED
+                                   1232 ;	---------------------------------
+                                   1233 ; Function DOS_SetAttribute
+                                   1234 ; ---------------------------------
+    000002D0                       1235 _DOS_SetAttribute::
+                                   1236 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1031: __endasm;
+    000002D0 FD E1            [14] 1237 	pop iy
+    000002D2 EB               [ 4] 1238 	ex de, hl
+    000002D3 E1               [10] 1239 	pop hl
+    000002D4 3B               [ 6] 1240 	dec sp
+    000002D5 3E 01            [ 7] 1241 	ld a, #1
+    000002D7 0E 50            [ 7] 1242 	ld c, #0x50
+    000002D9 CD 05 00         [17] 1243 	call 0x0005
+    000002DC 32r00r00         [13] 1244 	ld (_g_DOS_LastError), a
+    000002DF B7               [ 4] 1245 	or a
+    000002E0 CArE8r02         [10] 1246 	jp z, setattr_ok
+    000002E3 3E FF            [ 7] 1247 	ld a, #0xFF
+    000002E5 C3rE9r02         [10] 1248 	jp setattr_end
+    000002E8                       1249 setattr_ok:
+    000002E8 7D               [ 4] 1250 	ld a, l
+    000002E9                       1251 setattr_end:
+    000002E9 FD E9            [ 8] 1252 	jp (iy)
+                                   1253 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1032: }
+                                   1254 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1036: u8 DOS_GetAttribute(const c8* path) __NAKED
+                                   1255 ;	---------------------------------
+                                   1256 ; Function DOS_GetAttribute
+                                   1257 ; ---------------------------------
+    000002EB                       1258 _DOS_GetAttribute::
+                                   1259 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1055: __endasm;
+    000002EB EB               [ 4] 1260 	ex de, hl
+    000002EC AF               [ 4] 1261 	xor a
+    000002ED 0E 50            [ 7] 1262 	ld c, #0x50
+    000002EF CD 05 00         [17] 1263 	call 0x0005
+    000002F2 32r00r00         [13] 1264 	ld (_g_DOS_LastError), a
+    000002F5 B7               [ 4] 1265 	or a
+    000002F6 CArFCr02         [10] 1266 	jp z, getattr_ok
+    000002F9 3E FF            [ 7] 1267 	ld a, #0xFF
+    000002FB C9               [10] 1268 	ret
+    000002FC                       1269 getattr_ok:
+    000002FC 7D               [ 4] 1270 	ld a, l
+    000002FD C9               [10] 1271 	ret
+                                   1272 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1056: }
+                                   1273 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1060: u8 DOS_GetDirectory(u8 drive, const c8* path) __NAKED
+                                   1274 ;	---------------------------------
+                                   1275 ; Function DOS_GetDirectory
+                                   1276 ; ---------------------------------
+    000002FE                       1277 _DOS_GetDirectory::
+                                   1278 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1073: __endasm;
+    000002FE 47               [ 4] 1279 	ld b, a
+    000002FF 0E 59            [ 7] 1280 	ld c, #0x59
+    00000301 CD 05 00         [17] 1281 	call 0x0005
+    00000304 32r00r00         [13] 1282 	ld (_g_DOS_LastError), a
+    00000307 C9               [10] 1283 	ret
+                                   1284 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1074: }
+                                   1285 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1078: u8 DOS_ChangeDirectory(const c8* path) __NAKED
+                                   1286 ;	---------------------------------
+                                   1287 ; Function DOS_ChangeDirectory
+                                   1288 ; ---------------------------------
+    00000308                       1289 _DOS_ChangeDirectory::
+                                   1290 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1090: __endasm;
+    00000308 EB               [ 4] 1291 	ex de, hl
+    00000309 0E 5A            [ 7] 1292 	ld c, #0x5A
+    0000030B CD 05 00         [17] 1293 	call 0x0005
+    0000030E 32r00r00         [13] 1294 	ld (_g_DOS_LastError), a
+    00000311 C9               [10] 1295 	ret
+                                   1296 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1091: }
+                                   1297 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1095: const DOS_Time* DOS_GetTime() __NAKED
+                                   1298 ;	---------------------------------
+                                   1299 ; Function DOS_GetTime
+                                   1300 ; ---------------------------------
+    00000312                       1301 _DOS_GetTime::
+                                   1302 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1113: __endasm;
+    00000312 0E 2A            [ 7] 1303 	ld c, #0x2A
+    00000314 CD 05 00         [17] 1304 	call 0x0005
+    00000317 22r41r00         [16] 1305 	ld (_g_DOS_Time+0), hl
+    0000031A ED 53r43r00      [20] 1306 	ld (_g_DOS_Time+2), de
+    0000031E 32r45r00         [13] 1307 	ld (_g_DOS_Time+4), a
+    00000321 0E 2C            [ 7] 1308 	ld c, #0x2C
+    00000323 CD 05 00         [17] 1309 	call 0x0005
+    00000326 22r46r00         [16] 1310 	ld (_g_DOS_Time+5), hl
+    00000329 7A               [ 4] 1311 	ld a, d
+    0000032A 32r48r00         [13] 1312 	ld (_g_DOS_Time+7), a
+    0000032D 11r41r00         [10] 1313 	ld de, #_g_DOS_Time
+    00000330 C9               [10] 1314 	ret
+                                   1315 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1114: }
+                                   1316 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1127: u8 DOS_GetVersion(DOS_Version* ver) __NAKED
+                                   1317 ;	---------------------------------
+                                   1318 ; Function DOS_GetVersion
+                                   1319 ; ---------------------------------
+    00000331                       1320 _DOS_GetVersion::
+                                   1321 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1151: __endasm;
+    00000331 DD E5            [15] 1322 	push ix
+    00000333 E5               [11] 1323 	push hl
+    00000334 0E 6F            [ 7] 1324 	ld c, #0x6F
+    00000336 CD 05 00         [17] 1325 	call 0x0005
+    00000339 E1               [10] 1326 	pop hl
+    0000033A DD E1            [14] 1327 	pop ix
+    0000033C B7               [ 4] 1328 	or a
+    0000033D C0               [11] 1329 	ret nz
+    0000033E 71               [ 7] 1330 	ld (hl), c
+    0000033F 23               [ 6] 1331 	inc hl
+    00000340 70               [ 7] 1332 	ld (hl), b
+    00000341 23               [ 6] 1333 	inc hl
+    00000342 73               [ 7] 1334 	ld (hl), e
+    00000343 23               [ 6] 1335 	inc hl
+    00000344 72               [ 7] 1336 	ld (hl), d
+    00000345 78               [ 4] 1337 	ld a, b
+    00000346 C9               [10] 1338 	ret
+                                   1339 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1152: }
+                                   1340 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1162: u8 DOS_SelectDrive(u8 drive) __NAKED
+                                   1341 ;	---------------------------------
+                                   1342 ; Function DOS_SelectDrive
+                                   1343 ; ---------------------------------
+    00000347                       1344 _DOS_SelectDrive::
+                                   1345 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1173: __endasm;
+    00000347 0E 0E            [ 7] 1346 	ld c, #0x0E
+    00000349 5F               [ 4] 1347 	ld e, a
+    0000034A DD E5            [15] 1348 	push ix
+    0000034C CD 05 00         [17] 1349 	call 0x0005
+    0000034F DD E1            [14] 1350 	pop ix
+    00000351 C9               [10] 1351 	ret
+                                   1352 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1174: }
+                                   1353 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1183: u8 DOS_AvailableDrives() __NAKED __FASTCALL
+                                   1354 ;	---------------------------------
+                                   1355 ; Function DOS_AvailableDrives
+                                   1356 ; ---------------------------------
+    00000352                       1357 _DOS_AvailableDrives::
+                                   1358 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1191: __endasm;
+    00000352 0E 18            [ 7] 1359 	ld c, #0x18
+    00000354 DD E5            [15] 1360 	push ix
+    00000356 CD 05 00         [17] 1361 	call 0x0005
+    00000359 DD E1            [14] 1362 	pop ix
+    0000035B C9               [10] 1363 	ret
+                                   1364 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1192: }
+                                   1365 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1200: u8 DOS_GetCurrentDrive() __NAKED
+                                   1366 ;	---------------------------------
+                                   1367 ; Function DOS_GetCurrentDrive
+                                   1368 ; ---------------------------------
+    0000035C                       1369 _DOS_GetCurrentDrive::
+                                   1370 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1208: __endasm;
+    0000035C 0E 19            [ 7] 1371 	ld c, #0x19
+    0000035E DD E5            [15] 1372 	push ix
+    00000360 CD 05 00         [17] 1373 	call 0x0005
+    00000363 DD E1            [14] 1374 	pop ix
+    00000365 C9               [10] 1375 	ret
+                                   1376 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1209: }
+                                   1377 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1224: void DOS_GetDiskInfo(u8 drive, DOS_DiskInfo* info) __NAKED
+                                   1378 ;	---------------------------------
+                                   1379 ; Function DOS_GetDiskInfo
+                                   1380 ; ---------------------------------
+    00000366                       1381 _DOS_GetDiskInfo::
+                                   1382 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1245: __endasm;
+    00000366 D5               [11] 1383 	push de
+    00000367 0E 1B            [ 7] 1384 	ld c, #0x1B
+    00000369 5F               [ 4] 1385 	ld e, a
+    0000036A DD E5            [15] 1386 	push ix
+    0000036C CD 05 00         [17] 1387 	call 0x0005
+    0000036F DD E1            [14] 1388 	pop ix
+    00000371 FD E1            [14] 1389 	pop iy
+    00000373 FD 77 00         [19] 1390 	ld 0(iy), a
+    00000376 FD 71 01         [19] 1391 	ld 1(iy), c
+    00000379 FD 70 02         [19] 1392 	ld 2(iy), b
+    0000037C FD 73 03         [19] 1393 	ld 3(iy), e
+    0000037F FD 72 04         [19] 1394 	ld 4(iy), d
+    00000382 FD 75 05         [19] 1395 	ld 5(iy), l
+    00000385 FD 74 06         [19] 1396 	ld 6(iy), h
+    00000388 C9               [10] 1397 	ret
+                                   1398 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos.c:1246: }
+                                   1399 	.area _CODE
+                                   1400 	.area _INITIALIZER
+                                   1401 	.area _CABS (ABS)

@@ -1,0 +1,970 @@
+*DBASE
+     HELP -     ARQUIVO TEXTO VERSAO 1.0 PARA dBASE II PLUS MSX
+                 Copyright (C) 1987  DATALOGICA .
+
+               INTRODUÇÃO
+     Este  texto  fornece a você informações "on-line" sobre seu dBASE II
+Sistema de Gerenciamento de Banco de Dados . Usando o comando HELP em 
+conjunto com seu Manual, você logo estará escrevendo "procedures" com os
+comandos do sistema e ele trabalhará para você.
+
+
+
+               COMO USAR O COMANDO "HELP"
+     Informações sobre seu dBASE II podem ser obtidas simplesmente digitando-se
+HELP e uma das seguintes palavras-chaves (ex. HELP FUNÇÕES )
+
+     UTILITÁRIOS     TELA-CHEIA     LIMITES
+     COPIA           ERROS          HELP
+     FUNÇÕES         DBASE
+          (ou outro comando dBASE)
+
+dBASE então procurará o texto correspondente  à palavra-chave e o
+mostrará . Se não houver informações para este, dBASE dirá "Não há mensagem
+HELP ".   Quando houver mais texto a ser mostrado, então você verá a palavra
+Esperando.
+
+     Os principais arquivos em disco usados pelo dBASE são :
+
+          DBASE.COM      --arquivo-programa principal
+          DBASEOVR.COM   --todos os overlays e mensagens do sistema
+          DBASEMSG.TXT   --este arquivo HELP (desnecessário se não for
+                         usado o comando HELP)
+          COPIA.BAT      --programa para cópia do dBASE do disco mestre
+                         para o disco do usuário com 40 ou 80 colunas.
+          DGEN.CMD       --programa em dBASE que gera programas em dBASE
+                         para gerar arquivos (GERAARQ), etiquetas
+                         (GERAETIQ), menus (GERAMENU) e relatórios
+                         (GERAREL).     
+
+*UTILITÁRIOS
+UTILITÁRIOS PARA TRABALHAR COM O SISTEMA dBASE :
+
+     ZIP.COM     --executa um programa  CP/M o que irá acelerar  o
+                 desenvolvimento de telas para entrada de dados.
+     ZSCRN.OVL   --parte do ZIP.
+     OUTROS      --Programas em dBASE para Contas a Receber, Contas a 
+                 Pagar, Contabilidade, Fluxo de Caixa, Ativo Fixo, e
+                 Controle de Bancos.
+     Estes programas não se encontram no disco mestre. Para adquiri-los
+     contacte a DATALOGICA.
+
+*EXIT
+*TELA-CHEIA
+          CODIGOS DE MOVIMENTO DO CURSOR NA TELA
+     CTRL-X move  cursor p/baixo do próximo campo (tambem CTRL-F)
+     CTRL-E move  cursor p/cima  do próximo campo (tambem CTRL-A)
+     CTRL-D move  cursor p/frente do caracter
+     CTRL-S move  cursor p/trás do caracter
+     CTRL-G apaga o caracter sobre o cursor
+     CTRL-Y apaga o campo corrente a direita do cursor
+     CTRL-V alterna o modo INSERT ON / INSERT OFF
+     CTRL-W salva qualquer modificação feita e retorna ao dBASE
+          (tambem CTRL-O)
+
+          NO MODO DE EDIÇÃO - EDIT
+     CTRL-U inverte a marca DELETE on/off
+     CTRL-C grava registro corrente e avança para o próximo registro
+     CTRL-R grava registro corrente e retorna para registro anterior
+     CTRL-Q ignora modificações feitas e retorna ao  dBASE
+     CTRL-W grava todas as modificações feitas e retorna ao dBASE
+
+
+
+          NO MODO BROWSE
+     CTRL-B leva a janela p/direita um campo
+     CTRL-Z leva a janela p/esquerda um campo
+
+          NO MODO DE MODIFICAÇÃO - MODIFY
+     CTRL-T apaga a linha corrente e move as seguintes para cima
+     CTRL-N insere uma nova linha na posição do cursor
+     CTRL-C alimenta uma linha no vídeo
+     CTRL-W grava todas as modificações no disco e retorna ao dBASE
+     CTRL-Q ignora todas as modificações e retorna ao dBASE
+
+          NO MODO DE CONCATENAÇÃO - APPEND
+     <enter> quando o cursor está na primeira posição do primeiro campo
+          irá terminar o comando APPEND
+     CTRL-W  grava registro no disco e avança para próximo registro
+     CTRL-Q  ignora o registro corrente e retorna ao dBASE
+
+          CHAVES DE CONTROLE QUANDO NÃO EM TELA-CHEIA
+     CTRL-P alterna o modo da impressora em on/off
+     CTRL-R repete a último comando dBASE executado
+     CTRL-X apaga a linha de comando sem executá-lo
+     CTRL-H backspace
+     CTRL-M funciona exatamente como um <enter>
+*EXIT
+*COPIA
+*COPIA4
+*COPIA8
+     COPIA4 e COPIA8
+     Copia o disco mestre para o disco do usuário para vídeo de 40 ou 80
+colunas. Ex. COPIA4 A B - copia do mestre em A para o disco previamente
+formatado em B os programas a serem utilizados em equipamento com vídeo de 40
+colunas.
+*EXIT 
+*?
+*??
+> ?     -- Avalia e mostra na tela o valor de uma expressão.   
+
+     . ? 6/3
+       2
+
+> ??     -- Mesmo que ?, mas apresenta o resultado na mesma linha que a entrada.
+*EXIT
+*@
+> @     -- Apresenta dados formatados na tela ou impressora nas coordenadas
+          x,y especificadas (x = linha, y = coluna ).
+
+        Sintaxe: @ <coords> [SAY <exp> [USING '<picture>']]
+               [GET <variable> [PICTURE '<picture>']]
+*EXIT
+*ACCEPT
+> ACCEPT -- Solicita ao usuário para entrar uma informação , que é
+        armazenada dentro de uma variável de memória.
+
+        Sintaxe: ACCEPT ['<frase>'] TO <variável>
+
+*EXIT
+*ADATE
+> ADATE -- acrescenta dias a uma data.
+        Sintaxe: PLUS ADATE <data 1> <dias>  <parâmetro> TO <data 2>
+                            (DDMMAA) (3 pos)   (1 pos)      (DDMMAA)
+        Retorno: se parâmetro = "0" soma os dias a partir da <data 1>
+              retorno em <data 2>.
+              se parâmetro = "1" soma os dias a partir do primeiro
+              dia do mes seguinte a <data 1>, retorno em <data 2>.
+*EXIT 
+*APPEND
+> APPEND FROM <arquivo> [FOR <exp>] ou
+> APPEND FROM <arquivo> [SDF] [DELIMITED] [FOR <exp>]
+     -- adiciona dados (FROM) de um arquivo no formato de dados do  sistema
+        para o banco de dados em uso. Registros marcados para exclusão no
+        FROM <arquivo> não serão acrescentados.
+
+> APPEND BLANK -- acrescenta um branco, isto é, um registro vazio no arquivo .
+
+> APPEND -- permite ao usuário adicionar novos dados ao banco de dados em uso .
+     (se indexação estiver sendo usada, o aquivo de índices é atualizado)
+*EXIT
+*BROWSE
+> BROWSE [FIELDS <lista de campos>] -- Permite uma revisão TELA-CHEIA e edição
+     do banco de dados em uso.
+*EXIT
+*BUFF
+> BUFF -- aciona/desaciona o BUFFER de teclado. Notar que CTRL-S não funciona
+com esta função ativada.
+       Sintaxe: PLUS BUFF
+*EXIT
+*CANCEL
+> CANCEL -- Em um arquivo de comandos cancela a execução deste arquivo e
+         retorna ao dBASE.
+
+          ex. : IF RESP = 'C'
+               CANCEL
+                 ENDIF
+*EXIT
+*CDATE
+> CDATE -- determina a validade de uma data.
+        Sintaxe: PLUS CDATE < data > TO < resp >
+                            (DDMMAA)     (1 pos)
+        Retorno: se < resp > = '1' , data válida
+                 se < resp > = '0' , data inválida.
+*EXIT
+*CGC
+> CGC -- verifica a validade de um C.G.C.
+      Sintaxe: PLUS CGC < varcgc > TO < resp >
+                         (14 pos)      (1 pos)
+      Retorno: se < resp > = '1' , CGC válido
+               se < resp > = '0' , CGC inválido.
+*EXIT
+*CHANGE
+> CHANGE -- Permite edição de banco de dados em uso por  campo.  Digite
+         ESCape para terminar o modo CHANGE .
+         Sintaxe: CHANGE [<alcance>] FIELD <lista> [FOR <exp>]
+
+> PLUS CHANGE -- transforma a pontuação do sistema Americano para o Europeu.
+           Sintaxe: PLUS CHANGE < valor 1 > TO < valor 2 >
+           Entrada: < valor 1 > = valor com pontuação Americana
+           Retorno: < valor 2 > = valor com pontuação Européia.
+*EXIT
+*CLEAR
+> CLEAR  -- Fecha todos os bancos de dados em uso e libera as variáveis de
+            memória e a área de Seleção Primária.
+> CLEAR GETS -- faz dBASE ignorar  todos os comandos GET ainda ativos,
+            mas sem apagar a tela.
+*EXIT
+*CODE
+> CODE -- Envia a mensagem : "Entre com a senha: " para a linha e coluna
+       especificadas e aguarda que seja digitada a senha.
+       Sintaxe: PLUS CODE < linha > < coluna > TO < variável >
+                           ( 2 pos ) ( 2 pos  ) 
+       Retorno: < variável > = o que foi digitado.
+*EXIT
+*COPY
+> COPY -- Copia o banco de dados em uso ou somente sua estrutura para outro
+       arquivo. COPY irá criar o arquivo entrado após TO se ele não
+       existir, mas irá destruir um arquivo já existente.  Não irá
+       copiar registros marcados para exclusão.
+
+  Sintaxe: COPY TO <arquivo> [<alcance>] [FIELD <lista>] [FOR <exp>]
+        COPY TO <arquivo> [SDF] [DELIMITED [WITH <delimitador>]] [FOR <exp>]
+        COPY TO <arquivo> STRUCTURE [FIELD <lista>]
+*EXIT
+*COUNT
+> COUNT -- Conta o número de registros no arquivo de banco de dados em uso.
+        Sintaxe: COUNT [<alcance>] [FOR <exp>] [TO <variável>]
+*EXIT
+*CPF
+> CPF -- verifica a validade de um C.P.F.
+      Sintaxe: PLUS CPF  < varcpf > TO < resp >
+                   (11 pos)      (1 pos)
+      Retorno: se < resp > = '1' , CPF válido
+               se < resp > = '0' , CPF inválido.
+*EXIT
+*CREATE
+> CREATE [<nome arq>] -- Cria um novo arquivo de banco de dados . O usuário
+                será questionado sobre a estrutura deste arquivo. (Um arquivo
+com nome de outro já existente fará com que o mesmo seja sobreposto).
+*EXIT
+*DDATE
+> DDATE  -- calcula a quantidade de dias existentes entre duas datas.
+         Sintaxe: PLUS DDATE  < data 1 > < data 2 > TO < dias >
+                               (DDMMAA)   (DDMMAA)      (5 pos)
+         Retorno: < dias > = número de dias existentes entre as datas.
+*EXIT
+*DELETE
+> DELETE FILE <nome arq> -- apaga o arquivo correspondente.
+
+> DELETE [<alcance>] [FOR <exp>] [WHILE <exp>]-- marca registro(s) para
+       exclusão com "*" , só serão eliminados fisicamente com o comando PACK . 
+*EXIT
+*DISPLAY
+> DISPLAY FILES [ON <drive>] [LIKE <familia>] -- lista arquivos do drive 
+          especificado.
+
+> DISPLAY [<alcance>] [FOR <exp>] [<lista exp>] [FIELDS <lista campos>] [OFF]
+     -- mostra variáveis ou registros do arquivo em uso.
+
+> DISPLAY STRUCTURE -- mostra nome dos campos, tipos, tamanhos e decimais
+               (estrutura) do arquivo em uso.
+
+> DISPLAY MEMORY -- mostra nomes, tipos e valores de todas as variáveis de
+              memória definidas .
+
+> DISPLAY STATUS -- lista quais banco de dados estão abertos , data do sistema,
+               índices em uso , parâmetros correntes por SET.
+*EXIT
+*DO
+*ENDCASE
+*ENDDO
+*LOOP
+> DO <arquivo> -- abre e executa o arquivo de comandos especificado.
+
+> DO WHILE <exp>   --  usado em arquivos de comandos para abrir um 
+    <comandos> loop estruturado.Os comandos são executados enquanto a expressão
+  [LOOP]          DO WHILE <exp> torna-se verdadeira.
+    <comandos>
+  ENDDO
+*CASE
+> DO CASE  -- usado em arquivos de comandos para escolher um  e somente um
+     dos vários modos de execução . OTHERWISE opcional, é executada
+     quando não há CASE verdadeiro. ENDCASE é necessário para fechar o
+     comando.
+ex.     DO CASE
+          CASE OPÇÃO = '1'
+               DO Inclusão
+          OTHERWISE
+               QUIT
+     ENDCASE
+*EXIT
+*EDIT
+> EDIT [<número registro>] -- possibilita edição seletiva de registros em 
+       banco de dados. CTRL-W retorna o pedido do número  do  registro  e 
+       <return> no primeiro campo termina o modo EDIT
+*EXIT
+*EJECT
+> EJECT -- faz com que a impressora salte para a próxima página.
+*EXIT
+*ERASE
+> ERASE -- limpa a tela. 
+*EXIT
+*FIND
+> FIND <string> -- pesquisa de chave em arquivos indexados..
+*EXIT
+*FORMAT
+> FORMAT -- monta a máscara para impressão ( formato europeu ).
+         Sintaxe: PLUS FORMAT < var 1 > < qtddec > TO < masc >
+                               (1 pos)     ( tamanho de var 1
+                  mais espaços para expansão )
+         Retorno: < masc > = número editado no formato europeu.
+*EXIT
+*GO
+*GOTO
+> GO ou GOTO -- posiciona no registro especificado no banco de dados em uso . 
+  Sintaxe: GO ou GOTO [RECORD <n>], <n>, [TOP], [BOTTOM], ou <variável>
+*EXIT
+*HELP
+
+          COMANDOS DO dBASE II - HELP  
+Abaixo esta relacionada a lista de comandos dBASE. Este arquivo  HELP
+contém uma breve sinopse de cada comando .
+
+Para maiores esclarecimentos consulte o seu manual do Usuário.
+
+Para acessar o texto de um comando dBASE (ou outro texto HELP) que você quer
+revisar , digite : HELP <nome do comando> e <return> 
+
+Digite 'HELP dBASE ' para outras importantes informações.
+
+> ?     -- mostra uma expressão , variável ou campo  .
+> ??     -- mostra uma expressão na mesma linha  .
+> @     -- mostra dados no formato definido pelo usuário na tela ou impressora.
+> ACCEPT -- permite entrada de strings dentro de variáveis .
+> ADATE     -- acrescenta dias em uma data.
+> APPEND -- acrescenta informações de outro banco de dados ou arquivos em
+         formato do sistema .
+> BROWSE -- edição / revisão no modo janela de banco de dados .
+> BUFF -- aciona / desaciona buffer de teclado. Se acionado, a função CTRL-S não
+         funciona.
+> CANCEL -- cancela execução de comandos .
+> CDATE -- determina a validade de uma data.
+> CGC -- determina a validade de um C.G.C.
+> CHANGE -- edição de campos de banco de dados no modo de tela não cheia.   
+> CHANGE (PLUS) -- transforma pontuação do sistema Americano para o Europeu.
+> CLEAR -- fecha banco de dados em uso e libera todas as variáveis correntes .
+> CODE -- recebe a senha.
+> CONTINUE -- continua a ação de procura de um comando LOCATE  .
+> COPY -- cria uma copia de um banco de dados já existente .
+> COUNT -- conta o número de registros no banco de dados .
+> CPF -- determina a validade de um C.P.F.
+> CREATE -- cria um novo banco de dados estruturado .
+> DDATE -- calcula a quantidade de dias entre duas datas.
+> DELETE -- apaga um arquivo ou marca registros para exclusão .
+> DISPLAY -- mostra arquivos, estrutura ou registro de banco de dados,
+          variáveis ou status .
+> DO -- executa arquivos de comandos ou loops estruturados em arquivos de
+          comandos.
+> EDIT -- permite edição de registros em banco de dados .
+> EJECT -- alimenta uma página na impressora .
+> ELSE -- alterna o modo de execução de comando , dentro do comando IF .
+> ENDCASE -- termina um comando CASE .
+> ENDDO -- termina um comando DO WHILE .
+> ENDIF -- termina um comando IF .
+> ENDTEXT -- termina  um comando TEXT .
+> ERASE -- limpa a tela .(Em alguns casos com ? CHR(12)).
+> FIND -- posiciona no registro correspondente à uma chave em arquivo indexado
+> FORMAT -- monta máscara para impressão no formato Europeu. 
+> GO ou GOTO -- posiciona em um registro específico no banco de dados .
+> HELP -- acessa arquivo de auxilio ou texto de auxilio .
+> IF -- permite execução condicional de comandos.
+> INDEX -- cria um arquivo indexado .
+> INPUT -- permite entrada de expressões para uma variável  .
+> INSERT - insere novo registro dentro de um banco de dados .
+> JOIN -- associa saída de dois banco de dados .
+> LIST -- lista arquivos, estrutura ou registros de banco de dados, variáveis,
+       status.
+> LOCATE -- localiza um registro que obedece a uma condição .
+> LOOP -- pula para o começo de um comando DO WHILE .
+> LZERO -- troca brancos a esquerda por zeros.
+> MOD11 -- calcula o dígito módulo 11.
+> MODIFY  -- usado para criação e edição de arquivos de comandos e
+          modificação da estrutura de um banco de dados já existente .
+> NOTE or * -- permite inserção de comentários no arquivo de comandos .
+> PACK -- apaga registros marcados para exclusão .
+> PLUS -- indica novos comandos implementados no dBASE.
+> QUIT -- sai do dBASE e retorna ao DOS.
+> READ -- mostra dados e solicita informações no modo Tela-Cheia .
+> RECALL -- restaura registros marcados para a exclusão .
+> REINDEX -- atualiza um arquivo indexado já existente .
+> RELEASE -- elimina variáveis de memória .
+> REMARK -- permite a mostra de qualquer caracter .
+> RENAME -- muda o nome de um arquivo .
+> REPLACE -- altera informações em um registro campo por campo .
+> REPORT -- Formata e mostra um relatório .
+> RESET -- Avisa o sistema operacional da troca de disco.(somente CP/M).
+> RESTORE -- acessa variáveis de memória salvas em arquivos .
+> RETURN -- termina um arquivo de comandos .
+> SAVE -- copia variáveis correntes para um arquivo em disco.
+> SELECT -- alterna entre arquivos USE em áreas PRIMÁRIA e SECUNDÁRIA.
+> SET -- configura parâmetros de controle .
+> SKIP -- posiciona para frente ou para trás no banco de dados .
+> STORE --cria variáveis de memória .
+> SUM -- computa e mostra a soma de um campo .
+> TDATE -- acrescenta dias em uma data, caso a nova data cair num sabado
+        ou domingo, transfere para segunda.
+> TEXT -- permite saida de um bloco de texto de um arquivo de comandos . 
+> TOTAL -- cria copia resumida de informações combinadas de um banco de dados
+        de campos especificados , obedecendo algum critério .
+> UPDATE -- permite atualização em lote de um banco de dados .
+> USE -- especifíca o banco de dados para ser usado até o próximo USE .
+> WAIT -- suspende processamento de arquivo de comandos até que seja digitado
+       um caracter .
+
+     Outras palavras-chaves :  (ex digite 'HELP FUNÇÕES')
+
+       UTILITARIOS     TELA-CHEIA     LIMITES
+       COPIA            ERROS          HELP
+       FUNÇÕES          DBASE
+*EXIT
+*IF
+*ELSE
+*ENDIF
+> IF <exp>                -- em um arquivo de comandos permite execução
+     <qualquer comando>   condicional de comandos . A clausula ELSE é opcional.
+   [ELSE
+     <qualquer comando>]
+  ENDIF
+*EXIT
+*INDEX
+> INDEX ON <string> TO <nome arq.index> -- cria um arquivo indexado
+     para banco de dados em uso sobre uma determinada chave <string> .
+*EXIT
+*INPUT
+> INPUT ["<string>"] TO <variável> -- solicita o usuário a entrar dados
+     numéricos ou lógicos dentro de uma variável de memória já criada.
+*EXIT
+*INSERT
+>  INSERT  [[BEFORE] [BLANK]] -- insere um registro dentro do banco de dados
+      em uso imediatamente depois ou - com BEFORE - antes do registro corrente.
+*EXIT
+*JOIN
+> JOIN -- cria um novo banco de dados combinando os registros de arquivos
+     em uso em áreas primárias e secundárias . Registros são somados onde
+     FOR <exp> avaliar como verdadeiro . O comando deve ser executado na
+     área primária .
+
+     Sintaxe: JOIN TO <arquivo> FOR <exp> [FIELDS <lista de campos>]
+*EXIT
+*LIST
+> LIST FILES [ON <drive>] [LIKE <familia>] -- lista todos os arquivos do
+     disco designado.  Default é o disco corrente .
+
+> LIST [<alcance>] [FOR <exp>] [<lista exp>] [FIELDS <lista>] [OFF] -- mostra
+     registros do arquivo em uso . Valor default são todos os registros .
+
+> LIST STRUCTURE -- mostra a estrutura do arquivo em uso .
+
+> LIST MEMORY -- lista nomes e valores de todas as variáveis correntes
+           definidas na memória .
+
+> LIST STATUS -- indica quais arquivos de banco de dados estão abertos ,
+           índices, e parâmetros de controle criados por SET .
+*EXIT
+*LOCATE
+*CONTINUE
+> LOCATE [<alcance>] FOR <exp> -- acha primeiro registro do banco de dados no
+     qual FOR <exp> é verdadeira .Use CONTINUE para achar o próximo registro .
+*EXIT
+*LZERO
+> LZERO  -- substitui brancos a esquerda por zeros.
+         Sintaxe: PLUS LZERO  < var 1 > TO < var 2 >
+                               ( tamanho igual ao de var 1 )
+         Retorno: < var 2 > = devolve o string com zeros a esquerda.
+*EXIT
+*MOD11
+> MOD11 -- calcula o dígito módulo 11.
+        Sintaxe: PLUS MOD11  < número > TO  < dig >
+                              (1 pos)
+        Retorno: < dig > = digito modulo 11 do < número >.
+*EXIT
+*MODIFY
+> MODIFY STRUCTURE -- permite ao usuário alterar a estrutura do banco de dados
+                em uso . 
+
+> MODIFY COMMAND <arquivo de comandos>-- é o editor de texto para o dBASE II .
+*EXIT
+*NOTE
+> NOTE ou * -- permite a inserção de comentários em um arquivo de comandos .
+*EXIT
+*PACK
+> PACK -- apaga registros marcados previamente para exclusão .
+*EXIT
+*QUIT
+> QUIT [TO <com>] -- abandona dBASE e retorna  ao sistema operacional CP/M.
+*EXIT
+*PLUS
+> PLUS <rotina> <variável 1> ... TO  <variável n> -- indica novos comandos
+     implementados no dBASE:
+
+     ADATE  CGC     CPF          LZERO
+     BUFF       CHANGE     DDATE     MOD11
+     CDATE  CODE     FORMAT     TDATE 
+
+  Para outras explicações digite:
+          'HELP CPF' por exemplo.
+
+  obs: todas as variáveis utilizadas pelo comando plus devem ser tipo caracter.
+*EXIT  
+*READ
+> READ -- usado em arquivos de comandos  para leitura de variáveis da tela .
+
+          ex. : STORE '             ' TO TELEFONE
+          @ 6,4 SAY 'Telefone' GET TELEFONE PICTURE '(###)###-###'
+          READ
+*EXIT
+*RECALL
+> RECALL [<alcance>] [FOR <exp>] -- restaura registro(s) que estavam marcados
+     para exclusão dentro do banco de dados . 
+*EXIT
+*REINDEX
+> REINDEX -- permite atualizar arquivos indexados que não foram automaticamente
+          reindexados após alterações no banco de dados .
+
+          ex.     . USE CADPESS INDEX CODIGO
+               [operações  realizadas]
+               . SET INDEX TO NOME
+               . REINDEX
+*EXIT
+*RELEASE
+> RELEASE -- elimina variáveis de memória e abre espaço para uso futuro .
+
+       Sintaxe: RELEASE [<lista de var>], ou [ALL]
+                RELEASE ALL LIKE <tipo>
+                RELEASE ALL EXCEPT <tipo>
+*EXIT
+*REMARK
+> REMARK -- permite inserir comentários. Em arquivo de comandos
+         o comentário é mostrado.
+
+               . REMARK dBASE II PLUS para MSX
+                       dBASE II PLUS para MSX
+*EXIT
+*RENAME
+> RENAME <nome arq> TO <novo nome arq> -- permite renomear um arquivo no
+     diretório do disco .
+*EXIT
+*REPLACE
+> REPLACE -- permite ao usuário trocar conteúdo de um campo especificado no
+     banco de dados em uso.  Se o arquivo indexado é chaveado para o campo
+     a ser trocado , este é automaticamente atualizado . 
+
+     Sintaxe: REPLACE [<alcance] <campo> WITH <exp> [,<campo2> WITH <exp2>]
+           [FOR <exp>]
+*EXIT
+*REPORT
+> REPORT -- usado para criar um arquivo de Relatório (FRM) para mostrar
+     informações específicas de um banco de dados em formato pré-definido.
+     Os resultados são impressos no vídeo ou na impressora.
+
+    Sintaxe: REPORT [FORM <arquivo>] [<alcance>] [TO PRINT] [FOR <exp>] [PLAIN]
+*EXIT
+*RESET
+> RESET -- use este comando após troca de discos em qualquer drive para 
+       resetar o CP/M . Feche todos os arquivos antes de usar o comando RESET .
+       Note que este comando não tem função no DOS MSX.
+*EXIT
+*RESTORE
+> RESTORE FROM <arquivo> [ADDITIVE] -- recupera e ativa os valores de variáveis
+     previamente salvas com o comando SAVE para um arquivo de memória .
+     O comando ADDITIVE permite manter as variáveis definidas intactas ,
+     de outra forma elas serão perdidas .
+*EXIT
+*RETURN
+> RETURN -- pode ser usado em um arquivo de comandos para retornar o
+         controle para outro arquivo de comandos ou para o dBASE.
+*EXIT
+*SAVE
+> SAVE TO <arquivo> [ALL LIKE <familia>] [ALL EXCEPT <familia>]
+     -- copia todas as variáveis correntemente em uso, ou somente
+     aquelas especificadas por <familia> para um arquivo de memória (MEM)
+     determinado . 
+*EXIT
+*SELECT
+*PRIMARY
+*SECONDARY
+> SELECT [PRIMARY / SECONDARY] -- permite ao usuário selecionar um arquivo 
+          entre os dois abertos simultaneamente.
+*EXIT
+*SET
+> SET -- configura parâmetros  de controle do dBASE .
+
+          Sintaxe: SET <parâmetro> [ON ou OFF]
+                SET <parâmetro> TO <opção>
+
+     Todos os comandos SET estão listados abaixo em ordem alfabetica :
+     Note que alguns SETs não são do tipo (ON/OFF), e outros requerem
+     algumas opções a serem dadas pelo usuário . O valor default de
+     ON/OFF é indicado em letras minúsculas em cada exemplo .
+       ex.      SET BELL [ON/off] -- valor  default é ON .
+
+> SET ALTERNATE [OFF/on] -- ON transfere todas as saidas de tela (exceto tela-
+     cheia) para um arquivo em disco. (Este comando deve ser precedido do
+     comando SET ALTERNATE TO <arquivo>). OFF desliga estas saidas .
+
+> SET BELL [ON/off] -- ON emite um bip quando dados inválidos são entrados
+     ou o limite do campo é ultrapassado . OFF suspende o sinal do bip.
+
+> SET CARRY [OFF/on] -- ON  repete dados no registro corrente de um registro
+     anterior quando usando APPEND no modo Tela-Cheia.  OFF deixa o campo
+     em branco .
+
+> SET COLON [ON/off] -- ON mostra ":" para limitar o tamanho de um campo de
+     entrada. OFF suspende esta função .
+
+> SET CONFIRM [OFF/on] -- ON desabilita salto automatico para o próximo campo
+     quando o campo corrente é preenchido quando em modo Tela-Cheia. OFF
+     espera por um <return> para saltar para o próximo campo .
+
+> SET CONSOLE [ON/off] -- ON transfere todas as saidas para a tela. OFF cancela
+     esta função .
+
+> SET DELETED [OFF/on] -- ON desabilita o comando de pesquisa FIND ou o
+     processamento de registros marcados para exclusão .
+
+> SET DEBUG [OFF/on] -- ON transfere a saída criada por ECHO e STEP para
+     a impressora.   OFF transfere a saída para a tela .
+
+> SET ECHO [OFF/on] -- ON habilita a monitoração da execução de um arquivo
+       de comandos ecoando todos os comandos na tela. OFF desabilita a função .
+
+> SET EJECT [ON/off] -- ON força o comando REPORT para executar uma alimentação
+     de formulário antes de executar qualquer relatório na
+     impressora . OFF desabilita a função .
+
+> SET ESCAPE [ON/off] -- ON permite o usuário abortar a execução de um
+     arquivo de comandos pressionando a tecla ESC . OFF desabilita esta 
+     função .
+
+> SET EXACT [OFF/on] -- ON requer combinações exatas em qualquer comparação
+     de strings de caracteres (em comandos FOR <exp>, FIND , etc.).
+     OFF permite a combinação entre strings de diferentes tamanhos .
+
+> SET INTENSITY [ON/off] -- ON habilita vídeo inverso ou intensidade dupla em
+       operações Full-Screen (se permitido pelo hardware).  OFF desabilita esta
+       função .No MSX não tem significado.
+
+> SET LINKAGE [OFF/on] -- ON habilita movimento de ponteiros de registros nas
+     áreas PRIMARY e SECONDARY, por comandos que permitem um <alcance>,
+     isto é, somente no movimento para baixo . OFF suspende o ponteiro .
+
+> SET PRINT [OFF/on] -- ON tranfere a saída para impressora . OFF cancela a
+     saída .
+
+> SET  RAW  [OFF/on]  -- ON permite usar o comando DISPLAY e LIST para mostrar
+       os registros sem espaços inseridos entre os campos . OFF mostra colunas
+       de dados com espaçamento entre eles .
+
+> SET SCREEN [ON/off] -- ON habilita operações Tela-Cheia para APPEND, EDIT,
+     INSERT, READ, e CREATE .
+
+> SET STEP [OFF/on] -- ON permite a execução passo a passo de um arquivo
+     de comandos . OFF não para a execução à cada passo .
+
+> SET TALK [ON/off] -- ON mostra o resultado de cada execução de comando na
+     tela . Off suspende esta função .
+
+> SET ALTERNATE TO [<arquivo>] -- cria um arquivo em disco da familia .TXT para
+     salvar as saidas de tela . SET ALTERNATE TO fecha o arquivo .TXT .
+
+> SET DATE TO <xx/xx/xx> -- armazena uma string na data do sistema , mas não
+     executa a validação desta data .
+
+> SET DEFAULT TO <drive> -- faz com que o drive especificado seja aquele no
+     qual dBASE irá procurar os arquivos, quando instruido .
+
+> SET FORMAT TO <SCREEN / print> -- SCREEN transfere a saída de um comando
+     @ SAY para a tela . PRINT transfere a saída formatada para impressora.
+
+> SET FORMAT TO [<arquivo formato>] -- abre um arquivo .FMT, o qual dBASE irá
+     utilizar para formatar a tela para os comandos READ, APPEND, EDIT,
+     INSERT, CREATE, @ SAY . SET FORMAT TO fecha todos os arquivos ainda
+     abertos .
+
+> SET HEADING TO <string> -- salva <string> internamente e a imprime como
+     uma linha de cabeçalho de relatório .
+
+> SET INDEX TO <arquivo indexado> -- faz com que arquivos indexados sejam
+     usados com o banco de dados em uso . Outros arquivos indexados serão
+     fechados . SET INDEX TO fecha todos os arquivos indexados .
+
+> SET MARGIN TO <n> -- leva a margem esquerda da impressora para <n> colunas.
+*EXIT
+*SKIP
+> SKIP [-] [<n>] -- move ponteiro de registro para cima ou para baixo <n>
+     registros no banco de dados em uso . O valor default é +1 .
+*EXIT
+*STORE
+> STORE <exp> TO <variável> -- armazena o valor ou string dentro de uma 
+     variável .
+*EXIT
+*SUM
+> SUM -- calcula e mostra as somas de campos numéricos do banco de dados em
+     uso. 
+
+  Sintaxe: SUM <campo1> [,<campo2>] [<alcance>] [TO <lista de var>] [FOR <exp>]
+*EXIT
+*TDATE
+> TDATE  -- acrescenta dias a uma data. Caso a nova data for um sabado ou
+         domingo, será transferida automaticamente para segunda feira.
+
+         Sintaxe: PLUS TDATE  <data 1> <dias>  <parâmetro> TO <data 2>
+                              (DDMMAA) (3 pos)   (1 pos)      (DDMMAA)
+         Retorno: se parâmetro = "0" soma os dias a partir da <data 1>
+               retorno em <data 2>.
+               se parâmetro = "1" soma os dias a partir do primeiro
+               dia do mes seguinte a <data 1>, retorno em <data 2>.
+*EXIT
+*TEXT
+*ENDTEXT
+> TEXT -- no arquivo de comandos , permite a saida de informações de texto sem
+     o uso dos comandos @ SAY ou ? .  dBASE lerá tudo como  texto até ele
+     encontrar um comando ENDTEXT .
+*EXIT
+*TOTAL
+> TOTAL -- cria uma versão resumida de um banco de dados indexado ou pré-
+     sorteado copiando registros com uma única chave .
+     Registros duplicados serão removidos .  Todos os registros com a mesma
+     chave podem ter seus campos numéricos totalizados usando a opção
+     FIELDS .
+
+     Sintaxe: TOTAL TO <arquivo> ON <chave> [FIELDS <lista de campos>]
+*EXIT
+*UPDATE
+> UPDATE -- permite atualização em lote de banco de dados pré-sorteados ou
+     indexados de  um determinado banco de dados (FROM), pré-sorteados na
+     mesma <chave>  . 
+
+      Sintaxe: UPDATE FROM <arquivo> ON <key > [ADD <lista de campos>]
+           [REPLACE <list de campos> ou <campo> WITH <lista de campos>]
+*EXIT
+*USE
+> USE <arquivo> [INDEX <lista arq.indexados>] -- especifica o banco de dados a
+     ser usado para todas as operações sucessivas , USE fecha o arquivo em 
+     uso . 
+*EXIT
+*WAIT
+> WAIT [TO <variável>] -- usado em arquivos de comandos para suspender uma
+     operação até ser digitado um caracter . 
+*EXIT
+*FUNÇÕES
+> @ --  @(<string1>,<string2>) - Esta função faz pesquisa de <string1> em 
+     <string2>, resultando um número inteiro que é a posição referente a 
+     <string2>. Caso <string1> não seja encontrado em <string2>, retornará
+     com o valor zero.
+
+> * -- função de exclusão de registro avalia como Verdadeiro (TRUE) lógico se o
+       registro corrente foi marcado para exclusão .
+
+> # -- função de número de registro dá o valor de um inteiro correspondente
+       ao número de registro corrente .
+
+> ! -- !(<string>)  - função que produz uma  <string> em letras maiúsculas .
+
+> $ -- $(<string>,<inicio>,<tamanho>) - função de substring, produz uma
+       string de caracteres a partir de uma determinada string .
+
+
+> CHR -- CHR(<expressão numérica>) - produz o caracter ASCII equivalente
+      a <expressão numérica>.  
+
+> DATE()  -- retorna uma string de caracteres contendo a data do sistema no
+      no formato DD/MM/AA.
+
+> EOF     -- função de fim de arquivo (end-of-file). Avalia como verdadeiro
+          (TRUE) se for ultrapassado o último registro do arquivo.
+
+> FILE -- FILE(<arquivo>) - função que avalia como Verdadeiro (TRUE) se um
+       determinado (arquivo) existe no drive corrente .
+
+> INT -- INT(<expressão numérica>) -- função inteira que arrendonda para
+      o menor valor mais próximo do número .
+
+> LEN -- LEN(<string>) -- função que retorna o número de caracteres que possui
+      a <string>.
+
+> RANK -- RANK(<string>) -- retorna o valor (número ASCII) do caracter mais
+       a esquerda de  <string>.
+
+> STR -- STR(<expressão numérica>,<largura>[,<decimais>]) - função que converte
+      uma expressão numérica para uma string de caracteres .
+
+> VAL -- VAL(<string>) - função que converte uma string de caracteres feita por
+      números em uma expressão numérica.
+
+> TRIM -- TRIM(<string>) - função que remove espaços em branco a direita de
+       uma <string>.   
+
+> TYPE -- TYPE(<exp>) - função que produz uma string de um caracter contendo
+       um 'C','N','L',  ou 'U' se a <exp> é do tipo  Caracter ,  Numérica,
+       Lógica, ou Indefinida .
+
+> TEST -- 0  =  TEST(<exp>) - função que determina se <exp>  é
+       válida e  analisável. <exp> poderá ser uma expressão numérica ou
+       outra função , um nome de campo ,  ou outra combinação (mas não
+       uma palavra de comando dBASE).  Uma  <exp> válida retorna um 1.
+       Conforme o valor de <exp> funciona como LEN.
+*EXIT
+*LIMITES
+          LIMITAÇÕES E RESERVAS
+número de campos por registro                      32 máximo
+número de caracteres por registro                1000 máximo
+número de registro por banco de dados           65535 máximo
+número de caracteres por string                   254 máximo
+precisão de campos numéricos                       10 dígitos
+maior número                             1.8 x 10**63 aproximado
+menor número                            1.0 x 10**-63 aproximado
+número de variáveis de memória                     64 máximo
+número de caracteres por linha de comando         254 máximo
+número de expressões em comando SUM                 5 máximo
+número de caracteres no cabeçalho REPORT          254 máximo
+número de campos em REPORT                         24 máximo
+número de caracteres numa chave indexada           99 máximo
+número de GETS pendentes                           64 máximo
+número de arquivos abertos ao mesmo tempo          16 máximo
+tamanho de arquivo de comandos executável             ilimitado
+*EXIT
+*ERROS
+
+"Campo decimal inválido" -- Reentre a parte decimal da definição do campo .
+
+"Nome de arquivo inválido" -- Erro de sintaxe no nome do arquivo .
+
+"Nome de campo inválido" -- Redefina o nome do arquivo enquanto em CREATE .
+
+"Tipo de campo inválido" -- Deve ser C (caracter), N (numérico), ou L (lógico).
+
+"Tamanho de campo inválido" -- Redefina o tamanho do campo de entrada .
+
+"*** Além da string"  - Reescreva substring ($) com o parâmetro correto .
+
+"Não pode inserir, não há registros no banco de dados" -- Use o comando
+     APPEND no lugar.
+
+"Não pode abrir arquivo" -- Cheque a existencia ou integridade de um arquivo
+     MEM ou HEX.
+
+"Arquivo de comando não encontrado -- Cheque o nome do arquivo ou o drive
+     default.
+
+"Dado não encontrado" -- Reescreva o comando  REPLACE , ou veja a estrutura
+     do arquivo e o nome correto de campo .
+
+"Banco de dados em uso não é indexado" - FIND é permitido somente em banco de
+     dados indexados .
+
+"Diretório está cheio" --  O sistema operacional não pode gravar mais arquivos
+     no disco .
+
+"Disco está cheio" -- Não há mais espaço no disco . Use o comando DELETE FILE
+     para apagar arquivos desnecessários e conseguir mais espaço .
+
+"Fim de arquivo inesperado" -- O banco de dados em uso (USE) não está no
+     formato correto . dBASE não assegura que o arquivo é do tipo DBF .
+
+"FIELD não encontrado" -- Reescreva a linha de comando CHANGE .
+
+"Arquivo já existe" -- Delete o arquivo desnecessário antes de usar RENAME .
+
+"Arquivo não existe" -- Use DISPLAY FILE LIKE *.* para ter certeza se o
+     arquivo realmente existe .
+
+"Arquivo no momento está aberto" -- Use um comando USE ou CLEAR para fechar
+     este arquivo .
+
+"Arquivo de formato não pode ser aberto" -- Cheque a integridade deste arquivo.
+
+"Arquivo de formato não foi configurado" -- Use o arquivo .FMT apropriado .
+
+"Tipo de dado ilegal" -- SORT não pode sortear um campo lógico .
+
+"Valor ilegal para GO TO" -- Endereçamento de registro deve ser maior que 0
+     e menor que 65534.
+
+"Nome de variável ilegal" -- Somente alfanuméricos e "_" são permitidos em
+     variáveis e nomes de campos . Redefina a variável ou nome do campo .
+
+"Indice não compatível com o banco de dados" -- dBASE não pode combinar a chave
+     indexada com o banco de dados . Tente outro arquivo indexado .
+
+"Arquivo de índices não pode ser aberto" --  Cheque nome ou índice do banco de
+     dados .
+
+"Tentativa de gerar mais que 65534 registros" -- A cláusula FOR permite
+     ligação de demasiados registros . Faça-o mais comprimido .
+
+"Chaves não são do mesmo tamanho" -- Comando UPDATE requer chaves idênticas .
+
+"Macro não é cadeia de caracteres" -- A variável a ser expandida pela macro
+     (&) deve ser uma string de caracteres .
+
+"Mais que 5 campos a somar" -- SUM é limitado a 5 campos ao mesmo tempo.
+
+"Mais do que 7 arquivos indexados selecionados"- - O número máximo de arquivos
+     indexados abertos ao mesmo tempo é 7 . Um número menor dará melhor
+     performance.
+
+"Excedido o limite de encaixes" -- Não pode haver mais de 16 arquivos de
+     comandos abertos ao mesmo tempo .
+
+"Sem expressão para somar" -- Comando SUM necessita de uma expressão numérica .
+
+"FOR não encontrado" -- Reescreva comando  JOIN  com a sintaxe correta .
+
+"FROM não encontrado" -- Reescreva comando UPDATE com a sintaxe correta .
+
+"Não encontrado" -- Mais um diagnóstico que uma mensagem de erro . dBASE não
+     pode descobrir a chave . O número de registro é colocado em 0 .
+
+"Expressão não numérica -- Comando SUM necessita de uma expressão numérica .
+
+"Arquivo não é banco de dados do dBase II-- Arquivo DBF aberto não foi criado
+     pelo dBase II.
+
+"ON não encontrado" -- Reescreva o comando UPDATE ou INDEX corretamente .
+
+"Sem espaço para variáveis de memória -- Reduza o número ou tamanho das
+      variáveis de memória .
+
+"Tamanho do registro ultrapassa o limite de 1000 bytes" -- Reduza o tamanho de
+     alguns campos ou crie um segundo banco de dados com a mesmo chave .
+
+"Registro não indexado" -- Arquivo indexado não atualizado após um registro ter
+     sido incluido . REINDEX o arquivo .
+
+"Registro fora de alcance" -- Número do registro chamado é maior que o número
+     de registros do banco de dados . O arquivo indexado não está
+     atualizado . Reindexe o arquivo com o comando REINDEX .
+
+"Erro interno , notifique suporte" -- Contacte o departamento de suporte da
+     DATALOGICA.
+
+"Tipo de dado da origem não é o mesmo do destino" -- Cheque se tipos de dados
+     são ambos numéricos , ambos caracteres ou ambos lógicos .
+
+"*** Erro de sintaxe ***" -- dBASE não entendeu o comando .
+
+"Erro de sintaxe na especificação do formato" -- O comando @ SAY GET PICTURE
+     foi usado impropriamente .
+
+"Erro de sintaxe, redigite" -- INPUT, ACCEPT, REPORT requerem automaticamente
+     entrada correta .
+
+"TO não encontrado" -- Reescreva o comando com a sintaxe correta .
+
+"Excesso de caracteres" -- Somente quando não em modo TELA-CHEIA. O dado
+      entrado excedeu o tamanho alocado para aquele campo .
+
+"Excesso de arquivos abertos" -- Somente 16 arquivos de todos os tipos (.FMT,
+     .NDX ou de COMANDOS) podem ser abertos ao mesmo tempo .
+
+"Excesso de variáveis de memória -- Use no máximo 64 variáveis de memória  .
+
+"Excesso de RETURNs encontrado" -- Provavelmente um erro na estrutura de um
+     arquivo de comandos . Cheque o número e a localização de RETURNs.
+
+"WITH não encontrado" -- Reescreva comando  REPLACE corretamente .
+
+"Número de arquivo não designado" -- Erro interno , entre em contato com  o
+     suporte. Se HELP é usado, DBASEMSG.TXT deve existir no drive corrente.
+
+"*** Comando desconhecido" -- Cheque o conteúdo. dBASE não conseguiu 
+     interpretar o comando.
+
+"Variável não foi encontrada -- Precisa-se criar a variável ou checar o
+     conteúdo do nome do campo na estrutura do banco de dados .
+
+"*** Divisão por ZERO ***" -- Houve uma tentativa de divisão por zero .
+
+*EXIT

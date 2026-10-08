@@ -1,0 +1,509 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.6.0 #16555 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module memory
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _Mem_DynamicMerge
+                                     12 	.globl _g_MemChunkRoot
+                                     13 	.globl _g_StackAddress
+                                     14 	.globl _Mem_GetStackAddress
+                                     15 	.globl _Mem_Set_16b
+                                     16 	.globl _Mem_DynamicInitialize
+                                     17 	.globl _Mem_DynamicAlloc
+                                     18 	.globl _Mem_DynamicFree
+                                     19 ;--------------------------------------------------------
+                                     20 ; special function registers
+                                     21 ;--------------------------------------------------------
+                                     22 ;--------------------------------------------------------
+                                     23 ; ram data
+                                     24 ;--------------------------------------------------------
+                                     25 	.area _DATA
+    00000000                         26 _g_StackAddress::
+    00000000                         27 	.ds 2
+                                     28 ;--------------------------------------------------------
+                                     29 ; ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _INITIALIZED
+    00000000                         32 _g_MemChunkRoot::
+    00000000                         33 	.ds 2
+                                     34 ;--------------------------------------------------------
+                                     35 ; absolute ram data
+                                     36 ;--------------------------------------------------------
+                                     37 	.area _DABS (ABS)
+                                     38 	.area _DABS (ABS)
+                                     39 ;--------------------------------------------------------
+                                     40 ; global & static initialisations
+                                     41 ;--------------------------------------------------------
+                                     42 	.area _HOME
+                                     43 	.area _GSINIT
+                                     44 	.area _GSFINAL
+                                     45 	.area _GSINIT
+                                     46 ;--------------------------------------------------------
+                                     47 ; Home
+                                     48 ;--------------------------------------------------------
+                                     49 	.area _HOME
+                                     50 	.area _HOME
+                                     51 ;--------------------------------------------------------
+                                     52 ; code
+                                     53 ;--------------------------------------------------------
+                                     54 	.area _CODE
+                                     55 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:29: u16 Mem_GetStackAddress() __NAKED
+                                     56 ;	---------------------------------
+                                     57 ; Function Mem_GetStackAddress
+                                     58 ; ---------------------------------
+    00000000                         59 _Mem_GetStackAddress::
+                                     60 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:35: __endasm;
+    00000000 ED 73r00r00      [20]   61 	ld (_g_StackAddress), sp
+    00000004 ED 5Br00r00      [20]   62 	ld de, (_g_StackAddress)
+    00000008 C9               [10]   63 	ret
+                                     64 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:36: }
+                                     65 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:150: void Mem_Set_16b(u16 val, void* dest, u16 size)
+                                     66 ;	---------------------------------
+                                     67 ; Function Mem_Set_16b
+                                     68 ; ---------------------------------
+    00000009                         69 _Mem_Set_16b::
+                                     70 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:185: __endasm;
+    00000009 D5               [11]   71 	push de
+    0000000A EB               [ 4]   72 	ex de, hl
+    0000000B 72               [ 7]   73 	ld (hl), d
+    0000000C 23               [ 6]   74 	inc hl
+    0000000D 73               [ 7]   75 	ld (hl), e
+    0000000E 23               [ 6]   76 	inc hl
+    0000000F EB               [ 4]   77 	ex de, hl
+    00000010 E1               [10]   78 	pop hl
+    00000011 FD E1            [14]   79 	pop iy
+    00000013 C1               [10]   80 	pop bc
+    00000014 0B               [ 6]   81 	dec bc
+    00000015 0B               [ 6]   82 	dec bc
+    00000016 ED B0            [21]   83 	ldir
+    00000018                         84 mem_fill16_end:
+    00000018 FD E9            [ 8]   85 	jp (iy)
+                                     86 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:186: }
+    0000001A E1               [10]   87 	pop	hl
+    0000001B F1               [10]   88 	pop	af
+    0000001C E9               [ 4]   89 	jp	(hl)
+                                     90 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:258: void Mem_DynamicInitialize(void* base, u16 size)
+                                     91 ;	---------------------------------
+                                     92 ; Function Mem_DynamicInitialize
+                                     93 ; ---------------------------------
+    0000001D                         94 _Mem_DynamicInitialize::
+                                     95 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:260: g_MemChunkRoot = (MemChunkHeader*)base;
+                                     96 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:261: g_MemChunkRoot->Size = (size - sizeof(MemChunkHeader)) | MEM_CHUNK_FREE;
+    0000001D 22r00r00         [16]   97 	ld	(_g_MemChunkRoot), hl
+    00000020 7B               [ 4]   98 	ld	a, e
+    00000021 C6 FC            [ 7]   99 	add	a, #0xfc
+    00000023 4F               [ 4]  100 	ld	c, a
+    00000024 7A               [ 4]  101 	ld	a, d
+    00000025 CE FF            [ 7]  102 	adc	a, #0xff
+    00000027 F6 80            [ 7]  103 	or	a, #0x80
+    00000029 47               [ 4]  104 	ld	b, a
+    0000002A 71               [ 7]  105 	ld	(hl), c
+    0000002B 23               [ 6]  106 	inc	hl
+    0000002C 70               [ 7]  107 	ld	(hl), b
+                                    108 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:262: g_MemChunkRoot->Next = NULL;
+    0000002D 2Ar00r00         [16]  109 	ld	hl, (_g_MemChunkRoot)
+    00000030 23               [ 6]  110 	inc	hl
+    00000031 23               [ 6]  111 	inc	hl
+    00000032 AF               [ 4]  112 	xor	a, a
+    00000033 77               [ 7]  113 	ld	(hl), a
+    00000034 23               [ 6]  114 	inc	hl
+    00000035 77               [ 7]  115 	ld	(hl), a
+                                    116 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:263: }
+    00000036 C9               [10]  117 	ret
+                                    118 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:267: void* Mem_DynamicAlloc(u16 size)
+                                    119 ;	---------------------------------
+                                    120 ; Function Mem_DynamicAlloc
+                                    121 ; ---------------------------------
+    00000037                        122 _Mem_DynamicAlloc::
+    00000037 DD E5            [15]  123 	push	ix
+    00000039 DD 21 00 00      [14]  124 	ld	ix,	#0
+    0000003D DD 39            [15]  125 	add	ix, sp
+    0000003F FD 21 EE FF      [14]  126 	ld	iy, #-18
+    00000043 FD 39            [15]  127 	add	iy, sp
+    00000045 FD F9            [10]  128 	ld	sp, iy
+    00000047 DD 75 FE         [19]  129 	ld	-2 (ix), l
+    0000004A DD 74 FF         [19]  130 	ld	-1 (ix), h
+                                    131 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:274: MemChunkHeader* chunk = g_MemChunkRoot;
+    0000004D 2Ar00r00         [16]  132 	ld	hl, (_g_MemChunkRoot)
+    00000050 E3               [19]  133 	ex	(sp), hl
+                                    134 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:275: while (chunk)
+    00000051                        135 00107$:
+    00000051 DD 7E EF         [19]  136 	ld	a, -17 (ix)
+    00000054 DD B6 EE         [19]  137 	or	a, -18 (ix)
+    00000057 CAr4Er02         [10]  138 	jp	z, 00109$
+                                    139 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:277: u16 chunkSize = chunk->Size;
+    0000005A DD 7E EE         [19]  140 	ld	a, -18 (ix)
+    0000005D DD 77 F0         [19]  141 	ld	-16 (ix), a
+    00000060 DD 7E EF         [19]  142 	ld	a, -17 (ix)
+    00000063 DD 77 F1         [19]  143 	ld	-15 (ix), a
+    00000066 C1               [10]  144 	pop	bc
+    00000067 E1               [10]  145 	pop	hl
+    00000068 E5               [11]  146 	push	hl
+    00000069 C5               [11]  147 	push	bc
+    0000006A 7E               [ 7]  148 	ld	a, (hl)
+    0000006B DD 77 FA         [19]  149 	ld	-6 (ix), a
+    0000006E 23               [ 6]  150 	inc	hl
+    0000006F 7E               [ 7]  151 	ld	a, (hl)
+    00000070 DD 77 FB         [19]  152 	ld	-5 (ix), a
+    00000073 DD 7E FA         [19]  153 	ld	a, -6 (ix)
+    00000076 DD 77 FC         [19]  154 	ld	-4 (ix), a
+    00000079 DD 7E FB         [19]  155 	ld	a, -5 (ix)
+    0000007C DD 77 FD         [19]  156 	ld	-3 (ix), a
+                                    157 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:278: if (chunkSize & MEM_CHUNK_FREE) // Free chunk
+    0000007F DD CB FD 7E      [20]  158 	bit	7, -3 (ix)
+    00000083 CAr3Er02         [10]  159 	jp	z, 00106$
+                                    160 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:280: chunkSize &= ~MEM_CHUNK_FREE;
+    00000086 DD 7E FC         [19]  161 	ld	a, -4 (ix)
+    00000089 DD 77 F8         [19]  162 	ld	-8 (ix), a
+    0000008C DD 7E FD         [19]  163 	ld	a, -3 (ix)
+    0000008F DD 77 F9         [19]  164 	ld	-7 (ix), a
+    00000092 DD 7E F8         [19]  165 	ld	a, -8 (ix)
+    00000095 DD 77 FC         [19]  166 	ld	-4 (ix), a
+    00000098 DD 7E F9         [19]  167 	ld	a, -7 (ix)
+    0000009B E6 7F            [ 7]  168 	and	a, #0x7f
+    0000009D DD 77 FD         [19]  169 	ld	-3 (ix), a
+    000000A0 DD 7E FC         [19]  170 	ld	a, -4 (ix)
+    000000A3 DD 77 F2         [19]  171 	ld	-14 (ix), a
+    000000A6 DD 7E FD         [19]  172 	ld	a, -3 (ix)
+    000000A9 DD 77 F3         [19]  173 	ld	-13 (ix), a
+                                    174 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:281: if (chunkSize == size) // Re-use chunk
+    000000AC DD 7E F2         [19]  175 	ld	a, -14 (ix)
+    000000AF DD 96 FE         [19]  176 	sub	a, -2 (ix)
+    000000B2 20 6E            [12]  177 	jr	nz, 00102$
+    000000B4 DD 7E F3         [19]  178 	ld	a, -13 (ix)
+    000000B7 DD 96 FF         [19]  179 	sub	a, -1 (ix)
+    000000BA 20 66            [12]  180 	jr	nz, 00102$
+                                    181 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:283: chunk->Size &= ~MEM_CHUNK_FREE;
+    000000BC DD 7E FA         [19]  182 	ld	a, -6 (ix)
+    000000BF DD 77 FC         [19]  183 	ld	-4 (ix), a
+    000000C2 DD 7E FB         [19]  184 	ld	a, -5 (ix)
+    000000C5 DD 77 FD         [19]  185 	ld	-3 (ix), a
+    000000C8 DD 7E FC         [19]  186 	ld	a, -4 (ix)
+    000000CB DD 77 FA         [19]  187 	ld	-6 (ix), a
+    000000CE DD 7E FD         [19]  188 	ld	a, -3 (ix)
+    000000D1 E6 7F            [ 7]  189 	and	a, #0x7f
+    000000D3 DD 77 FB         [19]  190 	ld	-5 (ix), a
+    000000D6 DD 7E FA         [19]  191 	ld	a, -6 (ix)
+    000000D9 DD 77 FC         [19]  192 	ld	-4 (ix), a
+    000000DC DD 7E FB         [19]  193 	ld	a, -5 (ix)
+    000000DF DD 77 FD         [19]  194 	ld	-3 (ix), a
+    000000E2 DD 6E F0         [19]  195 	ld	l, -16 (ix)
+    000000E5 DD 66 F1         [19]  196 	ld	h, -15 (ix)
+    000000E8 DD 7E FC         [19]  197 	ld	a, -4 (ix)
+    000000EB 77               [ 7]  198 	ld	(hl), a
+    000000EC 23               [ 6]  199 	inc	hl
+    000000ED DD 7E FD         [19]  200 	ld	a, -3 (ix)
+    000000F0 77               [ 7]  201 	ld	(hl), a
+                                    202 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:284: return (void*)((u16)chunk + sizeof(MemChunkHeader));
+    000000F1 DD 7E EE         [19]  203 	ld	a, -18 (ix)
+    000000F4 DD 77 FC         [19]  204 	ld	-4 (ix), a
+    000000F7 DD 7E EF         [19]  205 	ld	a, -17 (ix)
+    000000FA DD 77 FD         [19]  206 	ld	-3 (ix), a
+    000000FD 11 04 00         [10]  207 	ld	de, #0x0004
+    00000100 DD 6E FC         [19]  208 	ld	l, -4 (ix)
+    00000103 DD 66 FD         [19]  209 	ld	h, -3 (ix)
+    00000106 19               [11]  210 	add	hl, de
+    00000107 DD 75 FA         [19]  211 	ld	-6 (ix), l
+    0000010A DD 74 FB         [19]  212 	ld	-5 (ix), h
+    0000010D DD 7E FA         [19]  213 	ld	a, -6 (ix)
+    00000110 DD 77 FC         [19]  214 	ld	-4 (ix), a
+    00000113 DD 7E FB         [19]  215 	ld	a, -5 (ix)
+    00000116 DD 77 FD         [19]  216 	ld	-3 (ix), a
+    00000119 DD 5E FC         [19]  217 	ld	e, -4 (ix)
+    0000011C DD 56 FD         [19]  218 	ld	d, -3 (ix)
+    0000011F C3r51r02         [10]  219 	jp	00110$
+    00000122                        220 00102$:
+                                    221 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:286: u16 needSize = size + sizeof(MemChunkHeader);
+    00000122 DD 7E FE         [19]  222 	ld	a, -2 (ix)
+    00000125 DD 77 FA         [19]  223 	ld	-6 (ix), a
+    00000128 DD 7E FF         [19]  224 	ld	a, -1 (ix)
+    0000012B DD 77 FB         [19]  225 	ld	-5 (ix), a
+    0000012E 11 04 00         [10]  226 	ld	de, #0x0004
+    00000131 DD 6E FA         [19]  227 	ld	l, -6 (ix)
+    00000134 DD 66 FB         [19]  228 	ld	h, -5 (ix)
+    00000137 19               [11]  229 	add	hl, de
+    00000138 DD 75 FC         [19]  230 	ld	-4 (ix), l
+    0000013B DD 74 FD         [19]  231 	ld	-3 (ix), h
+    0000013E DD 7E FC         [19]  232 	ld	a, -4 (ix)
+    00000141 DD 77 F4         [19]  233 	ld	-12 (ix), a
+    00000144 DD 7E FD         [19]  234 	ld	a, -3 (ix)
+    00000147 DD 77 F5         [19]  235 	ld	-11 (ix), a
+                                    236 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:287: if (chunkSize > needSize) // Create new sub-chunk
+    0000014A DD 7E F4         [19]  237 	ld	a, -12 (ix)
+    0000014D DD 96 F2         [19]  238 	sub	a, -14 (ix)
+    00000150 DD 7E F5         [19]  239 	ld	a, -11 (ix)
+    00000153 DD 9E F3         [19]  240 	sbc	a, -13 (ix)
+    00000156 D2r3Er02         [10]  241 	jp	nc, 00106$
+                                    242 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:289: MemChunkHeader* newChunk = (MemChunkHeader*)((u16)chunk + needSize); // New free sub-chunk
+    00000159 DD 7E EE         [19]  243 	ld	a, -18 (ix)
+    0000015C DD 77 F6         [19]  244 	ld	-10 (ix), a
+    0000015F DD 7E EF         [19]  245 	ld	a, -17 (ix)
+    00000162 DD 77 F7         [19]  246 	ld	-9 (ix), a
+    00000165 DD 7E F4         [19]  247 	ld	a, -12 (ix)
+    00000168 DD 86 F6         [19]  248 	add	a, -10 (ix)
+    0000016B 4F               [ 4]  249 	ld	c, a
+    0000016C DD 7E F5         [19]  250 	ld	a, -11 (ix)
+    0000016F DD 8E F7         [19]  251 	adc	a, -9 (ix)
+    00000172 DD 71 F8         [19]  252 	ld	-8 (ix), c
+    00000175 DD 77 F9         [19]  253 	ld	-7 (ix), a
+                                    254 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:290: newChunk->Size = (chunkSize - needSize) | MEM_CHUNK_FREE;
+    00000178 DD 7E F8         [19]  255 	ld	a, -8 (ix)
+    0000017B DD 77 FA         [19]  256 	ld	-6 (ix), a
+    0000017E DD 7E F9         [19]  257 	ld	a, -7 (ix)
+    00000181 DD 77 FB         [19]  258 	ld	-5 (ix), a
+    00000184 DD 7E F2         [19]  259 	ld	a, -14 (ix)
+    00000187 DD 96 F4         [19]  260 	sub	a, -12 (ix)
+    0000018A DD 77 FC         [19]  261 	ld	-4 (ix), a
+    0000018D DD 7E F3         [19]  262 	ld	a, -13 (ix)
+    00000190 DD 9E F5         [19]  263 	sbc	a, -11 (ix)
+    00000193 DD 77 FD         [19]  264 	ld	-3 (ix), a
+    00000196 DD 7E FC         [19]  265 	ld	a, -4 (ix)
+    00000199 DD 77 F4         [19]  266 	ld	-12 (ix), a
+    0000019C DD 7E FD         [19]  267 	ld	a, -3 (ix)
+    0000019F F6 80            [ 7]  268 	or	a, #0x80
+    000001A1 DD 77 F5         [19]  269 	ld	-11 (ix), a
+    000001A4 DD 7E F4         [19]  270 	ld	a, -12 (ix)
+    000001A7 DD 77 FC         [19]  271 	ld	-4 (ix), a
+    000001AA DD 7E F5         [19]  272 	ld	a, -11 (ix)
+    000001AD DD 77 FD         [19]  273 	ld	-3 (ix), a
+    000001B0 DD 6E FA         [19]  274 	ld	l, -6 (ix)
+    000001B3 DD 66 FB         [19]  275 	ld	h, -5 (ix)
+    000001B6 DD 7E FC         [19]  276 	ld	a, -4 (ix)
+    000001B9 77               [ 7]  277 	ld	(hl), a
+    000001BA 23               [ 6]  278 	inc	hl
+    000001BB DD 7E FD         [19]  279 	ld	a, -3 (ix)
+    000001BE 77               [ 7]  280 	ld	(hl), a
+                                    281 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:291: newChunk->Next = chunk->Next;
+    000001BF DD 6E F8         [19]  282 	ld	l, -8 (ix)
+    000001C2 DD 66 F9         [19]  283 	ld	h, -7 (ix)
+    000001C5 23               [ 6]  284 	inc	hl
+    000001C6 23               [ 6]  285 	inc	hl
+    000001C7 DD 75 FA         [19]  286 	ld	-6 (ix), l
+    000001CA DD 74 FB         [19]  287 	ld	-5 (ix), h
+    000001CD E1               [10]  288 	pop	hl
+    000001CE E5               [11]  289 	push	hl
+    000001CF 23               [ 6]  290 	inc	hl
+    000001D0 23               [ 6]  291 	inc	hl
+    000001D1 DD 75 FC         [19]  292 	ld	-4 (ix), l
+    000001D4 DD 74 FD         [19]  293 	ld	-3 (ix), h
+    000001D7 7E               [ 7]  294 	ld	a, (hl)
+    000001D8 DD 77 F4         [19]  295 	ld	-12 (ix), a
+    000001DB 23               [ 6]  296 	inc	hl
+    000001DC 7E               [ 7]  297 	ld	a, (hl)
+    000001DD DD 77 F5         [19]  298 	ld	-11 (ix), a
+    000001E0 DD 6E FA         [19]  299 	ld	l, -6 (ix)
+    000001E3 DD 66 FB         [19]  300 	ld	h, -5 (ix)
+    000001E6 DD 7E F4         [19]  301 	ld	a, -12 (ix)
+    000001E9 77               [ 7]  302 	ld	(hl), a
+    000001EA 23               [ 6]  303 	inc	hl
+    000001EB DD 7E F5         [19]  304 	ld	a, -11 (ix)
+    000001EE 77               [ 7]  305 	ld	(hl), a
+                                    306 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:293: chunk->Size = size; // Allocated sub-chunk
+    000001EF DD 6E F0         [19]  307 	ld	l, -16 (ix)
+    000001F2 DD 66 F1         [19]  308 	ld	h, -15 (ix)
+    000001F5 DD 7E FE         [19]  309 	ld	a, -2 (ix)
+    000001F8 77               [ 7]  310 	ld	(hl), a
+    000001F9 23               [ 6]  311 	inc	hl
+    000001FA DD 7E FF         [19]  312 	ld	a, -1 (ix)
+    000001FD 77               [ 7]  313 	ld	(hl), a
+                                    314 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:294: chunk->Next = newChunk;
+    000001FE DD 6E FC         [19]  315 	ld	l, -4 (ix)
+    00000201 DD 66 FD         [19]  316 	ld	h, -3 (ix)
+    00000204 DD 7E F8         [19]  317 	ld	a, -8 (ix)
+    00000207 77               [ 7]  318 	ld	(hl), a
+    00000208 23               [ 6]  319 	inc	hl
+    00000209 DD 7E F9         [19]  320 	ld	a, -7 (ix)
+    0000020C 77               [ 7]  321 	ld	(hl), a
+                                    322 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:296: return (void*)((u16)chunk + sizeof(MemChunkHeader));
+    0000020D DD 7E F6         [19]  323 	ld	a, -10 (ix)
+    00000210 DD 77 FC         [19]  324 	ld	-4 (ix), a
+    00000213 DD 7E F7         [19]  325 	ld	a, -9 (ix)
+    00000216 DD 77 FD         [19]  326 	ld	-3 (ix), a
+    00000219 11 04 00         [10]  327 	ld	de, #0x0004
+    0000021C DD 6E FC         [19]  328 	ld	l, -4 (ix)
+    0000021F DD 66 FD         [19]  329 	ld	h, -3 (ix)
+    00000222 19               [11]  330 	add	hl, de
+    00000223 DD 75 FA         [19]  331 	ld	-6 (ix), l
+    00000226 DD 74 FB         [19]  332 	ld	-5 (ix), h
+    00000229 DD 7E FA         [19]  333 	ld	a, -6 (ix)
+    0000022C DD 77 FC         [19]  334 	ld	-4 (ix), a
+    0000022F DD 7E FB         [19]  335 	ld	a, -5 (ix)
+    00000232 DD 77 FD         [19]  336 	ld	-3 (ix), a
+    00000235 DD 5E FC         [19]  337 	ld	e, -4 (ix)
+    00000238 DD 56 FD         [19]  338 	ld	d, -3 (ix)
+    0000023B C3r51r02         [10]  339 	jp	00110$
+    0000023E                        340 00106$:
+                                    341 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:299: chunk = chunk->Next;
+    0000023E E1               [10]  342 	pop	hl
+    0000023F E5               [11]  343 	push	hl
+    00000240 23               [ 6]  344 	inc	hl
+    00000241 23               [ 6]  345 	inc	hl
+    00000242 7E               [ 7]  346 	ld	a, (hl)
+    00000243 DD 77 EE         [19]  347 	ld	-18 (ix), a
+    00000246 23               [ 6]  348 	inc	hl
+    00000247 7E               [ 7]  349 	ld	a, (hl)
+    00000248 DD 77 EF         [19]  350 	ld	-17 (ix), a
+    0000024B C3r51r00         [10]  351 	jp	00107$
+    0000024E                        352 00109$:
+                                    353 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:301: return NULL;
+    0000024E 11 00 00         [10]  354 	ld	de, #0x0000
+    00000251                        355 00110$:
+                                    356 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:302: }
+    00000251 DD F9            [10]  357 	ld	sp, ix
+    00000253 DD E1            [14]  358 	pop	ix
+    00000255 C9               [10]  359 	ret
+                                    360 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:306: void Mem_DynamicMerge()
+                                    361 ;	---------------------------------
+                                    362 ; Function Mem_DynamicMerge
+                                    363 ; ---------------------------------
+    00000256                        364 _Mem_DynamicMerge::
+    00000256 DD E5            [15]  365 	push	ix
+    00000258 DD 21 00 00      [14]  366 	ld	ix,	#0
+    0000025C DD 39            [15]  367 	add	ix, sp
+    0000025E 21 F4 FF         [10]  368 	ld	hl, #-12
+    00000261 39               [11]  369 	add	hl, sp
+    00000262 F9               [ 6]  370 	ld	sp, hl
+                                    371 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:308: MemChunkHeader* chunk = g_MemChunkRoot;
+    00000263 2Ar00r00         [16]  372 	ld	hl, (_g_MemChunkRoot)
+    00000266 DD 75 FE         [19]  373 	ld	-2 (ix), l
+    00000269 DD 74 FF         [19]  374 	ld	-1 (ix), h
+                                    375 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:309: while (chunk)
+    0000026C                        376 00105$:
+    0000026C DD 7E FF         [19]  377 	ld	a, -1 (ix)
+    0000026F DD B6 FE         [19]  378 	or	a, -2 (ix)
+    00000272 CAr37r03         [10]  379 	jp	z, 00108$
+                                    380 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:311: MemChunkHeader* nextChunk = chunk->Next;
+    00000275 DD 6E FE         [19]  381 	ld	l, -2 (ix)
+    00000278 DD 66 FF         [19]  382 	ld	h, -1 (ix)
+    0000027B 23               [ 6]  383 	inc	hl
+    0000027C 23               [ 6]  384 	inc	hl
+    0000027D E3               [19]  385 	ex	(sp), hl
+    0000027E E1               [10]  386 	pop	hl
+    0000027F E5               [11]  387 	push	hl
+    00000280 7E               [ 7]  388 	ld	a, (hl)
+    00000281 DD 77 F6         [19]  389 	ld	-10 (ix), a
+    00000284 23               [ 6]  390 	inc	hl
+    00000285 7E               [ 7]  391 	ld	a, (hl)
+                                    392 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:312: if ((nextChunk != NULL) && (chunk->Size & MEM_CHUNK_FREE) && (nextChunk->Size & MEM_CHUNK_FREE))
+    00000286 DD 77 F7         [19]  393 	ld	-9 (ix), a
+    00000289 DD B6 F6         [19]  394 	or	a, -10 (ix)
+    0000028C CAr29r03         [10]  395 	jp	z, 00102$
+    0000028F DD 7E FE         [19]  396 	ld	a, -2 (ix)
+    00000292 DD 77 F8         [19]  397 	ld	-8 (ix), a
+    00000295 DD 7E FF         [19]  398 	ld	a, -1 (ix)
+    00000298 DD 77 F9         [19]  399 	ld	-7 (ix), a
+    0000029B DD 6E F8         [19]  400 	ld	l, -8 (ix)
+    0000029E DD 66 F9         [19]  401 	ld	h, -7 (ix)
+    000002A1 7E               [ 7]  402 	ld	a, (hl)
+    000002A2 DD 77 FE         [19]  403 	ld	-2 (ix), a
+    000002A5 23               [ 6]  404 	inc	hl
+    000002A6 7E               [ 7]  405 	ld	a, (hl)
+    000002A7 DD 77 FF         [19]  406 	ld	-1 (ix), a
+    000002AA DD CB FF 7E      [20]  407 	bit	7, -1 (ix)
+    000002AE 28 79            [12]  408 	jr	z, 00102$
+    000002B0 C1               [10]  409 	pop	bc
+    000002B1 E1               [10]  410 	pop	hl
+    000002B2 E5               [11]  411 	push	hl
+    000002B3 C5               [11]  412 	push	bc
+    000002B4 7E               [ 7]  413 	ld	a, (hl)
+    000002B5 DD 77 FC         [19]  414 	ld	-4 (ix), a
+    000002B8 23               [ 6]  415 	inc	hl
+    000002B9 7E               [ 7]  416 	ld	a, (hl)
+    000002BA DD 77 FD         [19]  417 	ld	-3 (ix), a
+    000002BD DD CB FD 7E      [20]  418 	bit	7, -3 (ix)
+    000002C1 28 66            [12]  419 	jr	z, 00102$
+                                    420 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:314: chunk->Size += nextChunk->Size + sizeof(MemChunkHeader);
+    000002C3 11 04 00         [10]  421 	ld	de, #0x0004
+    000002C6 DD 6E FC         [19]  422 	ld	l, -4 (ix)
+    000002C9 DD 66 FD         [19]  423 	ld	h, -3 (ix)
+    000002CC 19               [11]  424 	add	hl, de
+    000002CD DD 75 FA         [19]  425 	ld	-6 (ix), l
+    000002D0 DD 74 FB         [19]  426 	ld	-5 (ix), h
+    000002D3 DD 7E FE         [19]  427 	ld	a, -2 (ix)
+    000002D6 DD 77 FC         [19]  428 	ld	-4 (ix), a
+    000002D9 DD 7E FF         [19]  429 	ld	a, -1 (ix)
+    000002DC DD 77 FD         [19]  430 	ld	-3 (ix), a
+    000002DF DD 5E FC         [19]  431 	ld	e, -4 (ix)
+    000002E2 DD 56 FD         [19]  432 	ld	d, -3 (ix)
+    000002E5 DD 6E FA         [19]  433 	ld	l, -6 (ix)
+    000002E8 DD 66 FB         [19]  434 	ld	h, -5 (ix)
+    000002EB 19               [11]  435 	add	hl, de
+    000002EC DD 75 FE         [19]  436 	ld	-2 (ix), l
+    000002EF DD 74 FF         [19]  437 	ld	-1 (ix), h
+    000002F2 DD 6E F8         [19]  438 	ld	l, -8 (ix)
+    000002F5 DD 66 F9         [19]  439 	ld	h, -7 (ix)
+    000002F8 DD 7E FE         [19]  440 	ld	a, -2 (ix)
+    000002FB 77               [ 7]  441 	ld	(hl), a
+    000002FC 23               [ 6]  442 	inc	hl
+    000002FD DD 7E FF         [19]  443 	ld	a, -1 (ix)
+    00000300 77               [ 7]  444 	ld	(hl), a
+                                    445 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:315: chunk->Next = nextChunk->Next;
+    00000301 DD 7E F6         [19]  446 	ld	a, -10 (ix)
+    00000304 DD 77 FE         [19]  447 	ld	-2 (ix), a
+    00000307 DD 7E F7         [19]  448 	ld	a, -9 (ix)
+    0000030A DD 77 FF         [19]  449 	ld	-1 (ix), a
+    0000030D DD 6E FE         [19]  450 	ld	l, -2 (ix)
+    00000310 DD 66 FF         [19]  451 	ld	h, -1 (ix)
+    00000313 23               [ 6]  452 	inc	hl
+    00000314 23               [ 6]  453 	inc	hl
+    00000315 7E               [ 7]  454 	ld	a, (hl)
+    00000316 DD 77 FE         [19]  455 	ld	-2 (ix), a
+    00000319 23               [ 6]  456 	inc	hl
+    0000031A 7E               [ 7]  457 	ld	a, (hl)
+    0000031B DD 77 FF         [19]  458 	ld	-1 (ix), a
+    0000031E E1               [10]  459 	pop	hl
+    0000031F E5               [11]  460 	push	hl
+    00000320 DD 7E FE         [19]  461 	ld	a, -2 (ix)
+    00000323 77               [ 7]  462 	ld	(hl), a
+    00000324 23               [ 6]  463 	inc	hl
+    00000325 DD 7E FF         [19]  464 	ld	a, -1 (ix)
+    00000328 77               [ 7]  465 	ld	(hl), a
+    00000329                        466 00102$:
+                                    467 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:317: chunk = chunk->Next;
+    00000329 E1               [10]  468 	pop	hl
+    0000032A E5               [11]  469 	push	hl
+    0000032B 7E               [ 7]  470 	ld	a, (hl)
+    0000032C DD 77 FE         [19]  471 	ld	-2 (ix), a
+    0000032F 23               [ 6]  472 	inc	hl
+    00000330 7E               [ 7]  473 	ld	a, (hl)
+    00000331 DD 77 FF         [19]  474 	ld	-1 (ix), a
+    00000334 C3r6Cr02         [10]  475 	jp	00105$
+    00000337                        476 00108$:
+                                    477 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:319: }
+    00000337 DD F9            [10]  478 	ld	sp, ix
+    00000339 DD E1            [14]  479 	pop	ix
+    0000033B C9               [10]  480 	ret
+                                    481 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:323: void Mem_DynamicFree(void* ptr)
+                                    482 ;	---------------------------------
+                                    483 ; Function Mem_DynamicFree
+                                    484 ; ---------------------------------
+    0000033C                        485 _Mem_DynamicFree::
+                                    486 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:325: MemChunkHeader* chunk = (MemChunkHeader*)((u16)ptr - sizeof(MemChunkHeader));
+    0000033C 7D               [ 4]  487 	ld	a, l
+    0000033D C6 FC            [ 7]  488 	add	a, #0xfc
+    0000033F 6F               [ 4]  489 	ld	l, a
+    00000340 7C               [ 4]  490 	ld	a, h
+    00000341 CE FF            [ 7]  491 	adc	a, #0xff
+    00000343 67               [ 4]  492 	ld	h, a
+                                    493 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:326: chunk->Size |= MEM_CHUNK_FREE;
+    00000344 4E               [ 7]  494 	ld	c, (hl)
+    00000345 23               [ 6]  495 	inc	hl
+    00000346 46               [ 7]  496 	ld	b, (hl)
+    00000347 2B               [ 6]  497 	dec	hl
+    00000348 CB F8            [ 8]  498 	set	7, b
+    0000034A 71               [ 7]  499 	ld	(hl), c
+    0000034B 23               [ 6]  500 	inc	hl
+    0000034C 70               [ 7]  501 	ld	(hl), b
+                                    502 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:327: Mem_DynamicMerge();
+                                    503 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/memory.c:328: }
+    0000034D C3r56r02         [10]  504 	jp	_Mem_DynamicMerge
+                                    505 	.area _CODE
+                                    506 	.area _INITIALIZER
+    00000000                        507 __xinit__g_MemChunkRoot:
+    00000000 00 00                  508 	.dw #0x0000
+                                    509 	.area _CABS (ABS)

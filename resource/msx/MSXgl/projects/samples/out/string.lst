@@ -1,0 +1,1045 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.6.0 #16555 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module string
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _String_FromUInt8ZT
+                                     12 	.globl _String_FromUInt8
+                                     13 	.globl _String_FromUInt16ZT
+                                     14 	.globl _String_FromUInt16
+                                     15 	.globl _String_FormatVA
+                                     16 	.globl _String_Format
+                                     17 ;--------------------------------------------------------
+                                     18 ; special function registers
+                                     19 ;--------------------------------------------------------
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area _DATA
+                                     24 ;--------------------------------------------------------
+                                     25 ; ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area _INITIALIZED
+                                     28 ;--------------------------------------------------------
+                                     29 ; absolute ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _DABS (ABS)
+                                     32 	.area _DABS (ABS)
+                                     33 ;--------------------------------------------------------
+                                     34 ; global & static initialisations
+                                     35 ;--------------------------------------------------------
+                                     36 	.area _HOME
+                                     37 	.area _GSINIT
+                                     38 	.area _GSFINAL
+                                     39 	.area _GSINIT
+                                     40 ;--------------------------------------------------------
+                                     41 ; Home
+                                     42 ;--------------------------------------------------------
+                                     43 	.area _HOME
+                                     44 	.area _HOME
+                                     45 ;--------------------------------------------------------
+                                     46 ; code
+                                     47 ;--------------------------------------------------------
+                                     48 	.area _CODE
+                                     49 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:29: void String_FromUInt8ZT(u8 value, c8* string) __NAKED
+                                     50 ;	---------------------------------
+                                     51 ; Function String_FromUInt8ZT
+                                     52 ; ---------------------------------
+    00000000                         53 _String_FromUInt8ZT::
+                                     54 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:39: __endasm;
+    00000000 CDr06r00         [17]   55 	call _String_FromUInt8
+    00000003 AF               [ 4]   56 	xor a
+    00000004 12               [ 7]   57 	ld (de), a
+    00000005 C9               [10]   58 	ret
+                                     59 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:40: }
+                                     60 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:44: void String_FromUInt8(u8 value, c8* string) __NAKED
+                                     61 ;	---------------------------------
+                                     62 ; Function String_FromUInt8
+                                     63 ; ---------------------------------
+    00000006                         64 _String_FromUInt8::
+                                     65 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:70: __endasm;
+    00000006                         66 DispA:
+    00000006 0E 9C            [ 7]   67 	ld c, #-100
+    00000008 CDr12r00         [17]   68 	call Na1
+    0000000B 0E F6            [ 7]   69 	ld c, #-10
+    0000000D CDr12r00         [17]   70 	call Na1
+    00000010 0E FF            [ 7]   71 	ld c, #-1
+    00000012                         72 Na1:
+    00000012 06 2F            [ 7]   73 	ld b, #'0'-1
+    00000014                         74 Na2:
+    00000014 04               [ 4]   75 	inc b
+    00000015 81               [ 4]   76 	add a, c
+    00000016 38 FC            [12]   77 	jr c, Na2
+    00000018 91               [ 4]   78 	sub c
+    00000019 08               [ 4]   79 	ex af, af'		; '
+    0000001A 78               [ 4]   80 	ld a, b
+    0000001B 12               [ 7]   81 	ld (de), a
+    0000001C 13               [ 6]   82 	inc de
+    0000001D 08               [ 4]   83 	ex af, af'		; '
+    0000001E C9               [10]   84 	ret
+                                     85 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:72: }
+                                     86 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:79: void String_FromUInt16ZT(u16 value, c8* string) __NAKED
+                                     87 ;	---------------------------------
+                                     88 ; Function String_FromUInt16ZT
+                                     89 ; ---------------------------------
+    0000001F                         90 _String_FromUInt16ZT::
+                                     91 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:89: __endasm;
+    0000001F CDr25r00         [17]   92 	call _String_FromUInt16
+    00000022 AF               [ 4]   93 	xor a
+    00000023 12               [ 7]   94 	ld (de), a
+    00000024 C9               [10]   95 	ret
+                                     96 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:90: }
+                                     97 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:94: void String_FromUInt16(u16 value, c8* string) __NAKED
+                                     98 ;	---------------------------------
+                                     99 ; Function String_FromUInt16
+                                    100 ; ---------------------------------
+    00000025                        101 _String_FromUInt16::
+                                    102 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:122: __endasm;
+    00000025                        103 Num2Dec:
+    00000025 01 F0 D8         [10]  104 	ld bc, #-10000
+    00000028 CDr3Dr00         [17]  105 	call Num1
+    0000002B 01 18 FC         [10]  106 	ld bc, #-1000
+    0000002E CDr3Dr00         [17]  107 	call Num1
+    00000031 01 9C FF         [10]  108 	ld bc, #-100
+    00000034 CDr3Dr00         [17]  109 	call Num1
+    00000037 0E F6            [ 7]  110 	ld c, #-10
+    00000039 CDr3Dr00         [17]  111 	call Num1
+    0000003C 48               [ 4]  112 	ld c, b
+    0000003D                        113 Num1:
+    0000003D 3E 2F            [ 7]  114 	ld a, #'0'-1
+    0000003F                        115 Num2:
+    0000003F 3C               [ 4]  116 	inc a
+    00000040 09               [11]  117 	add hl, bc
+    00000041 38 FC            [12]  118 	jr c, Num2
+    00000043 ED 42            [15]  119 	sbc hl, bc
+    00000045 12               [ 7]  120 	ld (de), a
+    00000046 13               [ 6]  121 	inc de
+    00000047 C9               [10]  122 	ret
+                                    123 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:123: }
+                                    124 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:131: void String_FormatVA(c8* dest, const c8* format, va_list args)
+                                    125 ;	---------------------------------
+                                    126 ; Function String_FormatVA
+                                    127 ; ---------------------------------
+    00000048                        128 _String_FormatVA::
+    00000048 DD E5            [15]  129 	push	ix
+    0000004A DD 21 00 00      [14]  130 	ld	ix,	#0
+    0000004E DD 39            [15]  131 	add	ix, sp
+    00000050 FD 21 DF FF      [14]  132 	ld	iy, #-33
+    00000054 FD 39            [15]  133 	add	iy, sp
+    00000056 FD F9            [10]  134 	ld	sp, iy
+    00000058 DD 75 F8         [19]  135 	ld	-8 (ix), l
+    0000005B DD 74 F9         [19]  136 	ld	-7 (ix), h
+    0000005E DD 73 FA         [19]  137 	ld	-6 (ix), e
+    00000061 DD 72 FB         [19]  138 	ld	-5 (ix), d
+                                    139 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:135: while (*ptr != 0)
+    00000064                        140 00166$:
+    00000064 DD 6E FA         [19]  141 	ld	l, -6 (ix)
+    00000067 DD 66 FB         [19]  142 	ld	h, -5 (ix)
+    0000006A 7E               [ 7]  143 	ld	a, (hl)
+    0000006B DD 77 FF         [19]  144 	ld	-1 (ix), a
+    0000006E B7               [ 4]  145 	or	a, a
+    0000006F CAr00r07         [10]  146 	jp	z, 00168$
+                                    147 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:137: if (*ptr == '%')
+    00000072 DD 7E FF         [19]  148 	ld	a, -1 (ix)
+    00000075 D6 25            [ 7]  149 	sub	a, #0x25
+    00000077 C2rCAr06         [10]  150 	jp	nz, 00164$
+                                    151 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:139: ptr++;
+    0000007A DD 4E FA         [19]  152 	ld	c, -6 (ix)
+    0000007D DD 46 FB         [19]  153 	ld	b, -5 (ix)
+    00000080 03               [ 6]  154 	inc	bc
+                                    155 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:142: u8 pad = STRINT_PAD_NONE;
+    00000081 DD 36 F3 00      [19]  156 	ld	-13 (ix), #0x00
+                                    157 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:143: u8 len = 0;
+    00000085 DD 36 F4 00      [19]  158 	ld	-12 (ix), #0x00
+                                    159 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:144: if (*ptr == '0')
+    00000089 0A               [ 7]  160 	ld	a, (bc)
+    0000008A FE 30            [ 7]  161 	cp	a, #0x30
+    0000008C 20 08            [12]  162 	jr	nz, 00105$
+                                    163 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:146: pad = STRINT_PAD_ZERO;
+    0000008E DD 36 F3 01      [19]  164 	ld	-13 (ix), #0x01
+                                    165 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:147: ptr++;
+    00000092 03               [ 6]  166 	inc	bc
+    00000093 C3rA8r00         [10]  167 	jp	00236$
+    00000096                        168 00105$:
+                                    169 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:149: else if ((*ptr >= '1') && (*ptr <= '9'))
+    00000096 FE 31            [ 7]  170 	cp	a, #0x31
+    00000098 38 0E            [12]  171 	jr	c, 00236$
+    0000009A FE 3A            [ 7]  172 	cp	a, #0x3a
+    0000009C 30 0A            [12]  173 	jr	nc, 00236$
+                                    174 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:151: pad = STRINT_PAD_SPACE;
+    0000009E DD 36 F3 02      [19]  175 	ld	-13 (ix), #0x02
+                                    176 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:152: len = *ptr - '0';
+    000000A2 C6 D0            [ 7]  177 	add	a, #0xd0
+    000000A4 DD 77 F4         [19]  178 	ld	-12 (ix), a
+                                    179 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:153: ptr++;
+    000000A7 03               [ 6]  180 	inc	bc
+                                    181 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:155: while ((*ptr >= '0') && (*ptr <= '9'))
+    000000A8                        182 00236$:
+    000000A8 DD 71 FE         [19]  183 	ld	-2 (ix), c
+    000000AB DD 70 FF         [19]  184 	ld	-1 (ix), b
+    000000AE                        185 00108$:
+    000000AE DD 6E FE         [19]  186 	ld	l, -2 (ix)
+    000000B1 DD 66 FF         [19]  187 	ld	h, -1 (ix)
+    000000B4 7E               [ 7]  188 	ld	a, (hl)
+    000000B5 DD 77 FD         [19]  189 	ld	-3 (ix), a
+    000000B8 D6 30            [ 7]  190 	sub	a, #0x30
+    000000BA 38 2E            [12]  191 	jr	c, 00275$
+    000000BC 3E 39            [ 7]  192 	ld	a, #0x39
+    000000BE DD 96 FD         [19]  193 	sub	a, -3 (ix)
+    000000C1 38 27            [12]  194 	jr	c, 00275$
+                                    195 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:157: len *= 10;
+    000000C3 DD 7E F4         [19]  196 	ld	a, -12 (ix)
+    000000C6 4F               [ 4]  197 	ld	c, a
+    000000C7 87               [ 4]  198 	add	a, a
+    000000C8 87               [ 4]  199 	add	a, a
+    000000C9 81               [ 4]  200 	add	a, c
+    000000CA 87               [ 4]  201 	add	a, a
+    000000CB DD 77 FC         [19]  202 	ld	-4 (ix), a
+                                    203 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:158: len += *ptr - '0';
+    000000CE DD 7E FD         [19]  204 	ld	a, -3 (ix)
+    000000D1 C6 D0            [ 7]  205 	add	a, #0xd0
+    000000D3 DD 77 FD         [19]  206 	ld	-3 (ix), a
+    000000D6 DD 7E FC         [19]  207 	ld	a, -4 (ix)
+    000000D9 DD 86 FD         [19]  208 	add	a, -3 (ix)
+    000000DC DD 77 F4         [19]  209 	ld	-12 (ix), a
+                                    210 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:159: ptr++;
+    000000DF DD 34 FE         [23]  211 	inc	-2 (ix)
+    000000E2 20 CA            [12]  212 	jr	nz, 00108$
+    000000E4 DD 34 FF         [23]  213 	inc	-1 (ix)
+    000000E7 C3rAEr00         [10]  214 	jp	00108$
+    000000EA                        215 00275$:
+    000000EA DD 7E FE         [19]  216 	ld	a, -2 (ix)
+    000000ED DD 77 FA         [19]  217 	ld	-6 (ix), a
+    000000F0 DD 7E FF         [19]  218 	ld	a, -1 (ix)
+    000000F3 DD 77 FB         [19]  219 	ld	-5 (ix), a
+                                    220 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:163: switch (*ptr)
+    000000F6 DD 7E FD         [19]  221 	ld	a, -3 (ix)
+    000000F9 D6 25            [ 7]  222 	sub	a, #0x25
+    000000FB 28 4F            [12]  223 	jr	z, 00111$
+    000000FD DD 7E FD         [19]  224 	ld	a, -3 (ix)
+    00000100 D6 44            [ 7]  225 	sub	a, #0x44
+    00000102 28 5C            [12]  226 	jr	z, 00115$
+    00000104 DD 7E FD         [19]  227 	ld	a, -3 (ix)
+    00000107 D6 49            [ 7]  228 	sub	a, #0x49
+    00000109 28 55            [12]  229 	jr	z, 00115$
+    0000010B DD 7E FD         [19]  230 	ld	a, -3 (ix)
+    0000010E D6 55            [ 7]  231 	sub	a, #0x55
+    00000110 CArF4r06         [10]  232 	jp	z, 00165$
+    00000113 DD 7E FD         [19]  233 	ld	a, -3 (ix)
+    00000116 D6 58            [ 7]  234 	sub	a, #0x58
+    00000118 CAr02r03         [10]  235 	jp	z, 00133$
+    0000011B DD 7E FD         [19]  236 	ld	a, -3 (ix)
+    0000011E D6 63            [ 7]  237 	sub	a, #0x63
+    00000120 CAr71r06         [10]  238 	jp	z, 00159$
+    00000123 DD 7E FD         [19]  239 	ld	a, -3 (ix)
+    00000126 D6 64            [ 7]  240 	sub	a, #0x64
+    00000128 28 36            [12]  241 	jr	z, 00115$
+    0000012A DD 7E FD         [19]  242 	ld	a, -3 (ix)
+    0000012D D6 69            [ 7]  243 	sub	a, #0x69
+    0000012F 28 2F            [12]  244 	jr	z, 00115$
+    00000131 DD 7E FD         [19]  245 	ld	a, -3 (ix)
+    00000134 D6 73            [ 7]  246 	sub	a, #0x73
+    00000136 CAr94r06         [10]  247 	jp	z, 00160$
+    00000139 DD 7E FD         [19]  248 	ld	a, -3 (ix)
+    0000013C D6 75            [ 7]  249 	sub	a, #0x75
+    0000013E CArF4r06         [10]  250 	jp	z, 00165$
+    00000141 DD 7E FD         [19]  251 	ld	a, -3 (ix)
+    00000144 D6 78            [ 7]  252 	sub	a, #0x78
+    00000146 CAr54r05         [10]  253 	jp	z, 00150$
+    00000149 C3rF4r06         [10]  254 	jp	00165$
+                                    255 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:165: case '%':
+    0000014C                        256 00111$:
+                                    257 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:166: *dest++ = '%';
+    0000014C DD 6E F8         [19]  258 	ld	l, -8 (ix)
+    0000014F DD 66 F9         [19]  259 	ld	h, -7 (ix)
+    00000152 36 25            [10]  260 	ld	(hl), #0x25
+    00000154 DD 34 F8         [23]  261 	inc	-8 (ix)
+    00000157 C2rF4r06         [10]  262 	jp	nz, 00165$
+    0000015A DD 34 F9         [23]  263 	inc	-7 (ix)
+                                    264 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:167: break;
+    0000015D C3rF4r06         [10]  265 	jp	00165$
+                                    266 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:175: case 'd':
+    00000160                        267 00115$:
+                                    268 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:179: if ((*ptr == 'I') || (*ptr == 'D'))
+    00000160 DD 6E FA         [19]  269 	ld	l, -6 (ix)
+    00000163 DD 66 FB         [19]  270 	ld	h, -5 (ix)
+    00000166 7E               [ 7]  271 	ld	a, (hl)
+    00000167 FE 49            [ 7]  272 	cp	a, #0x49
+    00000169 28 04            [12]  273 	jr	z, 00116$
+    0000016B D6 44            [ 7]  274 	sub	a, #0x44
+    0000016D 20 22            [12]  275 	jr	nz, 00117$
+    0000016F                        276 00116$:
+                                    277 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:180: val = (i32)va_arg(args, i32);
+    0000016F DD 6E 04         [19]  278 	ld	l, 4 (ix)
+    00000172 DD 66 05         [19]  279 	ld	h, 5 (ix)
+    00000175 11 04 00         [10]  280 	ld	de, #0x0004
+    00000178 19               [11]  281 	add	hl, de
+    00000179 DD 75 04         [19]  282 	ld	4 (ix), l
+    0000017C DD 74 05         [19]  283 	ld	5 (ix), h
+    0000017F 11 FC FF         [10]  284 	ld	de, #0xfffc
+    00000182 19               [11]  285 	add	hl, de
+    00000183 EB               [ 4]  286 	ex	de, hl
+    00000184 21 1D 00         [10]  287 	ld	hl, #29
+    00000187 39               [11]  288 	add	hl, sp
+    00000188 EB               [ 4]  289 	ex	de, hl
+    00000189 01 04 00         [10]  290 	ld	bc, #0x0004
+    0000018C ED B0            [21]  291 	ldir
+    0000018E C3rB2r01         [10]  292 	jp	00118$
+    00000191                        293 00117$:
+                                    294 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:182: val = (i32)va_arg(args, i16);
+    00000191 DD 6E 04         [19]  295 	ld	l, 4 (ix)
+    00000194 DD 66 05         [19]  296 	ld	h, 5 (ix)
+    00000197 23               [ 6]  297 	inc	hl
+    00000198 23               [ 6]  298 	inc	hl
+    00000199 DD 75 04         [19]  299 	ld	4 (ix), l
+    0000019C DD 74 05         [19]  300 	ld	5 (ix), h
+    0000019F 2B               [ 6]  301 	dec	hl
+    000001A0 2B               [ 6]  302 	dec	hl
+    000001A1 4E               [ 7]  303 	ld	c, (hl)
+    000001A2 23               [ 6]  304 	inc	hl
+    000001A3 7E               [ 7]  305 	ld	a, (hl)
+    000001A4 DD 71 FC         [19]  306 	ld	-4 (ix), c
+    000001A7 DD 77 FD         [19]  307 	ld	-3 (ix), a
+    000001AA 07               [ 4]  308 	rlca
+    000001AB 9F               [ 4]  309 	sbc	a, a
+    000001AC DD 77 FE         [19]  310 	ld	-2 (ix), a
+    000001AF DD 77 FF         [19]  311 	ld	-1 (ix), a
+    000001B2                        312 00118$:
+                                    313 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:187: if (val < 0)
+    000001B2 DD CB FF 7E      [20]  314 	bit	7, -1 (ix)
+    000001B6 28 2E            [12]  315 	jr	z, 00121$
+                                    316 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:189: *dest++ = '-';
+    000001B8 DD 6E F8         [19]  317 	ld	l, -8 (ix)
+    000001BB DD 66 F9         [19]  318 	ld	h, -7 (ix)
+    000001BE 36 2D            [10]  319 	ld	(hl), #0x2d
+    000001C0 DD 34 F8         [23]  320 	inc	-8 (ix)
+    000001C3 20 03            [12]  321 	jr	nz, 00577$
+    000001C5 DD 34 F9         [23]  322 	inc	-7 (ix)
+    000001C8                        323 00577$:
+                                    324 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:190: val = -val;
+    000001C8 AF               [ 4]  325 	xor	a, a
+    000001C9 DD 96 FC         [19]  326 	sub	a, -4 (ix)
+    000001CC DD 77 FC         [19]  327 	ld	-4 (ix), a
+    000001CF 3E 00            [ 7]  328 	ld	a, #0x00
+    000001D1 DD 9E FD         [19]  329 	sbc	a, -3 (ix)
+    000001D4 DD 77 FD         [19]  330 	ld	-3 (ix), a
+    000001D7 3E 00            [ 7]  331 	ld	a, #0x00
+    000001D9 DD 9E FE         [19]  332 	sbc	a, -2 (ix)
+    000001DC DD 77 FE         [19]  333 	ld	-2 (ix), a
+    000001DF 9F               [ 4]  334 	sbc	a, a
+    000001E0 DD 96 FF         [19]  335 	sub	a, -1 (ix)
+    000001E3 DD 77 FF         [19]  336 	ld	-1 (ix), a
+    000001E6                        337 00121$:
+                                    338 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:193: c8* ptr = str;
+    000001E6 21 04 00         [10]  339 	ld	hl, #4
+    000001E9 39               [11]  340 	add	hl, sp
+                                    341 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:194: *ptr = 0;
+    000001EA 36 00            [10]  342 	ld	(hl), #0x00
+                                    343 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:196: while (val >= 10)
+    000001EC EB               [ 4]  344 	ex	de, hl
+    000001ED 0E 01            [ 7]  345 	ld	c, #0x01
+    000001EF                        346 00122$:
+                                    347 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:198: *++ptr = '0' + (val % 10);
+    000001EF 13               [ 6]  348 	inc	de
+    000001F0 DD 73 F6         [19]  349 	ld	-10 (ix), e
+    000001F3 DD 72 F7         [19]  350 	ld	-9 (ix), d
+                                    351 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:196: while (val >= 10)
+    000001F6 DD 7E FC         [19]  352 	ld	a, -4 (ix)
+    000001F9 D6 0A            [ 7]  353 	sub	a, #0x0a
+    000001FB DD 7E FD         [19]  354 	ld	a, -3 (ix)
+    000001FE DE 00            [ 7]  355 	sbc	a, #0x00
+    00000200 DD 7E FE         [19]  356 	ld	a, -2 (ix)
+    00000203 DE 00            [ 7]  357 	sbc	a, #0x00
+    00000205 DD 7E FF         [19]  358 	ld	a, -1 (ix)
+    00000208 17               [ 4]  359 	rla
+    00000209 3F               [ 4]  360 	ccf
+    0000020A 1F               [ 4]  361 	rra
+    0000020B DE 80            [ 7]  362 	sbc	a, #0x80
+    0000020D 38 5C            [12]  363 	jr	c, 00276$
+                                    364 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:198: *++ptr = '0' + (val % 10);
+    0000020F DD 5E F6         [19]  365 	ld	e, -10 (ix)
+    00000212 DD 56 F7         [19]  366 	ld	d, -9 (ix)
+    00000215 C5               [11]  367 	push	bc
+    00000216 D5               [11]  368 	push	de
+    00000217 21 00 00         [10]  369 	ld	hl, #0x0000
+    0000021A E5               [11]  370 	push	hl
+    0000021B 2E 0A            [ 7]  371 	ld	l, #0x0a
+    0000021D E5               [11]  372 	push	hl
+    0000021E DD 5E FC         [19]  373 	ld	e, -4 (ix)
+    00000221 DD 56 FD         [19]  374 	ld	d, -3 (ix)
+    00000224 DD 6E FE         [19]  375 	ld	l, -2 (ix)
+    00000227 DD 66 FF         [19]  376 	ld	h, -1 (ix)
+    0000022A CDr00r00         [17]  377 	call	__modslong
+    0000022D F1               [10]  378 	pop	af
+    0000022E F1               [10]  379 	pop	af
+    0000022F E5               [11]  380 	push	hl
+    00000230 FD E1            [14]  381 	pop	iy
+    00000232 EB               [ 4]  382 	ex	de, hl
+    00000233 D1               [10]  383 	pop	de
+    00000234 C1               [10]  384 	pop	bc
+    00000235 7D               [ 4]  385 	ld	a, l
+    00000236 C6 30            [ 7]  386 	add	a, #0x30
+    00000238 DD 6E F6         [19]  387 	ld	l, -10 (ix)
+    0000023B DD 66 F7         [19]  388 	ld	h, -9 (ix)
+    0000023E 77               [ 7]  389 	ld	(hl), a
+                                    390 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:199: val /= 10;
+    0000023F C5               [11]  391 	push	bc
+    00000240 D5               [11]  392 	push	de
+    00000241 21 00 00         [10]  393 	ld	hl, #0x0000
+    00000244 E5               [11]  394 	push	hl
+    00000245 2E 0A            [ 7]  395 	ld	l, #0x0a
+    00000247 E5               [11]  396 	push	hl
+    00000248 DD 5E FC         [19]  397 	ld	e, -4 (ix)
+    0000024B DD 56 FD         [19]  398 	ld	d, -3 (ix)
+    0000024E DD 6E FE         [19]  399 	ld	l, -2 (ix)
+    00000251 DD 66 FF         [19]  400 	ld	h, -1 (ix)
+                                    401 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:200: digit++;
+    00000254 CDr00r00         [17]  402 	call	__divslong
+    00000257 F1               [10]  403 	pop	af
+    00000258 F1               [10]  404 	pop	af
+    00000259 DD 73 FC         [19]  405 	ld	-4 (ix), e
+    0000025C DD 72 FD         [19]  406 	ld	-3 (ix), d
+    0000025F DD 75 FE         [19]  407 	ld	-2 (ix), l
+    00000262 DD 74 FF         [19]  408 	ld	-1 (ix), h
+    00000265 D1               [10]  409 	pop	de
+    00000266 C1               [10]  410 	pop	bc
+    00000267 0C               [ 4]  411 	inc	c
+    00000268 C3rEFr01         [10]  412 	jp	00122$
+    0000026B                        413 00276$:
+    0000026B DD 71 F5         [19]  414 	ld	-11 (ix), c
+                                    415 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:202: *++ptr = '0' + val;
+    0000026E DD 7E FC         [19]  416 	ld	a, -4 (ix)
+    00000271 C6 30            [ 7]  417 	add	a, #0x30
+    00000273 DD 6E F6         [19]  418 	ld	l, -10 (ix)
+    00000276 DD 66 F7         [19]  419 	ld	h, -9 (ix)
+    00000279 77               [ 7]  420 	ld	(hl), a
+                                    421 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:204: if (len > digit)
+    0000027A 79               [ 4]  422 	ld	a, c
+    0000027B DD 96 F4         [19]  423 	sub	a, -12 (ix)
+    0000027E 30 58            [12]  424 	jr	nc, 00257$
+                                    425 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:206: c8 padChr = (pad == STRINT_PAD_ZERO) ? '0' : ' ';
+    00000280 DD 7E F3         [19]  426 	ld	a, -13 (ix)
+    00000283 3D               [ 4]  427 	dec	a
+    00000284 3E 30            [ 7]  428 	ld	a, #0x30
+    00000286 28 02            [12]  429 	jr	z, 00182$
+    00000288 3E 20            [ 7]  430 	ld	a, #0x20
+    0000028A                        431 00182$:
+    0000028A DD 77 FD         [19]  432 	ld	-3 (ix), a
+                                    433 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:207: for (u8 i = 0; i < len - digit; ++i)
+    0000028D DD 7E F8         [19]  434 	ld	a, -8 (ix)
+    00000290 DD 77 FE         [19]  435 	ld	-2 (ix), a
+    00000293 DD 7E F9         [19]  436 	ld	a, -7 (ix)
+    00000296 DD 77 FF         [19]  437 	ld	-1 (ix), a
+    00000299 0E 00            [ 7]  438 	ld	c, #0x00
+    0000029B                        439 00174$:
+    0000029B DD 6E F4         [19]  440 	ld	l, -12 (ix)
+    0000029E 26 00            [ 7]  441 	ld	h, #0x00
+    000002A0 DD 5E F5         [19]  442 	ld	e, -11 (ix)
+    000002A3 16 00            [ 7]  443 	ld	d, #0x00
+    000002A5 BF               [ 4]  444 	cp	a, a
+    000002A6 ED 52            [15]  445 	sbc	hl, de
+    000002A8 79               [ 4]  446 	ld	a, c
+    000002A9 1E 00            [ 7]  447 	ld	e, #0x00
+    000002AB 95               [ 4]  448 	sub	a, l
+    000002AC 7B               [ 4]  449 	ld	a, e
+    000002AD 9C               [ 4]  450 	sbc	a, h
+    000002AE E2rB3r02         [10]  451 	jp	po, 00580$
+    000002B1 EE 80            [ 7]  452 	xor	a, #0x80
+    000002B3                        453 00580$:
+    000002B3 F2rCCr02         [10]  454 	jp	p, 00277$
+                                    455 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:208: *dest++ = padChr;
+    000002B6 DD 6E FE         [19]  456 	ld	l, -2 (ix)
+    000002B9 DD 66 FF         [19]  457 	ld	h, -1 (ix)
+    000002BC DD 7E FD         [19]  458 	ld	a, -3 (ix)
+    000002BF 77               [ 7]  459 	ld	(hl), a
+    000002C0 DD 34 FE         [23]  460 	inc	-2 (ix)
+    000002C3 20 03            [12]  461 	jr	nz, 00581$
+    000002C5 DD 34 FF         [23]  462 	inc	-1 (ix)
+    000002C8                        463 00581$:
+                                    464 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:207: for (u8 i = 0; i < len - digit; ++i)
+    000002C8 0C               [ 4]  465 	inc	c
+    000002C9 C3r9Br02         [10]  466 	jp	00174$
+                                    467 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:211: while (*ptr != 0)
+    000002CC                        468 00277$:
+    000002CC DD 7E FE         [19]  469 	ld	a, -2 (ix)
+    000002CF DD 77 F8         [19]  470 	ld	-8 (ix), a
+    000002D2 DD 7E FF         [19]  471 	ld	a, -1 (ix)
+    000002D5 DD 77 F9         [19]  472 	ld	-7 (ix), a
+    000002D8                        473 00257$:
+    000002D8 DD 4E F6         [19]  474 	ld	c, -10 (ix)
+    000002DB DD 46 F7         [19]  475 	ld	b, -9 (ix)
+    000002DE DD 7E F8         [19]  476 	ld	a, -8 (ix)
+    000002E1 DD 77 FE         [19]  477 	ld	-2 (ix), a
+    000002E4 DD 7E F9         [19]  478 	ld	a, -7 (ix)
+    000002E7 DD 77 FF         [19]  479 	ld	-1 (ix), a
+    000002EA                        480 00128$:
+    000002EA 0A               [ 7]  481 	ld	a, (bc)
+    000002EB B7               [ 4]  482 	or	a, a
+    000002EC CArDFr06         [10]  483 	jp	z, 00278$
+                                    484 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:212: *dest++ = *ptr--;
+    000002EF 0B               [ 6]  485 	dec	bc
+    000002F0 DD 6E FE         [19]  486 	ld	l, -2 (ix)
+    000002F3 DD 66 FF         [19]  487 	ld	h, -1 (ix)
+    000002F6 77               [ 7]  488 	ld	(hl), a
+    000002F7 DD 34 FE         [23]  489 	inc	-2 (ix)
+    000002FA 20 EE            [12]  490 	jr	nz, 00128$
+    000002FC DD 34 FF         [23]  491 	inc	-1 (ix)
+    000002FF C3rEAr02         [10]  492 	jp	00128$
+                                    493 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:225: case 'X':
+    00000302                        494 00133$:
+                                    495 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:227: if (len == 0)
+    00000302 DD 7E F4         [19]  496 	ld	a, -12 (ix)
+    00000305 B7               [ 4]  497 	or	a, a
+    00000306 20 04            [12]  498 	jr	nz, 00135$
+                                    499 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:228: len = 8;
+    00000308 DD 36 F4 08      [19]  500 	ld	-12 (ix), #0x08
+    0000030C                        501 00135$:
+                                    502 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:229: u32 val = (u32)va_arg(args, u32);
+    0000030C 11 04 00         [10]  503 	ld	de, #0x0004
+    0000030F DD 6E 04         [19]  504 	ld	l, 4 (ix)
+    00000312 DD 66 05         [19]  505 	ld	h, 5 (ix)
+    00000315 19               [11]  506 	add	hl, de
+    00000316 DD 75 FC         [19]  507 	ld	-4 (ix), l
+    00000319 DD 74 FD         [19]  508 	ld	-3 (ix), h
+    0000031C DD 7E FC         [19]  509 	ld	a, -4 (ix)
+    0000031F DD 77 04         [19]  510 	ld	4 (ix), a
+    00000322 DD 7E FD         [19]  511 	ld	a, -3 (ix)
+    00000325 DD 77 05         [19]  512 	ld	5 (ix), a
+    00000328 DD 7E FC         [19]  513 	ld	a, -4 (ix)
+    0000032B C6 FC            [ 7]  514 	add	a, #0xfc
+    0000032D DD 77 FE         [19]  515 	ld	-2 (ix), a
+    00000330 DD 7E FD         [19]  516 	ld	a, -3 (ix)
+    00000333 CE FF            [ 7]  517 	adc	a, #0xff
+    00000335 DD 77 FF         [19]  518 	ld	-1 (ix), a
+    00000338 DD 5E FE         [19]  519 	ld	e, -2 (ix)
+    0000033B DD 56 FF         [19]  520 	ld	d, -1 (ix)
+    0000033E 21 00 00         [10]  521 	ld	hl, #0
+    00000341 39               [11]  522 	add	hl, sp
+    00000342 EB               [ 4]  523 	ex	de, hl
+    00000343 01 04 00         [10]  524 	ld	bc, #0x0004
+    00000346 ED B0            [21]  525 	ldir
+                                    526 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:231: if (len > 7)
+    00000348 3E 07            [ 7]  527 	ld	a, #0x07
+    0000034A DD 96 F4         [19]  528 	sub	a, -12 (ix)
+    0000034D 30 42            [12]  529 	jr	nc, 00137$
+                                    530 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:232: *dest++ = g_HexChar[(val >> 28) & 0xF];
+    0000034F DD 7E E2         [19]  531 	ld	a, -30 (ix)
+    00000352 DD 77 FC         [19]  532 	ld	-4 (ix), a
+    00000355 AF               [ 4]  533 	xor	a, a
+    00000356 DD 77 FD         [19]  534 	ld	-3 (ix), a
+    00000359 DD 77 FE         [19]  535 	ld	-2 (ix), a
+    0000035C DD 77 FF         [19]  536 	ld	-1 (ix), a
+    0000035F 06 04            [ 7]  537 	ld	b, #0x04
+    00000361                        538 00583$:
+    00000361 DD CB FC 3E      [23]  539 	srl	-4 (ix)
+    00000365 10 FA            [13]  540 	djnz	00583$
+    00000367 DD 7E FC         [19]  541 	ld	a, -4 (ix)
+    0000036A DD 77 FF         [19]  542 	ld	-1 (ix), a
+    0000036D E6 0F            [ 7]  543 	and	a, #0x0f
+    0000036F DD 77 FF         [19]  544 	ld	-1 (ix), a
+    00000372 11r0Fr07         [10]  545 	ld	de, #_g_HexChar
+    00000375 DD 6E FF         [19]  546 	ld	l, -1 (ix)
+    00000378 26 00            [ 7]  547 	ld	h, #0x00
+    0000037A 19               [11]  548 	add	hl, de
+    0000037B DD 75 FE         [19]  549 	ld	-2 (ix), l
+    0000037E DD 74 FF         [19]  550 	ld	-1 (ix), h
+    00000381 7E               [ 7]  551 	ld	a, (hl)
+    00000382 DD 6E F8         [19]  552 	ld	l, -8 (ix)
+    00000385 DD 66 F9         [19]  553 	ld	h, -7 (ix)
+    00000388 77               [ 7]  554 	ld	(hl), a
+    00000389 DD 34 F8         [23]  555 	inc	-8 (ix)
+    0000038C 20 03            [12]  556 	jr	nz, 00585$
+    0000038E DD 34 F9         [23]  557 	inc	-7 (ix)
+    00000391                        558 00585$:
+    00000391                        559 00137$:
+                                    560 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:233: if (len > 6)
+    00000391 3E 06            [ 7]  561 	ld	a, #0x06
+    00000393 DD 96 F4         [19]  562 	sub	a, -12 (ix)
+    00000396 30 2A            [12]  563 	jr	nc, 00139$
+                                    564 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:234: *dest++ = g_HexChar[(val >> 24) & 0xF];
+    00000398 DD 7E E2         [19]  565 	ld	a, -30 (ix)
+    0000039B DD 77 FF         [19]  566 	ld	-1 (ix), a
+    0000039E E6 0F            [ 7]  567 	and	a, #0x0f
+    000003A0 DD 77 FF         [19]  568 	ld	-1 (ix), a
+    000003A3 11r0Fr07         [10]  569 	ld	de, #_g_HexChar
+    000003A6 DD 6E FF         [19]  570 	ld	l, -1 (ix)
+    000003A9 26 00            [ 7]  571 	ld	h, #0x00
+    000003AB 19               [11]  572 	add	hl, de
+    000003AC DD 75 FE         [19]  573 	ld	-2 (ix), l
+    000003AF DD 74 FF         [19]  574 	ld	-1 (ix), h
+    000003B2 7E               [ 7]  575 	ld	a, (hl)
+    000003B3 DD 6E F8         [19]  576 	ld	l, -8 (ix)
+    000003B6 DD 66 F9         [19]  577 	ld	h, -7 (ix)
+    000003B9 77               [ 7]  578 	ld	(hl), a
+    000003BA DD 34 F8         [23]  579 	inc	-8 (ix)
+    000003BD 20 03            [12]  580 	jr	nz, 00586$
+    000003BF DD 34 F9         [23]  581 	inc	-7 (ix)
+    000003C2                        582 00586$:
+    000003C2                        583 00139$:
+                                    584 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:235: if (len > 5)
+    000003C2 3E 05            [ 7]  585 	ld	a, #0x05
+    000003C4 DD 96 F4         [19]  586 	sub	a, -12 (ix)
+    000003C7 30 56            [12]  587 	jr	nc, 00141$
+                                    588 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:236: *dest++ = g_HexChar[(val >> 20) & 0xF];
+    000003C9 DD 7E E1         [19]  589 	ld	a, -31 (ix)
+    000003CC DD 77 FC         [19]  590 	ld	-4 (ix), a
+    000003CF DD 7E E2         [19]  591 	ld	a, -30 (ix)
+    000003D2 DD 77 FD         [19]  592 	ld	-3 (ix), a
+    000003D5 AF               [ 4]  593 	xor	a, a
+    000003D6 DD 77 FE         [19]  594 	ld	-2 (ix), a
+    000003D9 DD 77 FF         [19]  595 	ld	-1 (ix), a
+    000003DC 06 04            [ 7]  596 	ld	b, #0x04
+    000003DE                        597 00587$:
+    000003DE DD CB FD 3E      [23]  598 	srl	-3 (ix)
+    000003E2 DD CB FC 1E      [23]  599 	rr	-4 (ix)
+    000003E6 10 F6            [13]  600 	djnz	00587$
+    000003E8 DD 7E FC         [19]  601 	ld	a, -4 (ix)
+    000003EB DD 77 FE         [19]  602 	ld	-2 (ix), a
+    000003EE DD 7E FD         [19]  603 	ld	a, -3 (ix)
+    000003F1 DD 77 FF         [19]  604 	ld	-1 (ix), a
+    000003F4 DD 7E FE         [19]  605 	ld	a, -2 (ix)
+    000003F7 E6 0F            [ 7]  606 	and	a, #0x0f
+    000003F9 DD 77 FC         [19]  607 	ld	-4 (ix), a
+    000003FC DD 36 FD 00      [19]  608 	ld	-3 (ix), #0x00
+    00000400 11r0Fr07         [10]  609 	ld	de, #_g_HexChar
+    00000403 DD 6E FC         [19]  610 	ld	l, -4 (ix)
+    00000406 26 00            [ 7]  611 	ld	h, #0x00
+    00000408 19               [11]  612 	add	hl, de
+    00000409 DD 75 FE         [19]  613 	ld	-2 (ix), l
+    0000040C DD 74 FF         [19]  614 	ld	-1 (ix), h
+    0000040F 7E               [ 7]  615 	ld	a, (hl)
+    00000410 DD 6E F8         [19]  616 	ld	l, -8 (ix)
+    00000413 DD 66 F9         [19]  617 	ld	h, -7 (ix)
+    00000416 77               [ 7]  618 	ld	(hl), a
+    00000417 DD 34 F8         [23]  619 	inc	-8 (ix)
+    0000041A 20 03            [12]  620 	jr	nz, 00589$
+    0000041C DD 34 F9         [23]  621 	inc	-7 (ix)
+    0000041F                        622 00589$:
+    0000041F                        623 00141$:
+                                    624 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:237: if (len > 4)
+    0000041F 3E 04            [ 7]  625 	ld	a, #0x04
+    00000421 DD 96 F4         [19]  626 	sub	a, -12 (ix)
+    00000424 30 2A            [12]  627 	jr	nc, 00143$
+                                    628 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:238: *dest++ = g_HexChar[(val >> 16) & 0xF];
+    00000426 DD 7E E1         [19]  629 	ld	a, -31 (ix)
+    00000429 DD 77 FF         [19]  630 	ld	-1 (ix), a
+    0000042C E6 0F            [ 7]  631 	and	a, #0x0f
+    0000042E DD 77 FF         [19]  632 	ld	-1 (ix), a
+    00000431 11r0Fr07         [10]  633 	ld	de, #_g_HexChar
+    00000434 DD 6E FF         [19]  634 	ld	l, -1 (ix)
+    00000437 26 00            [ 7]  635 	ld	h, #0x00
+    00000439 19               [11]  636 	add	hl, de
+    0000043A DD 75 FE         [19]  637 	ld	-2 (ix), l
+    0000043D DD 74 FF         [19]  638 	ld	-1 (ix), h
+    00000440 7E               [ 7]  639 	ld	a, (hl)
+    00000441 DD 6E F8         [19]  640 	ld	l, -8 (ix)
+    00000444 DD 66 F9         [19]  641 	ld	h, -7 (ix)
+    00000447 77               [ 7]  642 	ld	(hl), a
+    00000448 DD 34 F8         [23]  643 	inc	-8 (ix)
+    0000044B 20 03            [12]  644 	jr	nz, 00590$
+    0000044D DD 34 F9         [23]  645 	inc	-7 (ix)
+    00000450                        646 00590$:
+    00000450                        647 00143$:
+                                    648 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:239: if (len > 3)
+    00000450 3E 03            [ 7]  649 	ld	a, #0x03
+    00000452 DD 96 F4         [19]  650 	sub	a, -12 (ix)
+    00000455 30 2D            [12]  651 	jr	nc, 00145$
+                                    652 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:240: *dest++ = g_HexChar[(val >> 12) & 0xF];
+    00000457 DD 5E E0         [19]  653 	ld	e, -32 (ix)
+    0000045A DD 56 E1         [19]  654 	ld	d, -31 (ix)
+    0000045D DD 4E E2         [19]  655 	ld	c, -30 (ix)
+    00000460 06 04            [ 7]  656 	ld	b, #0x04
+    00000462                        657 00591$:
+    00000462 CB 39            [ 8]  658 	srl	c
+    00000464 CB 1A            [ 8]  659 	rr	d
+    00000466 CB 1B            [ 8]  660 	rr	e
+    00000468 10 F8            [13]  661 	djnz	00591$
+    0000046A 7B               [ 4]  662 	ld	a, e
+    0000046B E6 0F            [ 7]  663 	and	a, #0x0f
+    0000046D 4F               [ 4]  664 	ld	c, a
+    0000046E 06 00            [ 7]  665 	ld	b, #0x00
+    00000470 21r0Fr07         [10]  666 	ld	hl, #_g_HexChar
+    00000473 09               [11]  667 	add	hl, bc
+    00000474 7E               [ 7]  668 	ld	a, (hl)
+    00000475 DD 6E F8         [19]  669 	ld	l, -8 (ix)
+    00000478 DD 66 F9         [19]  670 	ld	h, -7 (ix)
+    0000047B 77               [ 7]  671 	ld	(hl), a
+    0000047C DD 34 F8         [23]  672 	inc	-8 (ix)
+    0000047F 20 03            [12]  673 	jr	nz, 00593$
+    00000481 DD 34 F9         [23]  674 	inc	-7 (ix)
+    00000484                        675 00593$:
+    00000484                        676 00145$:
+                                    677 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:241: if (len > 2)
+    00000484 3E 02            [ 7]  678 	ld	a, #0x02
+    00000486 DD 96 F4         [19]  679 	sub	a, -12 (ix)
+    00000489 30 2A            [12]  680 	jr	nc, 00147$
+                                    681 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:242: *dest++ = g_HexChar[(val >> 8) & 0xF];
+    0000048B DD 7E E0         [19]  682 	ld	a, -32 (ix)
+    0000048E DD 77 FF         [19]  683 	ld	-1 (ix), a
+    00000491 E6 0F            [ 7]  684 	and	a, #0x0f
+    00000493 DD 77 FF         [19]  685 	ld	-1 (ix), a
+    00000496 11r0Fr07         [10]  686 	ld	de, #_g_HexChar
+    00000499 DD 6E FF         [19]  687 	ld	l, -1 (ix)
+    0000049C 26 00            [ 7]  688 	ld	h, #0x00
+    0000049E 19               [11]  689 	add	hl, de
+    0000049F DD 75 FE         [19]  690 	ld	-2 (ix), l
+    000004A2 DD 74 FF         [19]  691 	ld	-1 (ix), h
+    000004A5 7E               [ 7]  692 	ld	a, (hl)
+    000004A6 DD 6E F8         [19]  693 	ld	l, -8 (ix)
+    000004A9 DD 66 F9         [19]  694 	ld	h, -7 (ix)
+    000004AC 77               [ 7]  695 	ld	(hl), a
+    000004AD DD 34 F8         [23]  696 	inc	-8 (ix)
+    000004B0 20 03            [12]  697 	jr	nz, 00594$
+    000004B2 DD 34 F9         [23]  698 	inc	-7 (ix)
+    000004B5                        699 00594$:
+    000004B5                        700 00147$:
+                                    701 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:243: if (len > 1)
+    000004B5 3E 01            [ 7]  702 	ld	a, #0x01
+    000004B7 DD 96 F4         [19]  703 	sub	a, -12 (ix)
+    000004BA 30 63            [12]  704 	jr	nc, 00149$
+                                    705 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:244: *dest++ = g_HexChar[(val >> 4) & 0xF];
+    000004BC DD 7E DF         [19]  706 	ld	a, -33 (ix)
+    000004BF DD 77 FC         [19]  707 	ld	-4 (ix), a
+    000004C2 DD 7E E0         [19]  708 	ld	a, -32 (ix)
+    000004C5 DD 77 FD         [19]  709 	ld	-3 (ix), a
+    000004C8 DD 7E E1         [19]  710 	ld	a, -31 (ix)
+    000004CB DD 77 FE         [19]  711 	ld	-2 (ix), a
+    000004CE DD 7E E2         [19]  712 	ld	a, -30 (ix)
+    000004D1 DD 77 FF         [19]  713 	ld	-1 (ix), a
+    000004D4 06 04            [ 7]  714 	ld	b, #0x04
+    000004D6                        715 00595$:
+    000004D6 DD CB FF 3E      [23]  716 	srl	-1 (ix)
+    000004DA DD CB FE 1E      [23]  717 	rr	-2 (ix)
+    000004DE DD CB FD 1E      [23]  718 	rr	-3 (ix)
+    000004E2 DD CB FC 1E      [23]  719 	rr	-4 (ix)
+    000004E6 10 EE            [13]  720 	djnz	00595$
+    000004E8 DD 7E FC         [19]  721 	ld	a, -4 (ix)
+    000004EB DD 77 FE         [19]  722 	ld	-2 (ix), a
+    000004EE DD 7E FD         [19]  723 	ld	a, -3 (ix)
+    000004F1 DD 77 FF         [19]  724 	ld	-1 (ix), a
+    000004F4 DD 7E FE         [19]  725 	ld	a, -2 (ix)
+    000004F7 E6 0F            [ 7]  726 	and	a, #0x0f
+    000004F9 DD 77 FC         [19]  727 	ld	-4 (ix), a
+    000004FC DD 36 FD 00      [19]  728 	ld	-3 (ix), #0x00
+    00000500 11r0Fr07         [10]  729 	ld	de, #_g_HexChar
+    00000503 DD 6E FC         [19]  730 	ld	l, -4 (ix)
+    00000506 26 00            [ 7]  731 	ld	h, #0x00
+    00000508 19               [11]  732 	add	hl, de
+    00000509 DD 75 FE         [19]  733 	ld	-2 (ix), l
+    0000050C DD 74 FF         [19]  734 	ld	-1 (ix), h
+    0000050F 7E               [ 7]  735 	ld	a, (hl)
+    00000510 DD 6E F8         [19]  736 	ld	l, -8 (ix)
+    00000513 DD 66 F9         [19]  737 	ld	h, -7 (ix)
+    00000516 77               [ 7]  738 	ld	(hl), a
+    00000517 DD 34 F8         [23]  739 	inc	-8 (ix)
+    0000051A 20 03            [12]  740 	jr	nz, 00597$
+    0000051C DD 34 F9         [23]  741 	inc	-7 (ix)
+    0000051F                        742 00597$:
+    0000051F                        743 00149$:
+                                    744 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:245: *dest++ = g_HexChar[val & 0xF];
+    0000051F DD 7E DF         [19]  745 	ld	a, -33 (ix)
+    00000522 DD 77 FE         [19]  746 	ld	-2 (ix), a
+    00000525 DD 7E E0         [19]  747 	ld	a, -32 (ix)
+    00000528 DD 77 FF         [19]  748 	ld	-1 (ix), a
+    0000052B DD 7E FE         [19]  749 	ld	a, -2 (ix)
+    0000052E E6 0F            [ 7]  750 	and	a, #0x0f
+    00000530 DD 77 FC         [19]  751 	ld	-4 (ix), a
+    00000533 DD 36 FD 00      [19]  752 	ld	-3 (ix), #0x00
+    00000537 DD 6E FC         [19]  753 	ld	l, -4 (ix)
+    0000053A 26 00            [ 7]  754 	ld	h, #0x00
+    0000053C 11r0Fr07         [10]  755 	ld	de, #_g_HexChar
+    0000053F 19               [11]  756 	add	hl, de
+    00000540 7E               [ 7]  757 	ld	a, (hl)
+    00000541 DD 6E F8         [19]  758 	ld	l, -8 (ix)
+    00000544 DD 66 F9         [19]  759 	ld	h, -7 (ix)
+    00000547 77               [ 7]  760 	ld	(hl), a
+    00000548 DD 34 F8         [23]  761 	inc	-8 (ix)
+    0000054B C2rF4r06         [10]  762 	jp	nz, 00165$
+    0000054E DD 34 F9         [23]  763 	inc	-7 (ix)
+                                    764 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:246: break;
+    00000551 C3rF4r06         [10]  765 	jp	00165$
+                                    766 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:251: case 'x':
+    00000554                        767 00150$:
+                                    768 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:253: if (len == 0)
+    00000554 DD 7E F4         [19]  769 	ld	a, -12 (ix)
+    00000557 B7               [ 4]  770 	or	a, a
+    00000558 20 04            [12]  771 	jr	nz, 00152$
+                                    772 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:254: len = 4;
+    0000055A DD 36 F4 04      [19]  773 	ld	-12 (ix), #0x04
+    0000055E                        774 00152$:
+                                    775 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:255: u16 val = (u16)va_arg(args, u16);
+    0000055E DD 4E 04         [19]  776 	ld	c, 4 (ix)
+    00000561 DD 46 05         [19]  777 	ld	b, 5 (ix)
+    00000564 03               [ 6]  778 	inc	bc
+    00000565 03               [ 6]  779 	inc	bc
+    00000566 DD 71 04         [19]  780 	ld	4 (ix), c
+    00000569 DD 70 05         [19]  781 	ld	5 (ix), b
+    0000056C 0B               [ 6]  782 	dec	bc
+    0000056D 0B               [ 6]  783 	dec	bc
+    0000056E 0A               [ 7]  784 	ld	a, (bc)
+    0000056F DD 77 FC         [19]  785 	ld	-4 (ix), a
+    00000572 03               [ 6]  786 	inc	bc
+    00000573 0A               [ 7]  787 	ld	a, (bc)
+    00000574 DD 77 FD         [19]  788 	ld	-3 (ix), a
+                                    789 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:256: if (len > 3)
+    00000577 3E 03            [ 7]  790 	ld	a, #0x03
+    00000579 DD 96 F4         [19]  791 	sub	a, -12 (ix)
+    0000057C 30 3A            [12]  792 	jr	nc, 00154$
+                                    793 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:257: *dest++ = g_HexChar[(val >> 12) & 0xF];
+    0000057E DD 7E FD         [19]  794 	ld	a, -3 (ix)
+    00000581 07               [ 4]  795 	rlca
+    00000582 07               [ 4]  796 	rlca
+    00000583 07               [ 4]  797 	rlca
+    00000584 07               [ 4]  798 	rlca
+    00000585 E6 0F            [ 7]  799 	and	a, #0x0f
+    00000587 DD 77 FE         [19]  800 	ld	-2 (ix), a
+    0000058A DD 36 FF 00      [19]  801 	ld	-1 (ix), #0x00
+    0000058E DD 7E FE         [19]  802 	ld	a, -2 (ix)
+    00000591 DD 77 FF         [19]  803 	ld	-1 (ix), a
+    00000594 E6 0F            [ 7]  804 	and	a, #0x0f
+    00000596 DD 77 FF         [19]  805 	ld	-1 (ix), a
+    00000599 11r0Fr07         [10]  806 	ld	de, #_g_HexChar
+    0000059C DD 6E FF         [19]  807 	ld	l, -1 (ix)
+    0000059F 26 00            [ 7]  808 	ld	h, #0x00
+    000005A1 19               [11]  809 	add	hl, de
+    000005A2 DD 75 FE         [19]  810 	ld	-2 (ix), l
+    000005A5 DD 74 FF         [19]  811 	ld	-1 (ix), h
+    000005A8 7E               [ 7]  812 	ld	a, (hl)
+    000005A9 DD 6E F8         [19]  813 	ld	l, -8 (ix)
+    000005AC DD 66 F9         [19]  814 	ld	h, -7 (ix)
+    000005AF 77               [ 7]  815 	ld	(hl), a
+    000005B0 DD 34 F8         [23]  816 	inc	-8 (ix)
+    000005B3 20 03            [12]  817 	jr	nz, 00599$
+    000005B5 DD 34 F9         [23]  818 	inc	-7 (ix)
+    000005B8                        819 00599$:
+    000005B8                        820 00154$:
+                                    821 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:258: if (len > 2)
+    000005B8 3E 02            [ 7]  822 	ld	a, #0x02
+    000005BA DD 96 F4         [19]  823 	sub	a, -12 (ix)
+    000005BD 30 2A            [12]  824 	jr	nc, 00156$
+                                    825 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:259: *dest++ = g_HexChar[(val >> 8) & 0xF];
+    000005BF DD 7E FD         [19]  826 	ld	a, -3 (ix)
+    000005C2 DD 77 FF         [19]  827 	ld	-1 (ix), a
+    000005C5 E6 0F            [ 7]  828 	and	a, #0x0f
+    000005C7 DD 77 FF         [19]  829 	ld	-1 (ix), a
+    000005CA 11r0Fr07         [10]  830 	ld	de, #_g_HexChar
+    000005CD DD 6E FF         [19]  831 	ld	l, -1 (ix)
+    000005D0 26 00            [ 7]  832 	ld	h, #0x00
+    000005D2 19               [11]  833 	add	hl, de
+    000005D3 DD 75 FE         [19]  834 	ld	-2 (ix), l
+    000005D6 DD 74 FF         [19]  835 	ld	-1 (ix), h
+    000005D9 7E               [ 7]  836 	ld	a, (hl)
+    000005DA DD 6E F8         [19]  837 	ld	l, -8 (ix)
+    000005DD DD 66 F9         [19]  838 	ld	h, -7 (ix)
+    000005E0 77               [ 7]  839 	ld	(hl), a
+    000005E1 DD 34 F8         [23]  840 	inc	-8 (ix)
+    000005E4 20 03            [12]  841 	jr	nz, 00600$
+    000005E6 DD 34 F9         [23]  842 	inc	-7 (ix)
+    000005E9                        843 00600$:
+    000005E9                        844 00156$:
+                                    845 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:260: if (len > 1)
+    000005E9 3E 01            [ 7]  846 	ld	a, #0x01
+    000005EB DD 96 F4         [19]  847 	sub	a, -12 (ix)
+    000005EE 30 5E            [12]  848 	jr	nc, 00158$
+                                    849 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:261: *dest++ = g_HexChar[(val >> 4) & 0xF];
+    000005F0 DD 7E FC         [19]  850 	ld	a, -4 (ix)
+    000005F3 DD 77 FE         [19]  851 	ld	-2 (ix), a
+    000005F6 DD 7E FD         [19]  852 	ld	a, -3 (ix)
+    000005F9 DD 77 FF         [19]  853 	ld	-1 (ix), a
+    000005FC DD CB FF 3E      [23]  854 	srl	-1 (ix)
+    00000600 DD CB FE 1E      [23]  855 	rr	-2 (ix)
+    00000604 DD CB FF 3E      [23]  856 	srl	-1 (ix)
+    00000608 DD CB FE 1E      [23]  857 	rr	-2 (ix)
+    0000060C DD CB FF 3E      [23]  858 	srl	-1 (ix)
+    00000610 DD CB FE 1E      [23]  859 	rr	-2 (ix)
+    00000614 DD CB FF 3E      [23]  860 	srl	-1 (ix)
+    00000618 DD CB FE 1E      [23]  861 	rr	-2 (ix)
+    0000061C DD 7E FE         [19]  862 	ld	a, -2 (ix)
+    0000061F E6 0F            [ 7]  863 	and	a, #0x0f
+    00000621 DD 77 F6         [19]  864 	ld	-10 (ix), a
+    00000624 DD 36 F7 00      [19]  865 	ld	-9 (ix), #0x00
+    00000628 3Er0F            [ 7]  866 	ld	a, #<(_g_HexChar)
+    0000062A DD 86 F6         [19]  867 	add	a, -10 (ix)
+    0000062D DD 77 FE         [19]  868 	ld	-2 (ix), a
+    00000630 3Es07            [ 7]  869 	ld	a, #>(_g_HexChar)
+    00000632 DD 8E F7         [19]  870 	adc	a, -9 (ix)
+    00000635 DD 77 FF         [19]  871 	ld	-1 (ix), a
+    00000638 DD 6E FE         [19]  872 	ld	l, -2 (ix)
+    0000063B DD 66 FF         [19]  873 	ld	h, -1 (ix)
+    0000063E 7E               [ 7]  874 	ld	a, (hl)
+    0000063F DD 6E F8         [19]  875 	ld	l, -8 (ix)
+    00000642 DD 66 F9         [19]  876 	ld	h, -7 (ix)
+    00000645 77               [ 7]  877 	ld	(hl), a
+    00000646 DD 34 F8         [23]  878 	inc	-8 (ix)
+    00000649 20 03            [12]  879 	jr	nz, 00601$
+    0000064B DD 34 F9         [23]  880 	inc	-7 (ix)
+    0000064E                        881 00601$:
+    0000064E                        882 00158$:
+                                    883 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:262: *dest++ = g_HexChar[val & 0xF];
+    0000064E DD 7E FC         [19]  884 	ld	a, -4 (ix)
+    00000651 DD 4E FD         [19]  885 	ld	c, -3 (ix)
+    00000654 E6 0F            [ 7]  886 	and	a, #0x0f
+    00000656 5F               [ 4]  887 	ld	e, a
+    00000657 16 00            [ 7]  888 	ld	d, #0x00
+    00000659 21r0Fr07         [10]  889 	ld	hl, #_g_HexChar
+    0000065C 19               [11]  890 	add	hl, de
+    0000065D 7E               [ 7]  891 	ld	a, (hl)
+    0000065E DD 6E F8         [19]  892 	ld	l, -8 (ix)
+    00000661 DD 66 F9         [19]  893 	ld	h, -7 (ix)
+    00000664 77               [ 7]  894 	ld	(hl), a
+    00000665 DD 34 F8         [23]  895 	inc	-8 (ix)
+    00000668 C2rF4r06         [10]  896 	jp	nz, 00165$
+    0000066B DD 34 F9         [23]  897 	inc	-7 (ix)
+                                    898 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:263: break;
+    0000066E C3rF4r06         [10]  899 	jp	00165$
+                                    900 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:267: case 'c':
+    00000671                        901 00159$:
+                                    902 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:269: c8 val = (c8)va_arg(args, u16);
+    00000671 DD 6E 04         [19]  903 	ld	l, 4 (ix)
+    00000674 DD 66 05         [19]  904 	ld	h, 5 (ix)
+    00000677 23               [ 6]  905 	inc	hl
+    00000678 23               [ 6]  906 	inc	hl
+    00000679 DD 75 04         [19]  907 	ld	4 (ix), l
+    0000067C DD 74 05         [19]  908 	ld	5 (ix), h
+    0000067F 2B               [ 6]  909 	dec	hl
+    00000680 2B               [ 6]  910 	dec	hl
+    00000681 7E               [ 7]  911 	ld	a, (hl)
+                                    912 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:270: *dest++ = val;
+    00000682 DD 6E F8         [19]  913 	ld	l, -8 (ix)
+    00000685 DD 66 F9         [19]  914 	ld	h, -7 (ix)
+    00000688 77               [ 7]  915 	ld	(hl), a
+    00000689 DD 34 F8         [23]  916 	inc	-8 (ix)
+    0000068C 20 66            [12]  917 	jr	nz, 00165$
+    0000068E DD 34 F9         [23]  918 	inc	-7 (ix)
+                                    919 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:271: break;
+    00000691 C3rF4r06         [10]  920 	jp	00165$
+                                    921 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:275: case 's':
+    00000694                        922 00160$:
+                                    923 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:277: const c8* val = (const c8*)va_arg(args, const c8*);
+    00000694 DD 6E 04         [19]  924 	ld	l, 4 (ix)
+    00000697 DD 66 05         [19]  925 	ld	h, 5 (ix)
+    0000069A 23               [ 6]  926 	inc	hl
+    0000069B 23               [ 6]  927 	inc	hl
+    0000069C DD 75 04         [19]  928 	ld	4 (ix), l
+    0000069F DD 74 05         [19]  929 	ld	5 (ix), h
+    000006A2 2B               [ 6]  930 	dec	hl
+    000006A3 2B               [ 6]  931 	dec	hl
+    000006A4 4E               [ 7]  932 	ld	c, (hl)
+    000006A5 23               [ 6]  933 	inc	hl
+    000006A6 46               [ 7]  934 	ld	b, (hl)
+                                    935 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:278: u8 len = String_Length(val);
+    000006A7 1E 00            [ 7]  936 	ld	e, #0x00
+    000006A9 69               [ 4]  937 	ld	l, c
+    000006AA 60               [ 4]  938 	ld	h, b
+    000006AB                        939 00169$:
+    000006AB 7E               [ 7]  940 	ld	a, (hl)
+    000006AC 23               [ 6]  941 	inc	hl
+    000006AD B7               [ 4]  942 	or	a, a
+    000006AE 28 04            [12]  943 	jr	z, 00171$
+    000006B0 1C               [ 4]  944 	inc	e
+    000006B1 C3rABr06         [10]  945 	jp	00169$
+    000006B4                        946 00171$:
+                                    947 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:279: for (u8 i = 0; i < len; i++)
+    000006B4 69               [ 4]  948 	ld	l, c
+    000006B5 60               [ 4]  949 	ld	h, b
+    000006B6 DD 4E F8         [19]  950 	ld	c, -8 (ix)
+    000006B9 DD 46 F9         [19]  951 	ld	b, -7 (ix)
+    000006BC 16 00            [ 7]  952 	ld	d, #0x00
+    000006BE                        953 00177$:
+    000006BE 7A               [ 4]  954 	ld	a, d
+    000006BF 93               [ 4]  955 	sub	a, e
+    000006C0 30 2C            [12]  956 	jr	nc, 00280$
+                                    957 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:280: *dest++ = *val++;
+    000006C2 7E               [ 7]  958 	ld	a, (hl)
+    000006C3 23               [ 6]  959 	inc	hl
+    000006C4 02               [ 7]  960 	ld	(bc), a
+    000006C5 03               [ 6]  961 	inc	bc
+                                    962 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:279: for (u8 i = 0; i < len; i++)
+    000006C6 14               [ 4]  963 	inc	d
+    000006C7 C3rBEr06         [10]  964 	jp	00177$
+                                    965 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:283: }
+    000006CA                        966 00164$:
+                                    967 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:286: *dest++ = *ptr;
+    000006CA DD 6E F8         [19]  968 	ld	l, -8 (ix)
+    000006CD DD 66 F9         [19]  969 	ld	h, -7 (ix)
+    000006D0 DD 7E FF         [19]  970 	ld	a, -1 (ix)
+    000006D3 77               [ 7]  971 	ld	(hl), a
+    000006D4 DD 34 F8         [23]  972 	inc	-8 (ix)
+    000006D7 20 1B            [12]  973 	jr	nz, 00165$
+    000006D9 DD 34 F9         [23]  974 	inc	-7 (ix)
+                                    975 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:290: *dest = 0;
+    000006DC C3rF4r06         [10]  976 	jp	00165$
+                                    977 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:286: *dest++ = *ptr;
+    000006DF                        978 00278$:
+    000006DF DD 7E FE         [19]  979 	ld	a, -2 (ix)
+    000006E2 DD 77 F8         [19]  980 	ld	-8 (ix), a
+    000006E5 DD 7E FF         [19]  981 	ld	a, -1 (ix)
+    000006E8 DD 77 F9         [19]  982 	ld	-7 (ix), a
+                                    983 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:290: *dest = 0;
+    000006EB C3rF4r06         [10]  984 	jp	00165$
+                                    985 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:286: *dest++ = *ptr;
+    000006EE                        986 00280$:
+    000006EE DD 71 F8         [19]  987 	ld	-8 (ix), c
+    000006F1 DD 70 F9         [19]  988 	ld	-7 (ix), b
+    000006F4                        989 00165$:
+                                    990 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:288: ptr++;
+    000006F4 DD 34 FA         [23]  991 	inc	-6 (ix)
+    000006F7 C2r64r00         [10]  992 	jp	nz, 00166$
+    000006FA DD 34 FB         [23]  993 	inc	-5 (ix)
+    000006FD C3r64r00         [10]  994 	jp	00166$
+    00000700                        995 00168$:
+                                    996 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:290: *dest = 0;
+    00000700 DD 6E F8         [19]  997 	ld	l, -8 (ix)
+    00000703 DD 66 F9         [19]  998 	ld	h, -7 (ix)
+    00000706 36 00            [10]  999 	ld	(hl), #0x00
+                                   1000 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:291: }
+    00000708 DD F9            [10] 1001 	ld	sp, ix
+    0000070A DD E1            [14] 1002 	pop	ix
+    0000070C E1               [10] 1003 	pop	hl
+    0000070D F1               [10] 1004 	pop	af
+    0000070E E9               [ 4] 1005 	jp	(hl)
+    0000070F                       1006 _g_HexChar:
+    0000070F 30                    1007 	.db #0x30	; 48	'0'
+    00000710 31                    1008 	.db #0x31	; 49	'1'
+    00000711 32                    1009 	.db #0x32	; 50	'2'
+    00000712 33                    1010 	.db #0x33	; 51	'3'
+    00000713 34                    1011 	.db #0x34	; 52	'4'
+    00000714 35                    1012 	.db #0x35	; 53	'5'
+    00000715 36                    1013 	.db #0x36	; 54	'6'
+    00000716 37                    1014 	.db #0x37	; 55	'7'
+    00000717 38                    1015 	.db #0x38	; 56	'8'
+    00000718 39                    1016 	.db #0x39	; 57	'9'
+    00000719 41                    1017 	.db #0x41	; 65	'A'
+    0000071A 42                    1018 	.db #0x42	; 66	'B'
+    0000071B 43                    1019 	.db #0x43	; 67	'C'
+    0000071C 44                    1020 	.db #0x44	; 68	'D'
+    0000071D 45                    1021 	.db #0x45	; 69	'E'
+    0000071E 46                    1022 	.db #0x46	; 70	'F'
+                                   1023 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:295: void String_Format(c8* dest, const c8* format, ...)
+                                   1024 ;	---------------------------------
+                                   1025 ; Function String_Format
+                                   1026 ; ---------------------------------
+    0000071F                       1027 _String_Format::
+                                   1028 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:298: va_start(args, format);
+                                   1029 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:299: String_FormatVA(dest, format, args);
+    0000071F 21 06 00         [10] 1030 	ld	hl, #6
+    00000722 39               [11] 1031 	add	hl, sp
+    00000723 E5               [11] 1032 	push	hl
+    00000724 FD 21 06 00      [14] 1033 	ld	iy, #6
+    00000728 FD 39            [15] 1034 	add	iy, sp
+    0000072A FD 5E 00         [19] 1035 	ld	e, 0 (iy)
+    0000072D FD 56 01         [19] 1036 	ld	d, 1 (iy)
+    00000730 FD 6E FE         [19] 1037 	ld	l, -2 (iy)
+    00000733 FD 66 FF         [19] 1038 	ld	h, -1 (iy)
+    00000736 CDr48r00         [17] 1039 	call	_String_FormatVA
+                                   1040 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:300: va_end(args);
+                                   1041 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/string.c:301: }
+    00000739 C9               [10] 1042 	ret
+                                   1043 	.area _CODE
+                                   1044 	.area _INITIALIZER
+                                   1045 	.area _CABS (ABS)

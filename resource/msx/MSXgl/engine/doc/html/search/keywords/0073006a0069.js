@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("sji",["Function"],[["SJIS_Convert",,[[,,,,0,"File:tool/jis.h:SJIS_Convert"]]],["SJIS_ToJIS",,[[,,,,0,"File:tool/jis.h:SJIS_ToJIS"]]]]);

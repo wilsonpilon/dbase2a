@@ -1,0 +1,282 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.6.0 #16555 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module dos_mapper
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _g_EXTBIO
+                                     12 	.globl _g_HOKVLD
+                                     13 	.globl _g_DOS_JumpTable
+                                     14 	.globl _g_DOS_VarTable
+                                     15 	.globl _DOSMapper_Init
+                                     16 	.globl _DOSMapper_Alloc
+                                     17 	.globl _DOSMapper_Free
+                                     18 	.globl _DOSMapper_ReadByte
+                                     19 	.globl _DOSMapper_WriteByte
+                                     20 	.globl _DOSMapper_SetPage
+                                     21 	.globl _DOSMapper_SetPage0
+                                     22 	.globl _DOSMapper_SetPage1
+                                     23 	.globl _DOSMapper_SetPage2
+                                     24 	.globl _DOSMapper_GetPage
+                                     25 	.globl _DOSMapper_GetPage0
+                                     26 	.globl _DOSMapper_GetPage1
+                                     27 	.globl _DOSMapper_GetPage2
+                                     28 	.globl _DOSMapper_GetPage3
+                                     29 ;--------------------------------------------------------
+                                     30 ; special function registers
+                                     31 ;--------------------------------------------------------
+                                     32 ;--------------------------------------------------------
+                                     33 ; ram data
+                                     34 ;--------------------------------------------------------
+                                     35 	.area _DATA
+                                     36 ;--------------------------------------------------------
+                                     37 ; ram data
+                                     38 ;--------------------------------------------------------
+                                     39 	.area _INITIALIZED
+    00000000                         40 _g_DOS_VarTable::
+    00000000                         41 	.ds 2
+    00000002                         42 _g_DOS_JumpTable::
+    00000002                         43 	.ds 2
+                                     44 ;--------------------------------------------------------
+                                     45 ; absolute ram data
+                                     46 ;--------------------------------------------------------
+                                     47 	.area _DABS (ABS)
+                                     48 	.area _DABS (ABS)
+                                     49 ;--------------------------------------------------------
+                                     50 ; global & static initialisations
+                                     51 ;--------------------------------------------------------
+                                     52 	.area _HOME
+                                     53 	.area _GSINIT
+                                     54 	.area _GSFINAL
+                                     55 	.area _GSINIT
+                                     56 ;--------------------------------------------------------
+                                     57 ; Home
+                                     58 ;--------------------------------------------------------
+                                     59 	.area _HOME
+                                     60 	.area _HOME
+                                     61 ;--------------------------------------------------------
+                                     62 ; code
+                                     63 ;--------------------------------------------------------
+                                     64 	.area _CODE
+                                     65 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:39: bool DOSMapper_Init() __NAKED
+                                     66 ;	---------------------------------
+                                     67 ; Function DOSMapper_Init
+                                     68 ; ---------------------------------
+    00000000                         69 _DOSMapper_Init::
+                                     70 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:70: __endasm;
+    00000000 DD E5            [15]   71 	push ix
+    00000002 CDr08r00         [17]   72 	call init_extbios
+    00000005 DD E1            [14]   73 	pop ix
+    00000007 C9               [10]   74 	ret
+    00000008                         75 init_extbios:
+    00000008 3A 20 FB         [13]   76 	ld a, (0xFB20)
+    0000000B E6 01            [ 7]   77 	and #0x01
+    0000000D C8               [11]   78 	ret z
+    0000000E AF               [ 4]   79 	xor a
+    0000000F 16 04            [ 7]   80 	ld d, #0x04
+    00000011 1E 01            [ 7]   81 	ld e, #0x01
+    00000013 CD CA FF         [17]   82 	call 0xFFCA
+    00000016 B7               [ 4]   83 	or a
+    00000017 C8               [11]   84 	ret z
+    00000018 22r00r00         [16]   85 	ld (_g_DOS_VarTable), hl
+    0000001B AF               [ 4]   86 	xor a
+    0000001C 16 04            [ 7]   87 	ld d, #0x04
+    0000001E 1E 02            [ 7]   88 	ld e, #0x02
+    00000020 CD CA FF         [17]   89 	call 0xFFCA
+    00000023 B7               [ 4]   90 	or a
+    00000024 C8               [11]   91 	ret z
+    00000025 22r02r00         [16]   92 	ld (_g_DOS_JumpTable), hl
+    00000028 3E FF            [ 7]   93 	ld a, #0xFF
+    0000002A C9               [10]   94 	ret
+                                     95 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:71: }
+                                     96 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:75: bool DOSMapper_Alloc(u8 type, u8 slot, DOS_Segment* seg) __NAKED // Stack: 4 bytes
+                                     97 ;	---------------------------------
+                                     98 ; Function DOSMapper_Alloc
+                                     99 ; ---------------------------------
+    0000002B                        100 _DOSMapper_Alloc::
+                                    101 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:103: __endasm;
+    0000002B DD E5            [15]  102 	push ix
+    0000002D 45               [ 4]  103 	ld b, l
+    0000002E 2Ar02r00         [16]  104 	ld hl, (_g_DOS_JumpTable)
+    00000031 CDr00r00         [17]  105 	call ___sdcc_call_hl
+    00000034 DD E1            [14]  106 	pop ix
+    00000036 38 0B            [12]  107 	jr c, alloc_error
+    00000038 FD E1            [14]  108 	pop iy
+    0000003A E1               [10]  109 	pop hl
+    0000003B 77               [ 7]  110 	ld (hl), a
+    0000003C 23               [ 6]  111 	inc hl
+    0000003D 78               [ 4]  112 	ld a, b
+    0000003E 77               [ 7]  113 	ld (hl), a
+    0000003F 3E FF            [ 7]  114 	ld a, #0xFF
+    00000041 FD E9            [ 8]  115 	jp (iy)
+    00000043                        116 alloc_error:
+    00000043 AF               [ 4]  117 	xor a
+    00000044 C9               [10]  118 	ret
+                                    119 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:104: }
+                                    120 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:108: bool DOSMapper_Free(u8 seg, u8 slot) __NAKED
+                                    121 ;	---------------------------------
+                                    122 ; Function DOSMapper_Free
+                                    123 ; ---------------------------------
+    00000045                        124 _DOSMapper_Free::
+                                    125 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:124: __endasm;
+    00000045 DD E5            [15]  126 	push ix
+    00000047 45               [ 4]  127 	ld b, l
+    00000048 2Ar02r00         [16]  128 	ld hl, (_g_DOS_JumpTable)
+    0000004B 11 03 00         [10]  129 	ld de, #0x03
+    0000004E 19               [11]  130 	add hl, de
+    0000004F CDr00r00         [17]  131 	call ___sdcc_call_hl
+    00000052 3E 00            [ 7]  132 	ld a, #0
+    00000054 CE FF            [ 7]  133 	adc #0xFF
+    00000056 DD E1            [14]  134 	pop ix
+    00000058 C9               [10]  135 	ret
+                                    136 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:125: }
+                                    137 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:129: u8 DOSMapper_ReadByte(u8 seg, u16 addr) __NAKED // preserve BC, IX
+                                    138 ;	---------------------------------
+                                    139 ; Function DOSMapper_ReadByte
+                                    140 ; ---------------------------------
+    00000059                        141 _DOSMapper_ReadByte::
+                                    142 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:142: __endasm;
+    00000059 EB               [ 4]  143 	ex de, hl
+    0000005A FD 2Ar02r00      [20]  144 	ld iy, (_g_DOS_JumpTable)
+    0000005E 11 06 00         [10]  145 	ld de, #0x06
+    00000061 FD 19            [15]  146 	add iy, de
+    00000063 CDr00r00         [17]  147 	call ___sdcc_call_iy
+    00000066 FB               [ 4]  148 	ei
+    00000067 C9               [10]  149 	ret
+                                    150 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:143: }
+                                    151 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:147: void DOSMapper_WriteByte(u8 seg, u16 addr, u8 val) __NAKED
+                                    152 ;	---------------------------------
+                                    153 ; Function DOSMapper_WriteByte
+                                    154 ; ---------------------------------
+    00000068                        155 _DOSMapper_WriteByte::
+                                    156 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:164: __endasm;
+    00000068 EB               [ 4]  157 	ex de, hl
+    00000069 FD 21 02 00      [14]  158 	ld iy, #2
+    0000006D FD 39            [15]  159 	add iy, sp
+    0000006F FD 5E 00         [19]  160 	ld e, 0(iy)
+    00000072 FD 2Ar02r00      [20]  161 	ld iy, (_g_DOS_JumpTable)
+    00000076 01 09 00         [10]  162 	ld bc, #0x09
+    00000079 FD 09            [15]  163 	add iy, bc
+    0000007B CDr00r00         [17]  164 	call ___sdcc_call_iy
+    0000007E FB               [ 4]  165 	ei
+    0000007F C9               [10]  166 	ret
+                                    167 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:165: }
+                                    168 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:169: void DOSMapper_SetPage(u8 page, u8 seg) __NAKED
+                                    169 ;	---------------------------------
+                                    170 ; Function DOSMapper_SetPage
+                                    171 ; ---------------------------------
+    00000080                        172 _DOSMapper_SetPage::
+                                    173 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:184: __endasm;
+    00000080 0F               [ 4]  174 	rrca
+    00000081 0F               [ 4]  175 	rrca
+    00000082 67               [ 4]  176 	ld h, a
+    00000083 7D               [ 4]  177 	ld a, l
+    00000084 FD 2Ar02r00      [20]  178 	ld iy, (_g_DOS_JumpTable)
+    00000088 11 12 00         [10]  179 	ld de, #0x12
+    0000008B FD 19            [15]  180 	add iy, de
+    0000008D FD E9            [ 8]  181 	jp (iy)
+                                    182 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:185: }
+                                    183 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:189: void DOSMapper_SetPage0(u8 seg) __NAKED
+                                    184 ;	---------------------------------
+                                    185 ; Function DOSMapper_SetPage0
+                                    186 ; ---------------------------------
+    0000008F                        187 _DOSMapper_SetPage0::
+                                    188 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:198: __endasm;
+    0000008F 2Ar02r00         [16]  189 	ld hl, (_g_DOS_JumpTable)
+    00000092 11 18 00         [10]  190 	ld de, #0x18
+    00000095 19               [11]  191 	add hl, de
+    00000096 E9               [ 4]  192 	jp (hl)
+                                    193 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:199: }
+                                    194 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:203: void DOSMapper_SetPage1(u8 seg) __NAKED
+                                    195 ;	---------------------------------
+                                    196 ; Function DOSMapper_SetPage1
+                                    197 ; ---------------------------------
+    00000097                        198 _DOSMapper_SetPage1::
+                                    199 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:212: __endasm;
+    00000097 2Ar02r00         [16]  200 	ld hl, (_g_DOS_JumpTable)
+    0000009A 11 1E 00         [10]  201 	ld de, #0x1E
+    0000009D 19               [11]  202 	add hl, de
+    0000009E E9               [ 4]  203 	jp (hl)
+                                    204 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:213: }
+                                    205 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:217: void DOSMapper_SetPage2(u8 seg) __NAKED
+                                    206 ;	---------------------------------
+                                    207 ; Function DOSMapper_SetPage2
+                                    208 ; ---------------------------------
+    0000009F                        209 _DOSMapper_SetPage2::
+                                    210 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:226: __endasm;
+    0000009F 2Ar02r00         [16]  211 	ld hl, (_g_DOS_JumpTable)
+    000000A2 11 24 00         [10]  212 	ld de, #0x24
+    000000A5 19               [11]  213 	add hl, de
+    000000A6 E9               [ 4]  214 	jp (hl)
+                                    215 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:227: }
+                                    216 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:231: u8 DOSMapper_GetPage(u8 page) __NAKED
+                                    217 ;	---------------------------------
+                                    218 ; Function DOSMapper_GetPage
+                                    219 ; ---------------------------------
+    000000A7                        220 _DOSMapper_GetPage::
+                                    221 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:244: __endasm;
+    000000A7 0F               [ 4]  222 	rrca
+    000000A8 0F               [ 4]  223 	rrca
+    000000A9 67               [ 4]  224 	ld h, a
+    000000AA FD 2Ar02r00      [20]  225 	ld iy, (_g_DOS_JumpTable)
+    000000AE 11 15 00         [10]  226 	ld de, #0x15
+    000000B1 FD 19            [15]  227 	add iy, de
+    000000B3 FD E9            [ 8]  228 	jp (iy)
+                                    229 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:245: }
+                                    230 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:249: u8 DOSMapper_GetPage0() __NAKED
+                                    231 ;	---------------------------------
+                                    232 ; Function DOSMapper_GetPage0
+                                    233 ; ---------------------------------
+    000000B5                        234 _DOSMapper_GetPage0::
+                                    235 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:256: __endasm;
+    000000B5 2Ar02r00         [16]  236 	ld hl, (_g_DOS_JumpTable)
+    000000B8 11 1B 00         [10]  237 	ld de, #0x1B
+    000000BB 19               [11]  238 	add hl, de
+    000000BC E9               [ 4]  239 	jp (hl)
+                                    240 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:257: }
+                                    241 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:261: u8 DOSMapper_GetPage1() __NAKED
+                                    242 ;	---------------------------------
+                                    243 ; Function DOSMapper_GetPage1
+                                    244 ; ---------------------------------
+    000000BD                        245 _DOSMapper_GetPage1::
+                                    246 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:268: __endasm;
+    000000BD 2Ar02r00         [16]  247 	ld hl, (_g_DOS_JumpTable)
+    000000C0 11 21 00         [10]  248 	ld de, #0x21
+    000000C3 19               [11]  249 	add hl, de
+    000000C4 E9               [ 4]  250 	jp (hl)
+                                    251 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:269: }
+                                    252 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:273: u8 DOSMapper_GetPage2() __NAKED
+                                    253 ;	---------------------------------
+                                    254 ; Function DOSMapper_GetPage2
+                                    255 ; ---------------------------------
+    000000C5                        256 _DOSMapper_GetPage2::
+                                    257 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:280: __endasm;
+    000000C5 2Ar02r00         [16]  258 	ld hl, (_g_DOS_JumpTable)
+    000000C8 11 27 00         [10]  259 	ld de, #0x27
+    000000CB 19               [11]  260 	add hl, de
+    000000CC E9               [ 4]  261 	jp (hl)
+                                    262 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:281: }
+                                    263 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:285: u8 DOSMapper_GetPage3() __NAKED
+                                    264 ;	---------------------------------
+                                    265 ; Function DOSMapper_GetPage3
+                                    266 ; ---------------------------------
+    000000CD                        267 _DOSMapper_GetPage3::
+                                    268 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:292: __endasm;
+    000000CD 2Ar02r00         [16]  269 	ld hl, (_g_DOS_JumpTable)
+    000000D0 11 2D 00         [10]  270 	ld de, #0x2D
+    000000D3 19               [11]  271 	add hl, de
+    000000D4 E9               [ 4]  272 	jp (hl)
+                                    273 ;C:\dos\dbase2a\resource\msx\MSXgl\engine/src/dos_mapper.c:293: }
+                                    274 	.area _CODE
+                         0000FB20   275 _g_HOKVLD	=	0xfb20
+                         0000FFCA   276 _g_EXTBIO	=	0xffca
+                                    277 	.area _INITIALIZER
+    00000000                        278 __xinit__g_DOS_VarTable:
+    00000000 00 00                  279 	.dw #0x0000
+    00000002                        280 __xinit__g_DOS_JumpTable:
+    00000002 00 00                  281 	.dw #0x0000
+                                    282 	.area _CABS (ABS)

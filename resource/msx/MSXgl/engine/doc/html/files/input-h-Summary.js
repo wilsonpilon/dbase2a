@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:input.h","input.h");NDSummary.OnSummaryLoaded("File:input.h",[["C/C++","C"]],[["Functions","Function"],["Groups","Group"]],[[1090,0,1,"Detect","Detect"],[1091,0,0,"Input_Detect","Input_Detect"]]);
