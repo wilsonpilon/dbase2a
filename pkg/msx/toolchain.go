@@ -169,3 +169,20 @@ func (m *ToolchainManager) CompileProject(outputDir string, opts ProjectOptions)
 
 	return comFile, nil
 }
+
+// GenerateBootDisk cria a imagem de disco FAT12 (.DSK de 720KB) com MSX-DOS 2, dBase II++ e arquivos de sistema.
+func (m *ToolchainManager) GenerateBootDisk(dskPath string, customFiles map[string][]byte) error {
+	if dskPath == "" {
+		dskPath = filepath.Join("release", "dbase2plus.dsk")
+	}
+
+	if err := BuildMSXDOS2BootDisk(dskPath, customFiles); err != nil {
+		return fmt.Errorf("erro ao gerar disquete de boot MSX-DOS 2: %w", err)
+	}
+
+	if m.Storage != nil {
+		_ = m.Storage.LogMSXBuild("DBASE2PLUS", "msx2p", "msxgl", dskPath, "DSK_SUCCESS", "Disquete bootável MSX-DOS 2 de 720KB gerado com sucesso.")
+	}
+
+	return nil
+}

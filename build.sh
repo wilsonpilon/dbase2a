@@ -80,9 +80,18 @@ echo ""
 echo ">>> Compilando executável dBase II++ para Linux (amd64)..."
 EXE_PATH="${BIN_DIR}/dbase2plus"
 TAGS="${TAGS:-nogui}"
-go build -tags "${TAGS}" -ldflags "-s -w -X 'dbase2a/pkg/version.Current.Major=${MAJOR}' -X 'dbase2a/pkg/version.Current.Minor=${MINOR}' -X 'dbase2a/pkg/version.Current.Patch=${PATCH}' -X 'dbase2a/pkg/version.Current.Codename=${CODENAME}' -X 'dbase2a/pkg/version.Current.BuildDate=${BUILD_DATE}' -X 'dbase2a/pkg/version.Current.Commit=${COMMIT}'" -o "$EXE_PATH" ./cmd/dbase2plus
+go build -tags "${TAGS}" -ldflags "-s -w -X 'dbase2a/pkg/version.BuildMajor=${MAJOR}' -X 'dbase2a/pkg/version.BuildMinor=${MINOR}' -X 'dbase2a/pkg/version.BuildPatch=${PATCH}' -X 'dbase2a/pkg/version.BuildCodename=${CODENAME}' -X 'dbase2a/pkg/version.BuildDateVal=${BUILD_DATE}' -X 'dbase2a/pkg/version.BuildCommit=${COMMIT}'" -o "$EXE_PATH" ./cmd/dbase2plus
 
 echo ">>> Executável gerado: ${EXE_PATH}"
+
+echo ""
+echo ">>> Gerando disquete bootável MSX-DOS 2 (720 KB) para MSX 2+..."
+DSK_RELEASE_PATH="${RELEASE_DIR}/dbase2plus.dsk"
+DSK_DIST_NAME="dbase2plus-${VERSION_STR}-msx2p-dos2.dsk"
+DSK_DIST_PATH="${DIST_DIR}/${DSK_DIST_NAME}"
+"${EXE_PATH}" -dsk "${DSK_RELEASE_PATH}"
+cp "${DSK_RELEASE_PATH}" "${DSK_DIST_PATH}"
+echo ">>> Disquete MSX gerado: ${DSK_RELEASE_PATH} (720 KB FAT12 / MSX-DOS 2)"
 
 echo ""
 echo ">>> Copiando artefatos para a pasta '${RELEASE_DIR}'..."
@@ -95,6 +104,9 @@ if [ -d "resource" ]; then
     mkdir -p "${RELEASE_DIR}/resource"
     if [ -d "resource/files" ]; then cp -r "resource/files" "${RELEASE_DIR}/resource/"; fi
     if [ -d "resource/disks" ]; then cp -r "resource/disks" "${RELEASE_DIR}/resource/"; fi
+    if [ -d "resource/msxdos2" ]; then cp -r "resource/msxdos2" "${RELEASE_DIR}/resource/"; fi
+    if [ -f "vram.alf" ]; then cp "vram.alf" "${RELEASE_DIR}/"; cp "vram.alf" "${RELEASE_DIR}/resource/"; fi
+    if [ -f "resource/GRAPHOS.ALF" ]; then cp "resource/GRAPHOS.ALF" "${RELEASE_DIR}/resource/"; fi
 fi
 
 TAR_NAME="dbase2plus-${VERSION_STR}-linux-amd64.tar.gz"
@@ -112,4 +124,5 @@ echo "  BUILD CONCLUÍDO COM SUCESSO!                                           
 echo "  Versão: ${VERSION_STR}  |  Codinome: ${CODENAME}                              "
 echo "  Pasta de Release: ${RELEASE_DIR}                                              "
 echo "  Pacote de Distribuição: ${TAR_DIST_PATH}                                      "
+echo "  Disquete MSX 2+ Bootável: ${DSK_DIST_PATH}                                    "
 echo "================================================================================"

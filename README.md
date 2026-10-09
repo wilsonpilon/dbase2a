@@ -132,7 +132,12 @@ dbase2plus --exec="USE CLIENTES; LIST ALL; QUIT"
 dbase2plus --file=FOLHA.CMD
 
 # Gerar código C/MSX a partir de uma tabela DBF
-dbase2plus --export-msx=PRODUTOS.DBF --target=msx2p --sdk=fusion-c
+dbase2plus --export-msx=PRODUTOS.DBF --target=msx2p --sdk=msxgl
+
+# Gerar disquete bootável MSX-DOS 2 (720 KB) pronto para o MSX real
+dbase2plus --make-dsk
+# ou especificando o caminho de saída:
+dbase2plus --dsk=disco_msx.dsk
 
 # Exibir informações de versão e codinome de terror
 dbase2plus --version

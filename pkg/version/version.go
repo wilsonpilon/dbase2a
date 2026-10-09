@@ -3,6 +3,7 @@
 package version
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -20,18 +21,35 @@ type Info struct {
 	Commit    string `json:"commit"`     // Hash do commit Git ou 'dev'
 }
 
-// DefaultVersion define a versão inicial de fábrica caso nenhum arquivo exista.
-var DefaultVersion = Info{
-	Major:     0,
-	Minor:     1,
-	Patch:     0,
-	Codename:  "Nosferatu",
-	BuildDate: "2026-10-08",
-	Commit:    "dev",
+// Variáveis injetadas em tempo de compilação via ldflags (-X)
+var (
+	BuildMajor    = "0"
+	BuildMinor    = "6"
+	BuildPatch    = "4"
+	BuildCodename = "The Exorcist"
+	BuildDateVal  = "2026-10-08"
+	BuildCommit   = "dev"
+)
+
+// DefaultVersion define a versão padrão com base nas variáveis de build embutidas.
+func getDefaultVersion() Info {
+	var major, minor, patch int
+	fmt.Sscanf(BuildMajor, "%d", &major)
+	fmt.Sscanf(BuildMinor, "%d", &minor)
+	fmt.Sscanf(BuildPatch, "%d", &patch)
+
+	return Info{
+		Major:     major,
+		Minor:     minor,
+		Patch:     patch,
+		Codename:  BuildCodename,
+		BuildDate: BuildDateVal,
+		Commit:    BuildCommit,
+	}
 }
 
 // Current armazena a versão ativa carregada em tempo de execução.
-var Current = DefaultVersion
+var Current = getDefaultVersion()
 
 // VersionString retorna a string formatada no padrão "vX.Y.Z (Codename)".
 func (v Info) VersionString() string {
@@ -46,20 +64,30 @@ func (v Info) FullString() string {
 
 // Load lê o arquivo version.json a partir do caminho informado ou caminhos padrão.
 func Load(path string) (Info, error) {
-	if path == "" {
-		path = "version.json"
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return DefaultVersion, err
+	def := getDefaultVersion()
+
+	pathsToTry := []string{path}
+	if path == "" || path == "version.json" {
+		pathsToTry = []string{"version.json"}
+		if exePath, err := os.Executable(); err == nil {
+			pathsToTry = append(pathsToTry, filepath.Join(filepath.Dir(exePath), "version.json"))
+		}
 	}
 
-	var info Info
-	if err := json.Unmarshal(data, &info); err != nil {
-		return DefaultVersion, err
+	for _, p := range pathsToTry {
+		data, err := os.ReadFile(p)
+		if err == nil && len(data) > 0 {
+			data = bytes.TrimPrefix(data, []byte("\xef\xbb\xbf"))
+			var info Info
+			if err := json.Unmarshal(data, &info); err == nil {
+				Current = info
+				return info, nil
+			}
+		}
 	}
-	Current = info
-	return info, nil
+
+	Current = def
+	return def, nil
 }
 
 // Save grava os metadados de versão no arquivo JSON especificado.

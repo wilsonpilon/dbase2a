@@ -1,4 +1,4 @@
-# dBase II++ — Documento de Transição e Continuidade (HANDOVER.md)
+ # dBase II++ — Documento de Transição e Continuidade (HANDOVER.md)
 
 > **Para uso com JetBrains GoLand e Junie (AI Agent)**  
 > Este documento foi elaborado para permitir a transição imediata do projeto para um novo computador, preservando todo o contexto arquitetural, histórico de decisões, estado atual do código e próximos passos do roadmap.
@@ -86,13 +86,17 @@ C:\dos\dbase2a\ (ou raiz do projeto)
    - Editor de linha de comando com histórico de comandos.
    - Autocomplete cíclico com a tecla `TAB`.
    - Realce de sintaxe colorido ANSI em tempo real (comandos, cláusulas, operadores, funções, strings e erros em vermelho).
-6. **Ecossistema MSX e MSXgl (`pkg/msx`)**:
+6. **Ecossistema MSX, MSXgl e Disquetes Bootáveis (`pkg/msx`)**:
    - Emissor de código C configurado para MSX 2+ (256 KB Memory Mapper) e MSX-DOS 2 via File Handles.
    - Geração de `msxgl_config.h`, `project_config.js` e `Makefile`.
    - Conversor nativo Intel HEX (.ihx) para binário `.COM` em Go puro (`pkg/msx/hex2bin.go`).
+   - Gerador autônomo de imagens de disquete de 720 KB FAT12 para MSX-DOS 2 (`pkg/msx/dsk.go`), contendo a distribuição completa de `resource/msxdos2` (`MSXDOS2.SYS`, `COMMAND2.COM`, `MSXDOS.SYS`, subdiretórios `\UTILS` e `\HELP`), `AUTOEXEC.BAT`, `DBASE.COM` (com versão idêntica à do PC), `DBASEMSG.TXT`, tabelas `.DBF` e `README.TXT` pronto para boot no MSX 2+ real.
+   - Interface MSX modernizada com caracteres gráficos nativos da ROM do MSX (cantos, linhas simples e duplas, junções) eliminando caracteres legados em ASCII (`+===+` / `+---+`).
+   - Rotina de escrita em bloco acelerada via MSX-DOS 2 Function `0x40` (`_WRITE` direcionada ao stdout), eliminando a lentidão das chamadas arcaicas CP/M BDOS 0x09.
+   - Subsistema de ajuda completo no MSX com paridade total ao PC/Go: catálogo de comandos e suporte a subtópicos contextuais (`HELP USE`, `HELP BROWSE`, `HELP CREATE`, `HELP LIST`, `HELP EDIT`, etc.).
 7. **Automação de Build e Release**:
-   - `build.ps1` (Windows / PowerShell) gerando pacotes `.zip`.
-   - `build.sh` (Linux / Bash) gerando pacotes `.tar.gz`.
+   - `build.ps1` (Windows / PowerShell) gerando pacotes `.zip` e disquetes `.dsk`.
+   - `build.sh` (Linux / Bash) gerando pacotes `.tar.gz` e disquetes `.dsk`.
    - Controle de incremento de versão $Z$ com suporte a `--no-increment` / `-NoIncrement`.
 
 ---
@@ -118,9 +122,6 @@ Quando iniciar no novo computador, as prioridades recomendadas são:
 ### 🎯 Passo Seguinte: Passo 3 — Suporte a Índices Binários `.NDX` (B-Tree)
 * **Objetivo**: Busca em tempo logarítmico e navegação ordenada de tabelas sem varredura linear.
 * **Comandos**: `INDEX ON <chave> TO <arquivo>`, `SET INDEX TO <arquivo>`, `FIND <chave>`, `SEEK <chave>`, `REINDEX`.
-
-### 🎯 Passo 4 — Gerador de Disquetes Virtuais `.DSK` (720 KB MSX-DOS 2)
-* **Objetivo**: Emissão de imagens de disco FAT12 de 720 KB com MSX-DOS 2 e o executável `.COM` gerado para abrir direto no openMSX ou gravar no MSX real.
 
 ---
 

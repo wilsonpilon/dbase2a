@@ -90,7 +90,7 @@ Write-Host "`n>>> Compilando executável dBase II++ para Windows (amd64)..." -Fo
 $ExeName = "dbase2plus.exe"
 $ExePath = Join-Path $BinDir $ExeName
 
-$LdFlags = "-s -w -X 'dbase2a/pkg/version.Current.Major=$($VersionData.major)' -X 'dbase2a/pkg/version.Current.Minor=$($VersionData.minor)' -X 'dbase2a/pkg/version.Current.Patch=$($VersionData.patch)' -X 'dbase2a/pkg/version.Current.Codename=$($VersionData.codename)' -X 'dbase2a/pkg/version.Current.BuildDate=$($VersionData.build_date)' -X 'dbase2a/pkg/version.Current.Commit=$($VersionData.commit)'"
+$LdFlags = "-s -w -X 'dbase2a/pkg/version.BuildMajor=$($VersionData.major)' -X 'dbase2a/pkg/version.BuildMinor=$($VersionData.minor)' -X 'dbase2a/pkg/version.BuildPatch=$($VersionData.patch)' -X 'dbase2a/pkg/version.BuildCodename=$($VersionData.codename)' -X 'dbase2a/pkg/version.BuildDateVal=$($VersionData.build_date)' -X 'dbase2a/pkg/version.BuildCommit=$($VersionData.commit)'"
 
 if ($Tags -ne "") {
     go build -tags $Tags -ldflags $LdFlags -o $ExePath ./cmd/dbase2plus
@@ -103,7 +103,20 @@ if (-not (Test-Path $ExePath)) {
 }
 Write-Host ">>> Executável gerado: $ExePath ($((Get-Item $ExePath).Length / 1MB | ForEach-Object { '{0:N2} MB' -f $_ }))" -ForegroundColor Green
 
-# 6. Preparação da pasta release/
+# 6. Geração do disquete de boot MSX-DOS 2 (720 KB)
+Write-Host "`n>>> Gerando disquete bootável MSX-DOS 2 (720 KB) para MSX 2+..." -ForegroundColor Cyan
+$DskReleasePath = Join-Path $ReleaseDir "dbase2plus.dsk"
+$DskDistName = "dbase2plus-$VersionStr-msx2p-dos2.dsk"
+$DskDistPath = Join-Path $DistDir $DskDistName
+
+& $ExePath -dsk $DskReleasePath
+if (-not (Test-Path $DskReleasePath)) {
+    Write-Error "Erro ao gerar disquete MSX-DOS 2: $DskReleasePath"
+}
+Copy-Item $DskReleasePath -Destination $DskDistPath -Force
+Write-Host ">>> Disquete MSX gerado: $DskReleasePath (720 KB FAT12 / MSX-DOS 2)" -ForegroundColor Green
+
+# 7. Preparação da pasta release/
 Write-Host "`n>>> Copiando artefatos para a pasta '$ReleaseDir'..." -ForegroundColor Cyan
 Get-ChildItem -Path $ReleaseDir -Filter "*.zip" | Remove-Item -Force -ErrorAction SilentlyContinue
 Get-ChildItem -Path $ReleaseDir -Filter "*.tar.gz" | Remove-Item -Force -ErrorAction SilentlyContinue
@@ -124,9 +137,12 @@ if (Test-Path "resource") {
     New-Item -ItemType Directory -Path $RelResDir | Out-Null
     if (Test-Path "resource\files") { Copy-Item "resource\files" -Destination $RelResDir -Recurse -Force }
     if (Test-Path "resource\disks") { Copy-Item "resource\disks" -Destination $RelResDir -Recurse -Force }
+    if (Test-Path "resource\msxdos2") { Copy-Item "resource\msxdos2" -Destination $RelResDir -Recurse -Force }
+    if (Test-Path "vram.alf") { Copy-Item "vram.alf" -Destination $ReleaseDir -Force; Copy-Item "vram.alf" -Destination $RelResDir -Force }
+    if (Test-Path "resource\GRAPHOS.ALF") { Copy-Item "resource\GRAPHOS.ALF" -Destination $RelResDir -Force }
 }
 
-# 7. Geração do pacote compactado ZIP para distribuição
+# 8. Geração do pacote compactado ZIP para distribuição
 $ZipName = "dbase2plus-$VersionStr-windows-amd64.zip"
 $ZipDistPath = Join-Path $DistDir $ZipName
 $ZipReleasePath = Join-Path $ReleaseDir $ZipName
@@ -141,4 +157,5 @@ Write-Host "  BUILD CONCLUÍDO COM SUCESSO!                                     
 Write-Host "  Versão: $VersionStr  |  Codinome: $($VersionData.codename)                     " -ForegroundColor Yellow
 Write-Host "  Pasta de Release: $ReleaseDir                                                 " -ForegroundColor White
 Write-Host "  Pacote de Distribuição: $ZipDistPath                                          " -ForegroundColor White
+Write-Host "  Disquete MSX 2+ Bootável: $DskDistPath                                        " -ForegroundColor Yellow
 Write-Host "================================================================================" -ForegroundColor Green

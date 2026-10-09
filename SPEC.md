@@ -191,7 +191,7 @@ $$\text{Formato: } \mathbf{vX.Y.Z}$$
 - [x] Mapeamento dinâmico de segmentos de 16 KB no Memory Mapper do MSX 2+ (`dos_mapper.h`, `DOSMapper_Alloc`, `DOSMapper_SetPage2`) para cache de tabelas grandes em 256 KB RAM.
 - [x] Conversor nativo em Go de Intel HEX (.ihx) para binário executável MSX-DOS 2 (.COM) sem dependências externas (`pkg/msx/hex2bin.go`).
 - [x] Geração de `msxgl_config.h`, `project_config.js`, `Makefile`, `build.bat` e `build.sh` para 1-click build no PC e MSX.
-- [ ] Criação de imagens de disco virtuais `.DSK` (720 KB e 360 KB) automaticamente no PC contendo o executável compilado e os arquivos `.DBF`.
+- [x] Criação autônoma de imagens de disco virtuais `.DSK` (720 KB FAT12 / MSX-DOS 2) contendo `MSXDOS2.SYS`, `AUTOEXEC.BAT`, `DBASE.COM`, `DBASEMSG.TXT`, tabelas `.DBF` e `README.TXT` para boot no MSX real e emuladores (`pkg/msx/dsk.go` e flags `--dsk`/`--make-dsk`).
 - [ ] Integração de emulador MSX (openMSX / BlueMSX) diretamente disparado pela GUI do Fyne para testes instantâneos.
 
 ---

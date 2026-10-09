@@ -1,8 +1,8 @@
-{
-  "major": 0,
-  "minor": 6,
-  "patch": 4,
-  "codename": "The Exorcist",
-  "build_date": "2026-10-08",
-  "commit": "9b9f18d"
+﻿{
+    "major":  0,
+    "minor":  6,
+    "patch":  4,
+    "codename":  "The Exorcist",
+    "build_date":  "2026-10-08",
+    "commit":  "9cedfc2"
 }

@@ -14,6 +14,34 @@ e este projeto adota versionamento no padrão `vX.Y.Z` onde:
 ## [v0.6.4] - 2026-10-08 - *The Exorcist*
 
 ### Adicionado
+- **Tipografia e Alfabeto Graphos III na SCREEN 0 do MSX**:
+  - Integração do conjunto completo de caracteres do padrão Graphos III (`vram.alf` / `resource/GRAPHOS.ALF`, 2048 bytes) na inicialização do binário `DBASE.COM`.
+  - Inicialização automática via Z80 da tabela de gerador de caracteres (*Character Pattern Table*) no VDP V9938/V9958 (endereço `TXTCGP` 0xF3B7 / VRAM 0x0800), substituindo a fonte original por uma tipografia elegante com suporte ampliado a caracteres gráficos, molduras e caracteres acentuados da língua portuguesa sem ideogramas japoneses residuais.
+  - Inclusão dos arquivos de padrões `VRAM.ALF` e `GRAPHOS.ALF` diretamente na raiz do disquete bootável `dbase2plus.dsk` e nos pacotes de distribuição.
+- **Interface MSX 2+ Nativa com Caracteres Gráficos da ROM**:
+  - Eliminação completa de molduras legadas em ASCII (`+===+` e `+---+`) em favor de caracteres gráficos genuínos da ROM do MSX (CP437/MSX International): cantos simples (`0xDA`, `0xBF`, `0xC0`, `0xD9`), linhas horizontais e verticais (`0xC4`, `0xB3`), junções em T (`0xC2`, `0xC1`, `0xC3`, `0xB4`) e cruzamentos (`0xC5`), além de molduras duplas (`0xC9`, `0xCD`, `0xBB`, `0xC8`, `0xBC`, `0xCC`, `0xB9`) para banners e cabeçalhos.
+  - Navegador `BROWSE` no MSX redesenhado com grade tabular contínua de alta definição e barra de status inferior com teclas de atalho.
+- **Driver de Escrita Direta no Console para MSX-DOS 2 / MSX 2+**:
+  - Implementação da rotina de saída de console otimizada via MSX-DOS BDOS Function `0x09` (`_STROUT`), eliminando a dependência indevida de handles de arquivo (`_WRITE` 0x40) em binários `.COM` convencionais e garantindo exibição imediata do banner inicial, do prompt `.` e das respostas de comandos.
+  - Preservação da terminação de strings com `$` e suporte integral a sequências de controle VT-52 e caracteres gráficos estendidos da ROM do MSX.
+- **Subsistema de Ajuda (`HELP`) no MSX com Paridade Total à Versão PC/Go**:
+  - Catálogo completo de todos os comandos do dBase II++ (`APPEND`, `BROWSE`, `CLEAR`, `CONTINUE`, `COPY`, `COUNT`, `CREATE`, `DELETE`, `DISPLAY`, `DO`, `EDIT`, `FIND`, `GOTO`, `HELP`, `INDEX`, `LIST`, `LOCATE`, `MODIFY`, `PACK`, `QUIT`, `RECALL`, `REPLACE`, `RESTORE`, `SAVE`, `SELECT`, `SET`, `SKIP`, `SORT`, `STORE`, `SUM`, `TOTAL`, `USE`, `ZAP`, `?`, `@ SAY/GET`).
+  - Despachante interativo de subtópicos (`HELP <comando>` / `HELP <topico>`) no MSX: suporte a `HELP USE`, `HELP BROWSE`, `HELP CREATE`, `HELP LIST`, `HELP APPEND`, `HELP EDIT`, `HELP COUNT`, `HELP SUM`, `HELP PACK`, `HELP ZAP`, `HELP CLEAR`, `HELP QUIT`, `HELP INDEX`, `HELP FIND`, `HELP LOCATE`, `HELP REPLACE`, `HELP DELETE`, `HELP RECALL`, `HELP SET`, `HELP ?`, `HELP @`, `HELP FUNÇÕES`, `HELP TELA-CHEIA`.
+- **Gerador Autônomo de Disquetes Bootáveis MSX-DOS 2 (`pkg/msx/dsk.go`)**:
+  - Emissão de imagens de disco virtuais de 720 KB (`.DSK`, 80 trilhas, 2 faces, 9 setores/trilha, 1440 setores total) em formato FAT12 padrão MSX com suporte completo a subdiretórios hierárquicos.
+  - Setor de boot com BPB formatado para MSX-DOS 2 (OEM `MSXDOS2 `, Media Descriptor `0xF9`, 112 entradas no diretório raiz).
+  - Integração dos arquivos oficiais do MSX-DOS 2 a partir de `resource/msxdos2`: `MSXDOS2.SYS` (kernel MSX-DOS 2), `COMMAND2.COM` (interpretador de comandos v2.44), `MSXDOS.SYS` (fallback), `REBOOT.BAT` e `HISTORY.TXT`.
+  - Inclusão da suíte completa de utilitários no subdiretório `\UTILS` (`CHKDSK.COM`, `DISKCOPY.COM`, `XCOPY.COM`, `TREE.COM`, `MORE.COM`, `TO.COM`, `UNDEL.COM`, `XDIR.COM`, `YENSLASH.COM`, etc.).
+  - Inclusão do acervo de manuais e arquivos de ajuda no subdiretório `\HELP` (mais de 80 arquivos `.HLP`).
+  - Criação de `AUTOEXEC.BAT` customizado com configuração de `PATH %1\UTILS;%1\`, `SET HELP=%1\HELP`, `SET BACKSLASH=ON`, modo de vídeo nativo MSX-DOS 2 de 80 colunas (`MODE 80`) e inicialização imediata do `DBASE.COM`.
+  - Inclusão do executável binário `DBASE.COM` para MSX-DOS 2 com montador Z80 nativo, prompt interativo `.` sem quebra indevida de linha, bufferização de entrada BDOS 0x0A de 128 caracteres e comandos interativos no MSX real.
+  - Inclusão da tabela de demonstração `ARQUIVO.DBF` com cabeçalho 0x02 de 521 bytes e arquivo de instruções `README.TXT`.
+- **Flags de Linha de Comando para Geração de Discos MSX**:
+  - `--make-dsk`: Gera a imagem de disquete `release/dbase2plus.dsk` com 1 comando.
+  - `--dsk <caminho>`: Gera a imagem de disquete no arquivo `.DSK` especificado.
+- **Integração Completa na Automação de Build (`build.ps1` e `build.sh`)**:
+  - Geração automática de `release/dbase2plus.dsk` e `dist/dbase2plus-vX.Y.Z-msx2p-dos2.dsk` em todos os ciclos de build.
+  - Inclusão do disquete `.DSK` dentro do pacote ZIP de distribuição para entrega aos usuários.
 - **Documento de Handover & Transição (`HANDOVER.md`)**:
   - Guia completo de arquitetura, estado de código e instruções detalhadas para continuação imediata do projeto em outro computador utilizando GoLand e Junie.
   - Registro detalhado das decisões de design, status dos módulos e roadmap dos passos seguintes.

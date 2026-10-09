@@ -32,6 +32,8 @@ func main() {
 	exportMSX := flag.String("export-msx", "", "Exporta projeto em C/SDCC para MSX a partir de um arquivo .DBF")
 	compileMSX := flag.String("compile-msx", "", "Exporta e compila executável .COM para MSX a partir de um arquivo .DBF")
 	hex2comFile := flag.String("hex2com", "", "Converte um arquivo Intel HEX (.ihx) gerado pelo SDCC em binário MSX-DOS .COM")
+	makeDSK := flag.Bool("make-dsk", false, "Gera uma imagem de disquete de boot MSX-DOS 2 (720KB) com dBase II++")
+	dskPath := flag.String("dsk", "", "Caminho de saída para gerar a imagem de disquete bootável MSX-DOS 2 (.DSK)")
 	outPath := flag.String("out", "", "Caminho de saída para arquivo gerado (.COM, .DBF, etc.)")
 	msxTarget := flag.String("target", "msx2p", "Plataforma MSX de destino: msx1, msx2, msx2p, msxtr")
 	msxSDK := flag.String("sdk", "msxgl", "SDK para MSX: msxgl, fusion-c, sdcc")
@@ -63,6 +65,20 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Printf("Arquivo COM gerado com sucesso: %s\n", dest)
+		os.Exit(0)
+	}
+
+	// 2.1 Utilitário Gerador de Disquete Bootável MSX-DOS 2 (.DSK)
+	if *makeDSK || *dskPath != "" {
+		destDSK := *dskPath
+		if destDSK == "" {
+			destDSK = filepath.Join("release", "dbase2plus.dsk")
+		}
+		if err := msx.BuildMSXDOS2BootDisk(destDSK, nil); err != nil {
+			fmt.Fprintf(os.Stderr, "Erro ao gerar disquete bootável MSX-DOS 2: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Disquete bootavel MSX-DOS 2 de 720KB gerado com sucesso: %s\n", destDSK)
 		os.Exit(0)
 	}
 

@@ -70,19 +70,26 @@ Uma reimplementação moderna, rápida e estendida do clássico **dBase II / dBa
 
 | Arquivo | Plataforma | Descrição |
 |---|---|---|
-| `dbase2plus-v0.6.4-windows-amd64.zip` | Windows (x64) | Executável Windows (`dbase2plus.exe`), documentação e recursos |
-| `dbase2plus-v0.6.4-linux-amd64.tar.gz` | Linux (x86_64) | Executável Linux (`dbase2plus`), documentação e recursos |
+| `dbase2plus-v0.6.4-windows-amd64.zip` | Windows (x64) | Executável Windows (`dbase2plus.exe`), disquete MSX `.dsk`, documentação e recursos |
+| `dbase2plus-v0.6.4-linux-amd64.tar.gz` | Linux (x86_64) | Executável Linux (`dbase2plus`), disquete MSX `.dsk`, documentação e recursos |
+| `dbase2plus-v0.6.4-msx2p-dos2.dsk` | MSX 2+ (720 KB FAT12) | Imagem de disquete de boot com MSX-DOS 2 (`MSXDOS2.SYS`, `COMMAND2.COM`), utilitários (`\UTILS`), manuais (`\HELP`), `DBASE.COM`, `AUTOEXEC.BAT` e dados de teste |
 
 ---
 
 ### ⚡ Como Executar
 
-#### Windows:
+#### No MSX Real (ou openMSX / BlueMSX):
+1. Grave a imagem `dbase2plus-v0.6.4-msx2p-dos2.dsk` (ou `release/dbase2plus.dsk`) em um disquete de 3.5" de 720KB (ou carregue no emulador no drive A:).
+2. Ligue o MSX 2+ com o disquete inserido. O MSX-DOS 2 iniciará e executará automaticamente o `AUTOEXEC.BAT`, configurando modo texto de 80 colunas e abrindo o prompt `.` do dBase II++.
+3. No prompt, digite `USE ARQUIVO`, `LIST`, `BROWSE` ou `HELP`.
+
+#### No Windows:
 ```cmd
 # Extrair o arquivo dbase2plus-v0.6.4-windows-amd64.zip
 .\dbase2plus.exe          # Inicia no modo padrão (CLI)
 .\dbase2plus.exe --tui    # Inicia no modo Terminal UI
 .\dbase2plus.exe --gui    # Inicia no modo Interface Gráfica Fyne
+.\dbase2plus.exe --make-dsk # Gera disquete bootável MSX-DOS 2 de 720KB
 .\dbase2plus.exe --exec "HELP" # Executa comando direto
 ```
 
