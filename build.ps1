@@ -140,6 +140,8 @@ if (Test-Path "resource") {
     if (Test-Path "resource\msxdos2") { Copy-Item "resource\msxdos2" -Destination $RelResDir -Recurse -Force }
     if (Test-Path "vram.alf") { Copy-Item "vram.alf" -Destination $ReleaseDir -Force; Copy-Item "vram.alf" -Destination $RelResDir -Force }
     if (Test-Path "resource\GRAPHOS.ALF") { Copy-Item "resource\GRAPHOS.ALF" -Destination $RelResDir -Force }
+    if (Test-Path "resource\menu.alf") { Copy-Item "resource\menu.alf" -Destination $RelResDir -Force }
+    if (Test-Path "menu.alf") { Copy-Item "menu.alf" -Destination $ReleaseDir -Force; Copy-Item "menu.alf" -Destination $RelResDir -Force }
 }
 
 # 8. Geração do pacote compactado ZIP para distribuição

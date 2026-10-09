@@ -106,7 +106,9 @@ if [ -d "resource" ]; then
     if [ -d "resource/disks" ]; then cp -r "resource/disks" "${RELEASE_DIR}/resource/"; fi
     if [ -d "resource/msxdos2" ]; then cp -r "resource/msxdos2" "${RELEASE_DIR}/resource/"; fi
     if [ -f "vram.alf" ]; then cp "vram.alf" "${RELEASE_DIR}/"; cp "vram.alf" "${RELEASE_DIR}/resource/"; fi
+    if [ -f "menu.alf" ]; then cp "menu.alf" "${RELEASE_DIR}/"; cp "menu.alf" "${RELEASE_DIR}/resource/"; fi
     if [ -f "resource/GRAPHOS.ALF" ]; then cp "resource/GRAPHOS.ALF" "${RELEASE_DIR}/resource/"; fi
+    if [ -f "resource/menu.alf" ]; then cp "resource/menu.alf" "${RELEASE_DIR}/resource/"; fi
 fi
 
 TAR_NAME="dbase2plus-${VERSION_STR}-linux-amd64.tar.gz"
